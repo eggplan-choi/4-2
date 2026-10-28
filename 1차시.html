@@ -704,6 +704,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none; /* Prevents scrolling lag on touchscreens */
     }
 
     /* Bottom Navigation Bar (Always on Top) */
@@ -1153,10 +1154,10 @@
             </div>
           </div>
 
-          <div class="card" style="border-color: rgba(251, 191, 36, 0.5); background: linear-gradient(145deg, rgba(25, 36, 60, 0.95), rgba(15, 23, 42, 0.98));">
+          <div class="card" style="border-color: rgba(251, 191, 36, 0.5); background: var(--card-bg);">
             <div class="card-title" style="color: var(--amber);">🤔 2차시를 여는 생각 (탐구 과제)</div>
             <div class="card-body">
-              <div style="background: rgba(15, 23, 42, 0.85); border-radius: 14px; padding: 20px; margin-bottom: 16px;">
+              <div style="background: var(--math-box-bg); border-left: 6px solid var(--amber); border-radius: 14px; padding: 20px; margin-bottom: 16px;">
                 <p style="font-size: 30px; color: var(--amber); font-weight: 800; margin: 0;">
                   "공식으로 단번에 풀리는데, 왜 AI는 반복 탐색 알고리즘을 쓸까요?"
                 </p>
@@ -1591,63 +1592,124 @@
       resizeWhiteboardCanvas();
     }
 
-    /* ========================================================
-       4. Whiteboard Engine
+        /* ========================================================
+       4. Whiteboard High-Fidelity Smooth Ink Engine (Bézier Smoothing)
        ======================================================== */
     let wbCanvas, wbCtx;
     let isDrawing = false;
-    let lastX = 0, lastY = 0;
+    let points = [];
+    let currentWbOpacity = 1;
 
     function initWhiteboard() {
       wbCanvas = document.getElementById('whiteboard-canvas');
       if (!wbCanvas) return;
       wbCtx = wbCanvas.getContext('2d');
 
-      function startDraw(e) {
-        isDrawing = true;
+      function getPos(e) {
         const rect = wbCanvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        lastX = clientX - rect.left;
-        lastY = clientY - rect.top;
+        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+          time: Date.now()
+        };
       }
 
-      function draw(e) {
-        if (!isDrawing) return;
-        e.preventDefault();
-        const rect = wbCanvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const curX = clientX - rect.left;
-        const curY = clientY - rect.top;
+      function startDraw(e) {
+        // Prevent default touch gestures (pinch, scroll)
+        if (e.cancelable) e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        points = [pos, pos];
 
         const penColor = getComputedStyle(document.documentElement).getPropertyValue('--pen-color').trim() || '#ffffff';
         wbCtx.strokeStyle = penColor;
+        wbCtx.fillStyle = penColor;
         wbCtx.lineWidth = 4;
         wbCtx.lineCap = 'round';
         wbCtx.lineJoin = 'round';
 
+        // Draw an initial clean dot
         wbCtx.beginPath();
-        wbCtx.moveTo(lastX, lastY);
-        wbCtx.lineTo(curX, curY);
-        wbCtx.stroke();
-
-        lastX = curX;
-        lastY = curY;
+        wbCtx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+        wbCtx.fill();
       }
 
-      function stopDraw() { isDrawing = false; }
+      function draw(e) {
+        if (!isDrawing) return;
+        if (e.cancelable) e.preventDefault();
 
-      wbCanvas.addEventListener('mousedown', startDraw);
-      wbCanvas.addEventListener('mousemove', draw);
-      window.addEventListener('mouseup', stopDraw);
+        const penColor = getComputedStyle(document.documentElement).getPropertyValue('--pen-color').trim() || '#ffffff';
+        wbCtx.strokeStyle = penColor;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
 
-      wbCanvas.addEventListener('touchstart', startDraw, { passive: false });
-      wbCanvas.addEventListener('touchmove', draw, { passive: false });
-      window.addEventListener('touchend', stopDraw);
+        // High-frequency coalesced events support for high-precision styluses / touchscreens
+        const rawEvents = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+        for (let ev of rawEvents) {
+          const pos = getPos(ev);
+          points.push(pos);
+
+          // Need at least 3 points to create a smooth quadratic Bézier curve
+          if (points.length >= 3) {
+            const p0 = points[points.length - 3];
+            const p1 = points[points.length - 2];
+            const p2 = points[points.length - 1];
+
+            // Control point: p1, End point: midpoint between p1 and p2
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+            const startMidX = (p0.x + p1.x) / 2;
+            const startMidY = (p0.y + p1.y) / 2;
+
+            // Velocity-based stroke width smoothing
+            const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const dt = Math.max(1, p2.time - p1.time);
+            const speed = dist / dt; // px per ms
+            const targetWidth = Math.max(2.5, Math.min(5.5, 6.0 - speed * 1.5));
+            wbCtx.lineWidth = wbCtx.lineWidth * 0.7 + targetWidth * 0.3;
+
+            wbCtx.beginPath();
+            wbCtx.moveTo(startMidX, startMidY);
+            wbCtx.quadraticCurveTo(p1.x, p1.y, midX, midY);
+            wbCtx.stroke();
+          }
+        }
+      }
+
+      function stopDraw() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        // Finish any remaining segment
+        if (points.length >= 2) {
+          const p1 = points[points.length - 2];
+          const p2 = points[points.length - 1];
+          wbCtx.beginPath();
+          wbCtx.moveTo(p1.x, p1.y);
+          wbCtx.lineTo(p2.x, p2.y);
+          wbCtx.stroke();
+        }
+        points = [];
+      }
+
+      // Pointer Events (Unified handler for pen, touch, and mouse with zero latency)
+      if (window.PointerEvent) {
+        wbCanvas.addEventListener('pointerdown', startDraw);
+        wbCanvas.addEventListener('pointermove', draw);
+        window.addEventListener('pointerup', stopDraw);
+        window.addEventListener('pointercancel', stopDraw);
+      } else {
+        // Fallback for older browsers
+        wbCanvas.addEventListener('mousedown', startDraw);
+        wbCanvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDraw);
+        wbCanvas.addEventListener('touchstart', startDraw, { passive: false });
+        wbCanvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDraw);
+      }
     }
-
-    let currentWbOpacity = 1;
 
     function setWhiteboardOpacity(level) {
       currentWbOpacity = level;
@@ -1696,6 +1758,7 @@
       const wrap = document.getElementById('whiteboard-wrap');
       const rect = wrap.getBoundingClientRect();
       wbCtx.clearRect(0, 0, rect.width, rect.height);
+      points = [];
     }
 
     /* ========================================================
