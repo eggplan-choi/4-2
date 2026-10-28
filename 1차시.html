@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ⅳ-2. 최적화 1차시: 손실함수 L(a)의 대수적 도출</title>
+  
+  <!-- Pretendard Web Font -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* ========================================================
+       Theme Presets CSS Variables
+       ======================================================== */
+    :root, [data-theme="dark"] {
+      --bg-dark: #080c16;
+      --stage-bg: radial-gradient(circle at 50% 15%, #18243c 0%, #0c1220 70%, #070a14 100%);
+      --card-bg: rgba(20, 29, 48, 0.94);
+      --card-border: rgba(148, 163, 184, 0.25);
+      --text-main: #ffffff;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #818cf8;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --modal-bg: #131c31;
+      --canvas-bg: #090e1a;
+      --math-box-bg: rgba(9, 14, 26, 0.95);
+      --table-th-bg: rgba(15, 23, 42, 0.85);
+      --nav-bg: rgba(15, 23, 42, 0.98);
+      --btn-bg: rgba(255, 255, 255, 0.1);
+      --btn-border: rgba(255, 255, 255, 0.25);
+      --grid-color: rgba(148, 163, 184, 0.16);
+      --axis-color: rgba(255, 255, 255, 0.45);
+      --pen-color: #ffffff;
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-dark: #e2e8f0;
+      --stage-bg: radial-gradient(circle at 50% 15%, #ffffff 0%, #f1f5f9 70%, #e2e8f0 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-border: rgba(100, 116, 139, 0.3);
+      --text-main: #0f172a;
+      --text-sub: #334155;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-glow: rgba(2, 132, 199, 0.2);
+      --indigo: #6366f1;
+      --emerald: #059669;
+      --rose: #e11d48;
+      --amber: #d97706;
+      --modal-bg: #ffffff;
+      --canvas-bg: #f8fafc;
+      --math-box-bg: rgba(241, 245, 249, 0.95);
+      --table-th-bg: rgba(226, 232, 240, 0.9);
+      --nav-bg: rgba(255, 255, 255, 0.98);
+      --btn-bg: rgba(15, 23, 42, 0.08);
+      --btn-border: rgba(15, 23, 42, 0.2);
+      --grid-color: rgba(148, 163, 184, 0.35);
+      --axis-color: rgba(15, 23, 42, 0.65);
+      --pen-color: #0f172a;
+    }
+
+    [data-theme="green"] {
+      --bg-dark: #0a1710;
+      --stage-bg: radial-gradient(circle at 50% 15%, #173324 0%, #0e2217 70%, #08150e 100%);
+      --card-bg: rgba(20, 44, 32, 0.94);
+      --card-border: rgba(110, 231, 183, 0.28);
+      --text-main: #f0fdf4;
+      --text-sub: #d1fae5;
+      --text-muted: #6ee7b7;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #a7f3d0;
+      --emerald: #4ade80;
+      --rose: #fb7185;
+      --amber: #fde047;
+      --modal-bg: #132a1d;
+      --canvas-bg: #0b1a12;
+      --math-box-bg: rgba(8, 20, 14, 0.95);
+      --table-th-bg: rgba(15, 36, 25, 0.9);
+      --nav-bg: rgba(13, 30, 21, 0.98);
+      --btn-bg: rgba(240, 253, 244, 0.12);
+      --btn-border: rgba(240, 253, 244, 0.28);
+      --grid-color: rgba(110, 231, 183, 0.22);
+      --axis-color: rgba(240, 253, 244, 0.55);
+      --pen-color: #fef08a;
+    }
+
+    [data-theme="sepia"] {
+      --bg-dark: #1e1711;
+      --stage-bg: radial-gradient(circle at 50% 15%, #34271d 0%, #251b14 70%, #18120d 100%);
+      --card-bg: rgba(48, 36, 27, 0.94);
+      --card-border: rgba(245, 158, 11, 0.28);
+      --text-main: #fef3c7;
+      --text-sub: #fde68a;
+      --text-muted: #d97706;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #fcd34d;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --modal-bg: #291f17;
+      --canvas-bg: #18120e;
+      --math-box-bg: rgba(25, 18, 13, 0.95);
+      --table-th-bg: rgba(36, 27, 20, 0.9);
+      --nav-bg: rgba(30, 23, 17, 0.98);
+      --btn-bg: rgba(254, 243, 199, 0.12);
+      --btn-border: rgba(254, 243, 199, 0.28);
+      --grid-color: rgba(245, 158, 11, 0.2);
+      --axis-color: rgba(254, 243, 199, 0.55);
+      --pen-color: #fef3c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    /* 16:9 Viewport Stage Container */
+    #viewport-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 76px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      padding-top: 10px;
+    }
+
+    #slide-stage {
+      width: 1920px;
+      height: 1080px;
+      position: absolute;
+      top: 0;
+      transform-origin: top center;
+      background: var(--stage-bg);
+      border-radius: 20px;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+
+    /* Slide Layout: Always Top Aligned */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 55px 90px 40px 90px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(20px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 30px;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* Slide Header */
+    .slide-header {
+      margin-bottom: 2px;
+    }
+
+    .slide-tag {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 60px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .slide-desc {
+      font-size: 30px;
+      color: var(--text-sub);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      padding: 34px 40px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.35);
+      position: relative;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card.clickable:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 20px 45px -8px var(--primary-glow);
+    }
+
+    .card.clickable.amber-card:hover {
+      border-color: var(--amber);
+      box-shadow: 0 20px 45px -8px rgba(251, 191, 36, 0.3);
+    }
+
+    .card-title {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-body {
+      font-size: 29px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    .click-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.16);
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+
+    .click-hint.amber {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.16);
+      border-color: rgba(251, 191, 36, 0.45);
+    }
+
+    /* Large Math Box */
+    .math-callout {
+      background: var(--math-box-bg);
+      border-left: 8px solid var(--primary);
+      border-radius: 0 18px 18px 0;
+      padding: 20px 28px;
+      margin: 14px 0;
+      font-size: 32px;
+      color: var(--text-main);
+    }
+
+    .math-callout.emerald {
+      border-left-color: var(--emerald);
+    }
+
+    .math-callout.amber {
+      border-left-color: var(--amber);
+    }
+
+    /* Large Custom Table */
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 29px;
+    }
+
+    .custom-table th, .custom-table td {
+      padding: 14px 18px;
+      text-align: center;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .custom-table th {
+      background: var(--table-th-bg);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    /* Slide 1 Hero Layout */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 35px;
+      gap: 28px;
+    }
+
+    .hero-title {
+      font-size: 74px;
+      font-weight: 900;
+      line-height: 1.25;
+      background: linear-gradient(135deg, var(--text-main) 45%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 34px;
+      color: var(--text-sub);
+      max-width: 1350px;
+      line-height: 1.6;
+    }
+
+    .objective-list {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      padding: 38px 60px;
+      width: 1300px;
+      text-align: left;
+    }
+
+    .objective-list h4 {
+      font-size: 32px;
+      color: var(--primary);
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .objective-list ol {
+      padding-left: 36px;
+      font-size: 30px;
+      color: var(--text-main);
+      line-height: 1.8;
+    }
+
+    /* Slide 4 Simulator Layout */
+    .sim-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+    }
+
+    .sim-controls {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    .sim-slider-group {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .sim-slider-group label {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    input[type=range] {
+      flex: 1;
+      height: 14px;
+      border-radius: 7px;
+      background: var(--card-border);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 16px var(--primary-glow);
+      cursor: pointer;
+    }
+
+    .sim-preset-btn {
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--text-main);
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sim-preset-btn:hover {
+      background: var(--primary);
+      color: #070a14;
+    }
+
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      height: 520px;
+    }
+
+    .canvas-wrap {
+      background: var(--canvas-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
+      transition: background 0.3s ease;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-metric-badge {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: var(--nav-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 24px;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+      color: var(--text-main);
+    }
+
+    /* Modal / Popups (Positioned strictly above bottom-nav) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 72px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(16px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s;
+    }
+
+    /* Whiteboard Opacity & Tracing Mode Hierarchy */
+    #modal-whiteboard {
+      z-index: 3000;
+      transition: background 0.25s ease, backdrop-filter 0.25s ease;
+    }
+
+    /* Level 1: 100% Solid (Default) */
+    #modal-whiteboard.wb-level-1 {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(16px);
+    }
+    #modal-whiteboard.wb-level-1 .whiteboard-content {
+      background: var(--modal-bg);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+    }
+    #modal-whiteboard.wb-level-1 .whiteboard-canvas-wrap {
+      background: var(--modal-bg);
+    }
+
+    /* Level 2: 50% Semi-transparent (Underlying slide visible) */
+    #modal-whiteboard.wb-level-2 {
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: none;
+    }
+    #modal-whiteboard.wb-level-2 .whiteboard-content {
+      background: color-mix(in srgb, var(--modal-bg) 50%, transparent);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    }
+    #modal-whiteboard.wb-level-2 .whiteboard-canvas-wrap {
+      background: transparent;
+    }
+
+    /* Level 3: 15% High-transparency Tracing Mode (Sharp, clear tracing) */
+    #modal-whiteboard.wb-level-3 {
+      background: transparent;
+      backdrop-filter: none;
+    }
+    #modal-whiteboard.wb-level-3 .whiteboard-content {
+      background: color-mix(in srgb, var(--modal-bg) 15%, transparent);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+    #modal-whiteboard.wb-level-3 .whiteboard-canvas-wrap {
+      background: transparent;
+    }
+
+    /* Whiteboard Opacity Button Styles */
+    .wb-op-btn {
+      padding: 6px 14px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .wb-op-btn:hover {
+      background: var(--card-border);
+    }
+    .wb-op-btn.active {
+      background: var(--emerald) !important;
+      color: #070a14 !important;
+      border-color: var(--emerald) !important;
+    }
+
+    /* Editable Outline Styling */
+    body.editing-active .editable {
+      outline: 2px dashed rgba(251, 191, 36, 0.7) !important;
+      outline-offset: 4px;
+      cursor: text !important;
+    }
+
+    body.editing-active .editable:hover {
+      outline-color: var(--amber) !important;
+      background: rgba(251, 191, 36, 0.08) !important;
+    }
+
+    .btn-nav.active {
+      background: var(--amber) !important;
+      color: #070a14 !important;
+      border-color: var(--amber) !important;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--modal-bg);
+      border: 3px solid var(--primary);
+      border-radius: 30px;
+      width: 1400px;
+      max-height: 880px;
+      padding: 48px 58px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 22px;
+      transform: scale(0.96);
+      transition: transform 0.25s ease, background 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--card-border);
+      padding-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .modal-close-btn {
+      background: var(--btn-bg);
+      border: 2px solid var(--btn-border);
+      color: var(--text-main);
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      font-size: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: #ffffff;
+    }
+
+    .modal-body {
+      font-size: 30px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    /* ========================================================
+       Whiteboard Modal Specifics
+       ======================================================== */
+    .whiteboard-content {
+      width: 1760px;
+      height: 980px;
+      max-height: 980px;
+      padding: 30px 40px;
+      background: var(--modal-bg);
+      border: 3px solid var(--emerald);
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .whiteboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .whiteboard-tools {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .whiteboard-canvas-wrap {
+      flex: 1;
+      border-radius: 18px;
+      background: var(--modal-bg);
+      border: 2px dashed var(--card-border);
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    #whiteboard-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Bottom Navigation Bar (Always on Top) */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 72px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      border-top: 2px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      z-index: 4000;
+      transition: background 0.3s ease;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .nav-badge {
+      background: rgba(56, 189, 248, 0.16);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-nav {
+      background: var(--btn-bg);
+      border: 2px solid var(--btn-border);
+      color: var(--text-main);
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--card-border);
+    }
+
+    .btn-nav.whiteboard-btn {
+      background: rgba(52, 211, 153, 0.16);
+      border-color: rgba(52, 211, 153, 0.45);
+      color: var(--emerald);
+    }
+
+    .btn-nav.whiteboard-btn:hover {
+      background: var(--emerald);
+      color: #070a14;
+    }
+
+    /* Styled Theme Selector */
+    .theme-select {
+      background: var(--btn-bg);
+      border: 2px solid var(--btn-border);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 21px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      font-family: var(--font-family);
+      transition: all 0.2s;
+    }
+
+    .theme-select option {
+      background: var(--modal-bg);
+      color: var(--text-main);
+      font-size: 20px;
+    }
+
+    .slide-counter {
+      font-variant-numeric: tabular-nums;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin: 0 10px;
+    }
+
+    .slide-counter span {
+      color: var(--primary);
+    }
+
+    /* Bottom Progress Bar */
+    #progress-container {
+      position: fixed;
+      bottom: 72px;
+      left: 0;
+      width: 100vw;
+      height: 5px;
+      background: var(--card-border);
+      z-index: 4000;
+      pointer-events: none;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 14.28%;
+      background: linear-gradient(90deg, var(--primary), var(--emerald));
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 16:9 Viewport Stage Container -->
+  <main id="viewport-container">
+    <div id="slide-stage">
+
+      <!-- ==================== SLIDE 1: Cover ==================== -->
+      <section class="slide active" id="slide-1">
+        <div class="hero-container">
+          <div style="display: flex; gap: 18px;">
+            <span class="nav-badge" style="font-size: 22px; padding: 6px 22px;">고등학교 2학년</span>
+            <span class="nav-badge" style="font-size: 22px; padding: 6px 22px; border-color: var(--emerald); color: var(--emerald);">교과서 p.152~161</span>
+          </div>
+          <h1 class="hero-title">오차의 복습과 손실함수 $L(a)$ 의 대수적 도출</h1>
+          <p class="hero-subtitle">
+            단순 오차합의 부호 상쇄 한계를 극복하고, 주어진 데이터를 바탕으로<br>
+            추세선의 성능을 평가하는 손실함수(평균제곱오차)를 유도합니다.
+          </p>
+          <div class="objective-list">
+            <h4>🎯 학습 목표</h4>
+            <ol>
+              <li>예측 오차의 부호 상쇄 현상을 이해하고, <strong>평균제곱오차(MSE)</strong> 의 필요성을 설명할 수 있다. </li>
+              <li>데이터 좌표를 바탕으로 손실함수 $L(a)$ 를 전개하고, <strong>이차함수의 성질</strong> 로 최적의 기울기를 산출할 수 있다. </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 2: Error Dilemma ==================== -->
+      <section class="slide" id="slide-2">
+        <div class="slide-header">
+          <div class="slide-tag">Review &amp; Motivation</div>
+          <h2 class="slide-title">4-1단원 복습: 오차의 단순 합산과 부호 상쇄 현상</h2>
+          <p class="slide-desc">원점과 평균점을 지나는 직선은 오차의 단순 총합이 $0$ 이 되지만, 과연 최적의 선일까요?</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-review-calc')">
+            <div class="card-title">
+              <span>📐 후보 직선 $f(x) = 0.5x$ (원점과 평균점 통과)</span>
+              <span class="click-hint">🔍 상세 계산</span>
+            </div>
+            <div class="card-body">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>데이터 점</th>
+                    <th>예측값 $f(x_i)$ </th>
+                    <th>오차 ($y_i - f(x_i)$)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>$(3, 1)$ </td>
+                    <td>$f(3) = 1.5$ </td>
+                    <td><strong style="color: var(--rose);">-0.5</strong> </td>
+                  </tr>
+                  <tr>
+                    <td>$(2, 2)$ </td>
+                    <td>$f(2) = 1.0$ </td>
+                    <td><strong style="color: var(--primary);">+1.0</strong> </td>
+                  </tr>
+                  <tr>
+                    <td>$(7, 3)$ </td>
+                    <td>$f(7) = 3.5$ </td>
+                    <td><strong style="color: var(--rose);">-0.5</strong> </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="math-callout" style="font-size: 32px; text-align: center;">
+                오차의 단순 총합: $(-0.5) + (+1.0) + (-0.5) = 0$ 
+              </div>
+            </div>
+          </div>
+
+          <div class="card clickable" onclick="openModal('modal-review-insight')">
+            <div class="card-title">
+              <span>⚠️ 단순 합산 방식의 수학적 한계</span>
+              <span class="click-hint">🔍 개념 해설</span>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 18px;">
+              <div style="background: rgba(251, 113, 133, 0.14); border-left: 8px solid var(--rose); border-radius: 14px; padding: 22px;">
+                <h4 style="color: var(--rose); font-size: 30px; margin-bottom: 8px;">부호 상쇄로 인한 판정 왜곡</h4>
+                <p style="font-size: 27px; line-height: 1.6; margin: 0;">
+                  세 점 모두 직선에서 벗어나 있으나, 양과 음의 오차가 상쇄되어 오차가 전혀 없는 것처럼 오판됩니다.
+                </p>
+              </div>
+              <div style="background: rgba(52, 211, 153, 0.14); border-left: 8px solid var(--emerald); border-radius: 14px; padding: 22px;">
+                <h4 style="color: var(--emerald); font-size: 30px; margin-bottom: 8px;">수학적 해결 원리</h4>
+                <p style="font-size: 27px; line-height: 1.6; margin: 0;">
+                  부호와 무관하게 <strong>실제 데이터와의 순수한 거리(크기)</strong> 만을 정량화하는 새로운 목적함수가 필요합니다. 
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 3: Defining Loss Function ==================== -->
+      <section class="slide" id="slide-3">
+        <div class="slide-header">
+          <div class="slide-tag">Formalization</div>
+          <h2 class="slide-title">부호 상쇄의 극복과 평균제곱오차(MSE)의 도입</h2>
+          <p class="slide-desc">부호를 없애는 방법 중 인공지능이 제곱의 평균을 표준 지표로 채택하는 이유를 탐구합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-mae-detail')">
+            <div class="card-title">
+              <span>대안 1: 절댓값 오차 (MAE)</span>
+              <span class="click-hint">🔍 특성 보기</span>
+            </div>
+            <div class="card-body">
+              <div class="math-callout">
+                $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} |y_i - f(x_i)|$$
+              </div>
+              <p style="margin-top: 14px;">• 오차의 물리적 크기를 직접 반영함.</p>
+              <p>• 꺾인 점(첨점)에서 <strong>미분이 불가능</strong> 하여 최적화 알고리즘 적용이 까다로움. </p>
+            </div>
+          </div>
+
+          <div class="card clickable" style="border-color: rgba(52, 211, 153, 0.6);" onclick="openModal('modal-mse-detail')">
+            <div class="card-title" style="color: var(--emerald);">
+              <span>대안 2: 평균제곱오차 (MSE) ★ 표준</span>
+              <span class="click-hint">🔍 장점 보기</span>
+            </div>
+            <div class="card-body">
+              <div class="math-callout emerald">
+                $$L(a) = \frac{1}{n}\sum_{i=1}^{n} (y_i - ax_i)^2$$
+              </div>
+              <p style="margin-top: 14px;">• 실수의 제곱 성질($e_i^2 \ge 0$)로 부호 상쇄를 완전 차단함.</p>
+              <p>• 매끄러운 <strong>2차 포물선 곡선</strong> 을 형성하여 대칭축 및 미분 적용에 이상적임. </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 22px 38px;">
+          <h3 style="font-size: 32px; color: var(--primary); margin-bottom: 8px;">📖 [정의] 손실함수 (Loss Function)</h3>
+          <p style="font-size: 29px; line-height: 1.6;">
+            모델이 주어진 데이터에 얼마나 부합하지 못하는지를 수치화한 함수이며, 인공지능의 최적화는 곧 <strong>손실함수 $L(a)$ 를 최소화하는 매개변수 $a$ 를 구하는 과정</strong> 입니다. 
+          </p>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 4: Interactive Simulation ==================== -->
+      <section class="slide" id="slide-4">
+        <div class="slide-header" style="margin-bottom: 10px;">
+          <div class="slide-tag">Interactive Simulation</div>
+          <h2 class="slide-title">기울기 $a$ 에 따른 잔차 면적과 손실 곡면 비교</h2>
+          <p class="slide-desc">가로로 확장된 1:1 격자 데이터 공간과 정방형 손실 포물선의 움직임을 확인하세요.</p>
+        </div>
+
+        <div class="sim-panel">
+          <div class="sim-controls">
+            <div class="sim-slider-group">
+              <label for="slope-slider" id="label-slider-a">추세선 기울기 $a = 0.45$ </label>
+              <input type="range" id="slope-slider" min="0.0" max="1.1" step="0.01" value="0.45">
+            </div>
+            <div style="display: flex; gap: 14px;">
+              <button class="sim-preset-btn" onclick="setSlope(0.20)">a = 0.20</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.45)" style="border-color: var(--emerald); color: var(--emerald);">a = 0.45 (최적)</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.50)" style="border-color: var(--amber); color: var(--amber);">a = 0.50 (오차합 0)</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.80)">a = 0.80</button>
+            </div>
+            <div style="font-size: 29px; font-weight: 800; color: var(--text-main);" id="loss-indicator">
+              손실 $L(a) = 0.452$ 
+            </div>
+          </div>
+
+          <div class="canvas-grid">
+            <div class="canvas-wrap">
+              <canvas id="canvas-data"></canvas>
+              <div class="sim-metric-badge" style="left: 20px; right: auto;">
+                데이터 공간 (1:1 격자, 끝까지 연장): $f(x) = ax$ 
+              </div>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="canvas-loss"></canvas>
+              <div class="sim-metric-badge">
+                손실 곡면 (1:1 격자 포물선): $L(a)$ 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 5: Algebraic Derivation Step 1 ==================== -->
+      <section class="slide" id="slide-5">
+        <div class="slide-header">
+          <div class="slide-tag">Derivation 1</div>
+          <h2 class="slide-title">손실함수 $L(a)$ 식의 대수적 전개</h2>
+          <p class="slide-desc">세 데이터 점 $(3, 1)$ , $(2, 2)$ , $(7, 3)$ 로부터 $a$ 에 대한 2차 다항식을 도출합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-step1-expand')">
+            <div class="card-title">
+              <span>① 식 수립 및 대입</span>
+              <span class="click-hint">🔍 전개 과정</span>
+            </div>
+            <div class="card-body">
+              <p>세 점을 모델 $f(x) = ax$ 에 대입하여 MSE 식 수립:</p>
+              <div class="math-callout">
+                $$L(a) = \frac{1}{3} \sum_{i=1}^{3} (y_i - ax_i)^2$$
+                $$= \frac{1}{3} \left[ (1 - 3a)^2 + (2 - 2a)^2 + (3 - 7a)^2 \right]$$
+              </div>
+              <p style="margin-top: 14px;">각 항을 전개하여 동류항을 취합합니다.</p>
+            </div>
+          </div>
+
+          <div class="card clickable" style="border-color: rgba(56, 189, 248, 0.5);" onclick="openModal('modal-step1-group')">
+            <div class="card-title" style="color: var(--primary);">
+              <span>② 2차 다항식 표준형 정리</span>
+              <span class="click-hint">🔍 계수 분석</span>
+            </div>
+            <div class="card-body">
+              <p>동류항 정리 결과:</p>
+              <div class="math-callout emerald">
+                $$L(a) = \frac{62}{3}a^2 - \frac{56}{3}a + \frac{14}{3}$$
+              </div>
+              <p style="margin-top: 14px;">
+                최고차항 계수 $A = \frac{62}{3} > 0$ 이므로,<br>
+                손실함수 그래프는 <strong>아래로 볼록한 포물선</strong> 을 이룹니다. 
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 6: Algebraic Derivation Step 2 ==================== -->
+      <section class="slide" id="slide-6">
+        <div class="slide-header">
+          <div class="slide-tag">Derivation 2 &amp; Comparison</div>
+          <h2 class="slide-title">최적 기울기 도출 및 두 직선의 비교 분석</h2>
+          <p class="slide-desc">이차함수의 꼭짓점에서 손실이 최소화되며, 오차합이 0인 직선보다 더 작은 손실을 달성합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Left: Optimal Solution (Clickable Card) -->
+          <div class="card clickable" onclick="openModal('modal-step2-complete')">
+            <div class="card-title" style="color: var(--emerald);">
+              <span>🎯 최적해 도출 ($a_{\text{최적}} = \frac{14}{31}$)</span>
+              <span class="click-hint">🔍 유도식</span>
+            </div>
+            <div class="card-body">
+              <div class="math-callout emerald">
+                $$L(a) = \frac{62}{3}\left(a - \frac{14}{31}\right)^2 + \frac{14}{31}$$
+              </div>
+              <p style="font-size: 27px; line-height: 1.6; margin-top: 12px;">
+                대칭축 공식 또는 완전제곱식에 의해:<br>
+                <strong>최적 기울기: $a = \frac{14}{31} \approx 0.45$ </strong><br>
+                <strong>이때의 최소 손실: $L\left(\frac{14}{31}\right) = \frac{14}{31} \approx 0.452$ </strong> 
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Direct Comparison of Two Lines (Clickable Card) -->
+          <div class="card clickable amber-card" style="border-color: rgba(251, 191, 36, 0.45);" onclick="openModal('modal-stat-insight')">
+            <div class="card-title">
+              <span>⚖️ 오차합 0인 선 vs 최적 추세선</span>
+              <span class="click-hint amber">🔍 통계학 상식 비교</span>
+            </div>
+            <div class="card-body" style="font-size: 26px; line-height: 1.6;">
+              <table class="custom-table" style="font-size: 25px; margin: 4px 0 12px 0;">
+                <thead>
+                  <tr>
+                    <th>구분</th>
+                    <th>단순 오차합</th>
+                    <th>손실값 $L(a)$ </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>후보 직선 $f(x) = 0.5x$ </td>
+                    <td><strong style="color: var(--emerald);">$\sum e_i = 0$ </strong> </td>
+                    <td>$0.500$ </td>
+                  </tr>
+                  <tr>
+                    <td>최적 추세선 $f(x) \approx 0.45x$ </td>
+                    <td>$\sum e_i \ne 0$ </td>
+                    <td><strong style="color: var(--primary);">$0.452$ (최소)</strong> </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="margin: 0; font-size: 24px; color: var(--text-sub);">
+                💡 인공지능의 기준은 '오차합 0'이 아니라 <strong>'손실함수(제곱오차)의 최소화'</strong> 이므로 $f(x) \approx 0.45x$ 가 채택됩니다. 
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 20px 38px;">
+          <p style="font-size: 27px; line-height: 1.6; margin: 0;">
+            세 점 $(3, 1)$ , $(2, 2)$ , $(7, 3)$ 을 대표하는 최적 추세선은 <strong>$f(x) = \frac{14}{31}x$ (약 $0.45x$)</strong> 이며, 카드를 터치하면 왜 최적선이 평균점을 지나지 않는지 상세 원리를 확인할 수 있습니다. 
+          </p>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 7: Summary & Bridge Question ==================== -->
+      <section class="slide" id="slide-7">
+        <div class="slide-header">
+          <div class="slide-tag">Summary &amp; Outlook</div>
+          <h2 class="slide-title">1차시 정리 및 2차시 질문: "왜 반복 알고리즘인가?"</h2>
+          <p class="slide-desc">오늘 배운 대수적 최적화의 의의를 정리하고, 2차시 경사하강법의 필요성으로 연결합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📝 1차시 핵심 요약</div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <strong style="color: var(--primary);">1. 부호 상쇄 극복:</strong> 오차 제곱의 평균(MSE)을 손실함수로 수립함. 
+              </div>
+              <div>
+                <strong style="color: var(--indigo);">2. 포물선 곡면:</strong> 선형 모델의 손실함수는 아래로 볼록한 2차 다항식을 형성함. 
+              </div>
+              <div>
+                <strong style="color: var(--emerald);">3. 최적해 확정:</strong> 대칭축 성질을 통해 최적 기울기 $a = \frac{14}{31} \approx 0.45$ 를 산출함. 
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="border-color: rgba(251, 191, 36, 0.5); background: linear-gradient(145deg, rgba(25, 36, 60, 0.95), rgba(15, 23, 42, 0.98));">
+            <div class="card-title" style="color: var(--amber);">🤔 2차시를 여는 생각 (탐구 과제)</div>
+            <div class="card-body">
+              <div style="background: rgba(15, 23, 42, 0.85); border-radius: 14px; padding: 20px; margin-bottom: 16px;">
+                <p style="font-size: 30px; color: var(--amber); font-weight: 800; margin: 0;">
+                  "공식으로 단번에 풀리는데, 왜 AI는 반복 탐색 알고리즘을 쓸까요?"
+                </p>
+              </div>
+              <ul style="padding-left: 32px; line-height: 1.7; font-size: 27px;">
+                <li>$y$ 절편 $b$ 가 포함된 다변수 모델이나 수억 개의 신경망 매개변수라면?</li>
+                <li>한 번에 계산하는 역행렬 공식은 메모리와 계산량의 한계에 부딪힙니다.</li>
+              </ul>
+              <div class="math-callout emerald" style="margin-top: 16px; font-size: 29px;">
+                💡 <strong>다음 시간:</strong> 현재 위치에서 접선 기울기(미분계수)만 보며 한 걸음씩 내려가는 알고리즘<br>
+                $\rightarrow$ <strong>[2차시] 경사하강법과 미분계수의 역할</strong> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== POPUP MODALS ==================== -->
+
+  <!-- Modal 1: Review Calculation -->
+  <div class="modal-overlay" id="modal-review-calc" onclick="closeModalOnBackdrop(event, 'modal-review-calc')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📐 데이터 점과 모델 오차 상세 계산</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-review-calc')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>모델 식: $f(x) = 0.5x$ , 데이터 점: $(3, 1)$ , $(2, 2)$ , $(7, 3)$ </p>
+        <div class="math-callout">
+          • 첫 번째 점 $(3, 1)$ : 예측값 $f(3) = 1.5 \implies$ 오차 $e_1 = 1 - 1.5 = -0.5$<br>
+          • 두 번째 점 $(2, 2)$ : 예측값 $f(2) = 1.0 \implies$ 오차 $e_2 = 2 - 1.0 = +1.0$<br>
+          • 세 번째 점 $(7, 3)$ : 예측값 $f(7) = 3.5 \implies$ 오차 $e_3 = 3 - 3.5 = -0.5$
+        </div>
+        <p>
+          오차 총합:
+          $$\sum_{i=1}^{3} e_i = (-0.5) + (+1.0) + (-0.5) = 0$$
+        </p>
+        <p>각 데이터에서 오차가 명백히 존재함에도 단순 합산 결과는 $0$ 이 됨을 확인합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Review Insight -->
+  <div class="modal-overlay" id="modal-review-insight" onclick="closeModalOnBackdrop(event, 'modal-review-insight')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">⚠️ 부호 상쇄의 수학적 한계</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-review-insight')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>왜 단순 합산은 신뢰할 수 없는가?</strong> </p>
+        <p>
+          오차 $e_i = y_i - f(x_i)$ 는 실제값보다 예측값이 작으면 양수, 크면 음수가 됩니다.
+        </p>
+        <p>
+          이를 단순 합산하면 서로 반대 방향의 오차들이 상쇄(Cancellation)되어 데이터에 적합하지 않은 직선도 '완벽한 모델'로 오판할 수 있습니다.
+        </p>
+        <p>따라서 모든 오차의 크기를 정확히 반영하기 위해 부호를 제거하는 변환이 필수적입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: MAE Detail -->
+  <div class="modal-overlay" id="modal-mae-detail" onclick="closeModalOnBackdrop(event, 'modal-mae-detail')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">대안 1: 절댓값 오차(MAE)의 특성</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-mae-detail')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="math-callout">
+          $$\text{MAE}(a) = \frac{1}{n} \sum_{i=1}^{n} |y_i - ax_i|$$
+        </div>
+        <p>• <strong>장점:</strong> 오차 크기를 직관적으로 나타내며 이상치에 덜 민감합니다. </p>
+        <p>• <strong>수학적 한계:</strong> 절댓값 함수는 $0$ 에서 꺾인 점(첨점)을 가지므로 <strong>미분이 불가능</strong> 한 지점이 발생합니다. 이는 기울기를 이용해 최적점을 찾아가는 알고리즘에 불리합니다. </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: MSE Detail -->
+  <div class="modal-overlay" id="modal-mse-detail" onclick="closeModalOnBackdrop(event, 'modal-mse-detail')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">대안 2: 평균제곱오차(MSE)의 유용성</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-mse-detail')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="math-callout emerald">
+          $$L(a) = \frac{1}{n} \sum_{i=1}^{n} (y_i - ax_i)^2$$
+        </div>
+        <p>• <strong>실수의 성질:</strong> 임의의 실수에 대해 $e^2 \ge 0$ 이므로 부호 상쇄가 일어나지 않습니다. </p>
+        <p>• <strong>미분 가능성:</strong> $a$ 에 대해 전개했을 때 전 구간에서 매끄러운 2차 포물선이 되어 미분계수가 항상 명확히 존재합니다. </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Step 1 Expand -->
+  <div class="modal-overlay" id="modal-step1-expand" onclick="closeModalOnBackdrop(event, 'modal-step1-expand')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">① 개별 괄호 전개 과정</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-step1-expand')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="math-callout">
+          1. $(1 - 3a)^2 = 1 - 6a + 9a^2$<br>
+          2. $(2 - 2a)^2 = 4 - 8a + 4a^2$<br>
+          3. $(3 - 7a)^2 = 9 - 42a + 49a^2$
+        </div>
+        <p>각 항을 전개한 뒤 동류항별로 계수를 묶어 합산합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Step 1 Group -->
+  <div class="modal-overlay" id="modal-step1-group" onclick="closeModalOnBackdrop(event, 'modal-step1-group')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">② 동류항 취합 및 표준 손실함수 도출</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-step1-group')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="math-callout emerald">
+          • $a^2$ 항의 합: $9 + 4 + 49 = 62$<br>
+          • $a$ 항의 합: $-6 - 8 - 42 = -56$<br>
+          • 상수항의 합: $1 + 4 + 9 = 14$
+        </div>
+        <p>대괄호 내부의 식은 $62a^2 - 56a + 14$ 이며, $\frac{1}{3}$ 을 적용하면 최종 손실함수가 완성됩니다:</p>
+        <div class="math-callout">
+          $$L(a) = \frac{1}{3}(62a^2 - 56a + 14) = \frac{62}{3}a^2 - \frac{56}{3}a + \frac{14}{3}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Step 2 Complete -->
+  <div class="modal-overlay" id="modal-step2-complete" onclick="closeModalOnBackdrop(event, 'modal-step2-complete')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">경로 1: 완전제곱식 표준형 변형 과정</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-step2-complete')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="math-callout">
+          $$L(a) = \frac{62}{3} \left( a^2 - \frac{56}{62}a \right) + \frac{14}{3} = \frac{62}{3} \left( a^2 - \frac{28}{31}a \right) + \frac{14}{3}$$
+          $$= \frac{62}{3} \left[ \left( a - \frac{14}{31} \right)^2 - \frac{196}{961} \right] + \frac{14}{3}$$
+          $$= \frac{62}{3} \left( a - \frac{14}{31} \right)^2 - \frac{392}{93} + \frac{434}{93}$$
+          $$L(a) = \frac{62}{3} \left( a - \frac{14}{31} \right)^2 + \frac{14}{31}$$
+        </div>
+        <p>$\left(a - \frac{14}{31}\right)^2 \ge 0$ 이므로 $a = \frac{14}{31} \approx 0.45$ 일 때 최솟값 $L\left(\frac{14}{31}\right) = \frac{14}{31} \approx 0.452$ 에 도달합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Statistical Insight -->
+  <div class="modal-overlay" id="modal-stat-insight" onclick="closeModalOnBackdrop(event, 'modal-stat-insight')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📊 통계학 상식과의 비교: 왜 최적선이 평균점을 안 지날까?</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-stat-insight')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>1. 통계학의 기본 상식: "최소제곱 회귀직선은 항상 평균점을 지난다"</strong> </p>
+        <p>
+          통계학에서 배우는 단순선형회귀 모델은 $y$ 절편이 존재하는 일반적인 형태인 <strong>$f(x) = ax + b$ </strong> 입니다.<br>
+          이때 손실함수를 절편 $b$ 로 편미분하여 $0$ 으로 두면 다음과 같은 필수 관계식이 도출됩니다:
+        </p>
+        <div class="math-callout">
+          $$\frac{\partial L}{\partial b} = 0 \implies \frac{1}{n}\sum_{i=1}^{n} (y_i - ax_i - b) = 0 \iff b = \bar{y} - a\bar{x}$$
+        </div>
+        <p>
+          즉, 절편 $b$ 가 자유롭게 움직일 수 있을 때는 <strong>직선이 반드시 데이터의 평균점 $(\bar{x}, \bar{y})$ 을 통과</strong> 하게 되며, 이때는 <strong>오차의 단순 총합도 항상 정확히 $0$ </strong> 이 됩니다.
+        </p>
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 20px 0;">
+        <p><strong>2. 인공지능 수학 교과서의 제약 조건: "원점 통과 ($b = 0$)"</strong> </p>
+        <p>
+          고등학교 인공지능 수학에서는 학습자의 연산 부담을 줄이고 1차원 경사하강법을 직관적으로 학습시키기 위해 <strong>절편을 $0$ 으로 고정($b = 0$)</strong> 하고 원점을 지나는 직선 $f(x) = ax$ 만을 다룹니다.
+        </p>
+        <div class="math-callout emerald">
+          • 오차합을 $0$ 으로 만드는 기울기: $a_1 = \frac{\bar{y}}{\bar{x}} = \frac{2}{4} = 0.50$<br>
+          • 제곱오차(손실)를 최소화하는 기울기: $a_2 = \frac{\sum x_i y_i}{\sum x_i^2} = \frac{28}{62} = \frac{14}{31} \approx 0.45$ 
+        </div>
+        <p>
+          원점 제약($b=0$)이 걸리면 이 두 수학적 조건이 서로 분리됩니다. 인공지능 모델의 최종 목적은 <strong>'오차합 0'이 아니라 '손실값(MSE)의 최소화'</strong> 이므로, 평균점을 지나지 않더라도 손실이 더 작은 $a \approx 0.45$ 가 진정한 최적해로 채택됩니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== WHITEBOARD MODAL (WITH 3-STEP OPACITY) ==================== -->
+  <div class="modal-overlay wb-level-1" id="modal-whiteboard" onclick="closeModalOnBackdrop(event, 'modal-whiteboard')">
+    <div class="whiteboard-content" onclick="event.stopPropagation()">
+      <div class="whiteboard-header">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <h3 class="modal-title" style="font-size: 36px;">📋 화이트보드 (판서 공간)</h3>
+          <span style="font-size: 20px; color: var(--text-muted);">전자칠판 펜 또는 마우스 터치로 자유롭게 판서할 수 있습니다.</span>
+        </div>
+        <div class="whiteboard-tools">
+          <!-- 3-Step Opacity Control Buttons -->
+          <div style="display: flex; align-items: center; gap: 6px; background: var(--btn-bg); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--card-border);">
+            <span style="font-size: 18px; font-weight: 700; color: var(--text-muted); margin-right: 4px;">투명도:</span>
+            <button class="wb-op-btn active" id="btn-op-1" onclick="setWhiteboardOpacity(1)">100% 불투명</button>
+            <button class="wb-op-btn" id="btn-op-2" onclick="setWhiteboardOpacity(2)">50% 반투명</button>
+            <button class="wb-op-btn" id="btn-op-3" onclick="setWhiteboardOpacity(3)">15% 트레이싱</button>
+          </div>
+          <button class="btn-nav" onclick="clearWhiteboard()">🧹 보드 지우기</button>
+          <button class="modal-close-btn" onclick="closeModal('modal-whiteboard')" style="width: 50px; height: 50px; font-size: 26px;">✕</button>
+        </div>
+      </div>
+      <div class="whiteboard-canvas-wrap" id="whiteboard-wrap">
+        <canvas id="whiteboard-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM CONTROL BAR ==================== -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <footer id="bottom-nav">
+    <div class="nav-left">
+      <span class="nav-badge">인공지능 수학</span>
+      <span class="nav-title">Ⅳ-2. 최적화 (1차시)</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn-nav" onclick="prevSlide()">◀ 이전</button>
+      <div class="slide-counter"><span id="curr-num">01</span> / <span id="total-num">07</span></div>
+      <button class="btn-nav" onclick="nextSlide()">다음 ▶</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+      
+      <!-- Theme Preset Selector -->
+      <select class="theme-select" id="theme-selector" onchange="changeTheme(this.value)">
+        <option value="dark">🌙 다크 네이비</option>
+        <option value="light">☀️ 클린 라이트</option>
+        <option value="green">🌿 그린 칠판</option>
+        <option value="sepia">☕ 웜 세피아</option>
+      </select>
+
+      <!-- Whiteboard Trigger Button -->
+      <button class="btn-nav whiteboard-btn" onclick="openWhiteboard()">📋 화이트보드</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+
+      <!-- Live Edit & Save HTML Buttons -->
+      <button class="btn-nav" id="btn-edit" onclick="toggleEditMode()">✏️ 편집 모드</button>
+      <button class="btn-nav" id="btn-save" onclick="saveHTML()">💾 HTML 저장</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+      
+      <button class="btn-nav" onclick="toggleFullscreen()">⛶ 전체화면</button>
+    </div>
+  </footer>
+
+  <script>
+    /* ========================================================
+       1. Slide Scaling & Navigation Engine
+       ======================================================== */
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    document.getElementById('total-num').textContent = String(totalSlides).padStart(2, '0');
+
+    function updateScale() {
+      const stage = document.getElementById('slide-stage');
+      const viewport = document.getElementById('viewport-container');
+      const scaleX = viewport.clientWidth / 1920;
+      const scaleY = viewport.clientHeight / 1080;
+      const scale = Math.min(scaleX, scaleY) * 0.98;
+      stage.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', () => {
+      updateScale();
+      resizeWhiteboardCanvas();
+    });
+
+    window.addEventListener('load', () => {
+      updateScale();
+      renderAllKaTeX();
+      initSimulation();
+      initWhiteboard();
+    });
+
+    function showSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      slides[currentSlide].classList.remove('active');
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+
+      document.getElementById('curr-num').textContent = String(currentSlide + 1).padStart(2, '0');
+      document.getElementById('progress-bar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+      if (currentSlide === 3) {
+        requestAnimationFrame(renderSimulation);
+      }
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { showSlide(currentSlide - 1); }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+        if (e.key === 'Escape') {
+          e.target.blur();
+        }
+        return; // Prevent slide navigation while typing/editing
+      }
+
+      if (e.key === 'Escape') {
+        closeTopModal();
+        return;
+      }
+
+      if (document.querySelector('.modal-overlay.active')) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    /* ========================================================
+       2. Modal Control & Stacked Hierarchy Engine
+       ======================================================== */
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.add('active');
+        renderAllKaTeX();
+        if (isEditing) applyEditModeToModals();
+      }
+    }
+
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('active');
+    }
+
+    function closeModalOnBackdrop(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    function closeTopModal() {
+      // If whiteboard is active, close only whiteboard so underlying modal remains!
+      const wb = document.getElementById('modal-whiteboard');
+      if (wb && wb.classList.contains('active')) {
+        wb.classList.remove('active');
+        return;
+      }
+      // Otherwise close active content modals
+      const activeModals = Array.from(document.querySelectorAll('.modal-overlay.active'));
+      if (activeModals.length > 0) {
+        activeModals[activeModals.length - 1].classList.remove('active');
+      }
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    }
+
+    /* ========================================================
+       Live Inline Edit & Save HTML Engine (Slides + Modals)
+       ======================================================== */
+    let isEditing = false;
+
+    function toggleEditMode() {
+      isEditing = !isEditing;
+      const btn = document.getElementById('btn-edit');
+      if (isEditing) {
+        btn.classList.add('active');
+        btn.innerHTML = '✏️ 편집 종료';
+        document.body.classList.add('editing-active');
+        applyEditModeToModals();
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '✏️ 편집 모드';
+        document.body.classList.remove('editing-active');
+        removeEditModeFromModals();
+      }
+    }
+
+    function applyEditModeToModals() {
+      document.querySelectorAll('.editable, .modal-title, .modal-body p, .modal-body .math-callout, .card-title span:first-child, .card-body p, .objective-list ol li, .slide-desc, .hero-subtitle').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+        el.classList.add('editable');
+      });
+    }
+
+    function removeEditModeFromModals() {
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.removeAttribute('contenteditable');
+      });
+    }
+
+    function saveHTML() {
+      const wasEditing = isEditing;
+      if (wasEditing) toggleEditMode();
+
+      // Ensure modals are closed before saving to ensure clean initial load
+      closeAllModals();
+
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '2026_태릉고_인공지능수학_최적화_1차시_슬라이드_수정본.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (wasEditing) toggleEditMode();
+    }
+
+    /* ========================================================
+       3. Theme Switching Engine
+       ======================================================== */
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      // Re-render simulation with theme colors
+      renderSimulation();
+      // Redraw whiteboard with theme background if needed
+      resizeWhiteboardCanvas();
+    }
+
+    /* ========================================================
+       4. Whiteboard Engine
+       ======================================================== */
+    let wbCanvas, wbCtx;
+    let isDrawing = false;
+    let lastX = 0, lastY = 0;
+
+    function initWhiteboard() {
+      wbCanvas = document.getElementById('whiteboard-canvas');
+      if (!wbCanvas) return;
+      wbCtx = wbCanvas.getContext('2d');
+
+      function startDraw(e) {
+        isDrawing = true;
+        const rect = wbCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        lastX = clientX - rect.left;
+        lastY = clientY - rect.top;
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const rect = wbCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const curX = clientX - rect.left;
+        const curY = clientY - rect.top;
+
+        const penColor = getComputedStyle(document.documentElement).getPropertyValue('--pen-color').trim() || '#ffffff';
+        wbCtx.strokeStyle = penColor;
+        wbCtx.lineWidth = 4;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
+
+        wbCtx.beginPath();
+        wbCtx.moveTo(lastX, lastY);
+        wbCtx.lineTo(curX, curY);
+        wbCtx.stroke();
+
+        lastX = curX;
+        lastY = curY;
+      }
+
+      function stopDraw() { isDrawing = false; }
+
+      wbCanvas.addEventListener('mousedown', startDraw);
+      wbCanvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDraw);
+
+      wbCanvas.addEventListener('touchstart', startDraw, { passive: false });
+      wbCanvas.addEventListener('touchmove', draw, { passive: false });
+      window.addEventListener('touchend', stopDraw);
+    }
+
+    let currentWbOpacity = 1;
+
+    function setWhiteboardOpacity(level) {
+      currentWbOpacity = level;
+      const modal = document.getElementById('modal-whiteboard');
+      if (!modal) return;
+      modal.classList.remove('wb-level-1', 'wb-level-2', 'wb-level-3');
+      modal.classList.add(`wb-level-${level}`);
+
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`btn-op-${i}`);
+        if (btn) btn.classList.toggle('active', i === level);
+      }
+    }
+
+    function openWhiteboard() {
+      openModal('modal-whiteboard');
+      setWhiteboardOpacity(currentWbOpacity);
+      setTimeout(resizeWhiteboardCanvas, 50);
+    }
+
+    function resizeWhiteboardCanvas() {
+      if (!wbCanvas) return;
+      const wrap = document.getElementById('whiteboard-wrap');
+      if (!wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      // Save current drawing
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = wbCanvas.width;
+      tempCanvas.height = wbCanvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(wbCanvas, 0, 0);
+
+      wbCanvas.width = rect.width * dpr;
+      wbCanvas.height = rect.height * dpr;
+      wbCtx = wbCanvas.getContext('2d');
+      wbCtx.scale(dpr, dpr);
+
+      // Restore drawing
+      wbCtx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+    }
+
+    function clearWhiteboard() {
+      if (!wbCanvas || !wbCtx) return;
+      const wrap = document.getElementById('whiteboard-wrap');
+      const rect = wrap.getBoundingClientRect();
+      wbCtx.clearRect(0, 0, rect.width, rect.height);
+    }
+
+    /* ========================================================
+       5. KaTeX Auto Render
+       ======================================================== */
+    function renderAllKaTeX() {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    /* ========================================================
+       6. Simulation Engine (1:1 Aspect Ratio on Both Canvases)
+       Data: (3, 1), (2, 2), (7, 3)
+       ======================================================== */
+    const dataPoints = [
+      { x: 3, y: 1 },
+      { x: 2, y: 2 },
+      { x: 7, y: 3 }
+    ];
+
+    let currentA = 0.45;
+
+    function lossFunction(a) {
+      return (62.0 / 3.0) * a * a - (56.0 / 3.0) * a + (14.0 / 3.0);
+    }
+
+    function initSimulation() {
+      const slider = document.getElementById('slope-slider');
+      slider.addEventListener('input', (e) => {
+        currentA = parseFloat(e.target.value);
+        updateSimulationUI();
+      });
+      updateSimulationUI();
+    }
+
+    function setSlope(val) {
+      currentA = val;
+      document.getElementById('slope-slider').value = val;
+      updateSimulationUI();
+    }
+
+    function updateSimulationUI() {
+      const labelA = document.getElementById('label-slider-a');
+      labelA.innerHTML = `추세선 기울기 $a = ${currentA.toFixed(2)}$ `;
+      
+      const currentL = lossFunction(currentA);
+      const indicator = document.getElementById('loss-indicator');
+      indicator.innerHTML = `손실 $L(a) = ${currentL.toFixed(3)}$ `;
+
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(labelA, { delimiters: [{ left: '$', right: '$', display: false }] });
+        renderMathInElement(indicator, { delimiters: [{ left: '$', right: '$', display: false }] });
+      }
+
+      renderSimulation();
+    }
+
+    function renderSimulation() {
+      renderDataCanvasEqualAspect();
+      renderLossCanvasEqualAspect();
+    }
+
+    function setupCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function renderDataCanvasEqualAspect() {
+      const canvas = document.getElementById('canvas-data');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(148, 163, 184, 0.16)';
+      const axisColor = style.getPropertyValue('--axis-color').trim() || 'rgba(255, 255, 255, 0.45)';
+      const textMuted = style.getPropertyValue('--text-muted').trim() || '#94a3b8';
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const primary = style.getPropertyValue('--primary').trim() || '#38bdf8';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+      const amber = style.getPropertyValue('--amber').trim() || '#fbbf24';
+
+      const padLeft = 60;
+      const padBottom = 55;
+      const availH = height - padBottom - 40;
+      const unitScale = availH / 5.0;
+
+      const originX = padLeft;
+      const originY = height - padBottom;
+
+      function toScreenX(x) { return originX + x * unitScale; }
+      function toScreenY(y) { return originY - y * unitScale; }
+
+      const maxVisibleX = Math.floor((width - originX - 10) / unitScale);
+
+      // Grid Lines
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= maxVisibleX; x++) {
+        const sx = toScreenX(x);
+        ctx.beginPath();
+        ctx.moveTo(sx, 20);
+        ctx.lineTo(sx, height - padBottom + 10);
+        ctx.stroke();
+        ctx.fillStyle = textMuted;
+        ctx.font = 'bold 18px Pretendard';
+        ctx.fillText(x, sx - 5, originY + 28);
+      }
+      for (let y = 0; y <= 4; y++) {
+        const sy = toScreenY(y);
+        ctx.beginPath();
+        ctx.moveTo(padLeft - 10, sy);
+        ctx.lineTo(width - 15, sy);
+        ctx.stroke();
+        ctx.fillStyle = textMuted;
+        ctx.font = 'bold 18px Pretendard';
+        ctx.fillText(y, originX - 28, sy + 6);
+      }
+
+      // Main Axes
+      ctx.strokeStyle = axisColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft - 15, originY);
+      ctx.lineTo(width - 15, originY);
+      ctx.moveTo(originX, originY + 10);
+      ctx.lineTo(originX, 20);
+      ctx.stroke();
+
+      // Line f(x) = currentA * x
+      ctx.strokeStyle = primary;
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      const lineEndX = (width - originX) / unitScale;
+      ctx.lineTo(toScreenX(lineEndX), toScreenY(currentA * lineEndX));
+      ctx.stroke();
+
+      // Mean Point Indicator (4, 2)
+      const meanX = toScreenX(4);
+      const meanY = toScreenY(2);
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = amber;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(meanX, originY); ctx.lineTo(meanX, meanY);
+      ctx.moveTo(originX, meanY); ctx.lineTo(meanX, meanY);
+      ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = amber;
+      ctx.beginPath(); ctx.arc(meanX, meanY, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 18px Pretendard';
+      ctx.fillText('평균점 (4, 2)', meanX + 12, meanY - 8);
+
+      // Points and Residual Squares
+      dataPoints.forEach(pt => {
+        const predY = currentA * pt.x;
+        const sx = toScreenX(pt.x);
+        const syData = toScreenY(pt.y);
+        const syPred = toScreenY(predY);
+
+        ctx.save();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = rose;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(sx, syData);
+        ctx.lineTo(sx, syPred);
+        ctx.stroke();
+        ctx.restore();
+
+        const sidePx = Math.abs(syData - syPred);
+        ctx.fillStyle = 'rgba(251, 113, 133, 0.22)';
+        ctx.strokeStyle = 'rgba(251, 113, 133, 0.65)';
+        ctx.lineWidth = 2;
+        const squareTopY = Math.min(syData, syPred);
+        ctx.fillRect(sx, squareTopY, sidePx, sidePx);
+        ctx.strokeRect(sx, squareTopY, sidePx, sidePx);
+
+        ctx.fillStyle = textMain;
+        ctx.beginPath();
+        ctx.arc(sx, syData, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = primary;
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+
+        ctx.fillStyle = textMain;
+        ctx.font = 'bold 22px Pretendard';
+        ctx.fillText(`(${pt.x}, ${pt.y})`, sx + 14, syData - 14);
+      });
+    }
+
+    function renderLossCanvasEqualAspect() {
+      const canvas = document.getElementById('canvas-loss');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(148, 163, 184, 0.16)';
+      const axisColor = style.getPropertyValue('--axis-color').trim() || 'rgba(255, 255, 255, 0.45)';
+      const textMuted = style.getPropertyValue('--text-muted').trim() || '#94a3b8';
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const indigo = style.getPropertyValue('--indigo').trim() || '#818cf8';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+      const amber = style.getPropertyValue('--amber').trim() || '#fbbf24';
+
+      const padLeft = 60;
+      const padBottom = 55;
+      const availH = height - padBottom - 40;
+      const unitScale = availH / 6.0;
+
+      const originX = padLeft;
+      const originY = height - padBottom;
+
+      function toX(a) { return originX + a * unitScale * 4.0; }
+      function toY(l) { return originY - l * unitScale; }
+
+      const maxL_val = 6;
+
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+
+      for (let a = 0; a <= 1.2; a += 0.2) {
+        const sx = toX(a);
+        ctx.beginPath();
+        ctx.moveTo(sx, 20);
+        ctx.lineTo(sx, height - padBottom + 10);
+        ctx.stroke();
+        ctx.fillStyle = textMuted;
+        ctx.font = 'bold 18px Pretendard';
+        ctx.fillText(a.toFixed(1), sx - 12, originY + 28);
+      }
+      for (let l = 0; l <= maxL_val; l++) {
+        const sy = toY(l);
+        ctx.beginPath();
+        ctx.moveTo(padLeft - 10, sy);
+        ctx.lineTo(width - 15, sy);
+        ctx.stroke();
+        ctx.fillStyle = textMuted;
+        ctx.font = 'bold 18px Pretendard';
+        ctx.fillText(l, originX - 26, sy + 6);
+      }
+
+      ctx.strokeStyle = axisColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft - 15, originY);
+      ctx.lineTo(width - 15, originY);
+      ctx.moveTo(originX, originY + 10);
+      ctx.lineTo(originX, 20);
+      ctx.stroke();
+
+      // Parabola Curve
+      ctx.strokeStyle = indigo;
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      let first = true;
+      for (let a = 0.0; a <= 1.05; a += 0.01) {
+        const l = lossFunction(a);
+        if (l > maxL_val + 0.5) continue;
+        const px = toX(a);
+        const py = toY(l);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      // Guide for a = 0.5 (오차합 0인 지점)
+      const a05X = toX(0.5);
+      const a05Y = toY(lossFunction(0.5));
+      ctx.fillStyle = amber;
+      ctx.beginPath(); ctx.arc(a05X, a05Y, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 17px Pretendard';
+      ctx.fillText('오차합 0 (0.50, 0.50)', a05X + 12, a05Y - 8);
+
+      // Optimal Vertex at a = 14/31 (~0.45)
+      const optA = 14.0 / 31.0;
+      const optL = 14.0 / 31.0;
+      const vx = toX(optA);
+      const vy = toY(optL);
+
+      ctx.save();
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = emerald;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(vx, originY); ctx.lineTo(vx, vy);
+      ctx.moveTo(originX, vy); ctx.lineTo(vx, vy);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = emerald;
+      ctx.beginPath(); ctx.arc(vx, vy, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 19px Pretendard';
+      ctx.fillText(`최적 꼭짓점 (0.45, 0.45)`, vx + 14, vy + 8);
+
+      // Current Point & Tangent
+      const curL = lossFunction(currentA);
+      const curX = toX(currentA);
+      const curY = toY(curL);
+
+      const dL_da = (124.0 / 3.0) * currentA - (56.0 / 3.0);
+      const deltaA = 0.12;
+      const tanX1 = toX(currentA - deltaA);
+      const tanY1 = toY(curL - dL_da * deltaA);
+      const tanX2 = toX(currentA + deltaA);
+      const tanY2 = toY(curL + dL_da * deltaA);
+
+      ctx.strokeStyle = rose;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(tanX1, tanY1);
+      ctx.lineTo(tanX2, tanY2);
+      ctx.stroke();
+
+      ctx.fillStyle = rose;
+      ctx.beginPath(); ctx.arc(curX, curY, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = textMain; ctx.lineWidth = 3; ctx.stroke();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>
