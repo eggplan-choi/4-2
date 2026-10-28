@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ⅳ-2. 최적화 2차시: 경사하강법의 직관과 미분계수의 역할</title>
+  
+  <!-- Pretendard Web Font -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* ========================================================
+       Theme Presets CSS Variables
+       ======================================================== */
+    :root, [data-theme="dark"] {
+      --bg-dark: #080c16;
+      --stage-bg: radial-gradient(circle at 50% 15%, #18243c 0%, #0c1220 70%, #070a14 100%);
+      --card-bg: rgba(20, 29, 48, 0.94);
+      --card-border: rgba(148, 163, 184, 0.25);
+      --text-main: #ffffff;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #818cf8;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --modal-bg: #131c31;
+      --canvas-bg: #090e1a;
+      --math-box-bg: rgba(9, 14, 26, 0.95);
+      --table-th-bg: rgba(15, 23, 42, 0.85);
+      --nav-bg: rgba(15, 23, 42, 0.98);
+      --btn-bg: rgba(255, 255, 255, 0.1);
+      --btn-border: rgba(255, 255, 255, 0.25);
+      --grid-color: rgba(148, 163, 184, 0.16);
+      --axis-color: rgba(255, 255, 255, 0.45);
+      --pen-color: #ffffff;
+      --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-dark: #e2e8f0;
+      --stage-bg: radial-gradient(circle at 50% 15%, #ffffff 0%, #f1f5f9 70%, #e2e8f0 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-border: rgba(100, 116, 139, 0.3);
+      --text-main: #0f172a;
+      --text-sub: #334155;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-glow: rgba(2, 132, 199, 0.2);
+      --indigo: #6366f1;
+      --emerald: #059669;
+      --rose: #e11d48;
+      --amber: #d97706;
+      --modal-bg: #ffffff;
+      --canvas-bg: #f8fafc;
+      --math-box-bg: rgba(241, 245, 249, 0.95);
+      --table-th-bg: rgba(226, 232, 240, 0.9);
+      --nav-bg: rgba(255, 255, 255, 0.98);
+      --btn-bg: rgba(15, 23, 42, 0.08);
+      --btn-border: rgba(15, 23, 42, 0.2);
+      --grid-color: rgba(148, 163, 184, 0.35);
+      --axis-color: rgba(15, 23, 42, 0.65);
+      --pen-color: #0f172a;
+    }
+
+    [data-theme="green"] {
+      --bg-dark: #0a1710;
+      --stage-bg: radial-gradient(circle at 50% 15%, #173324 0%, #0e2217 70%, #08150e 100%);
+      --card-bg: rgba(20, 44, 32, 0.94);
+      --card-border: rgba(110, 231, 183, 0.28);
+      --text-main: #f0fdf4;
+      --text-sub: #d1fae5;
+      --text-muted: #6ee7b7;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #a7f3d0;
+      --emerald: #4ade80;
+      --rose: #fb7185;
+      --amber: #fde047;
+      --modal-bg: #132a1d;
+      --canvas-bg: #0b1a12;
+      --math-box-bg: rgba(8, 20, 14, 0.95);
+      --table-th-bg: rgba(15, 36, 25, 0.9);
+      --nav-bg: rgba(13, 30, 21, 0.98);
+      --btn-bg: rgba(240, 253, 244, 0.12);
+      --btn-border: rgba(240, 253, 244, 0.28);
+      --grid-color: rgba(110, 231, 183, 0.22);
+      --axis-color: rgba(240, 253, 244, 0.55);
+      --pen-color: #fef08a;
+    }
+
+    [data-theme="sepia"] {
+      --bg-dark: #1e1711;
+      --stage-bg: radial-gradient(circle at 50% 15%, #34271d 0%, #251b14 70%, #18120d 100%);
+      --card-bg: rgba(48, 36, 27, 0.94);
+      --card-border: rgba(245, 158, 11, 0.28);
+      --text-main: #fef3c7;
+      --text-sub: #fde68a;
+      --text-muted: #d97706;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #fcd34d;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --modal-bg: #291f17;
+      --canvas-bg: #18120e;
+      --math-box-bg: rgba(25, 18, 13, 0.95);
+      --table-th-bg: rgba(36, 27, 20, 0.9);
+      --nav-bg: rgba(30, 23, 17, 0.98);
+      --btn-bg: rgba(254, 243, 199, 0.12);
+      --btn-border: rgba(254, 243, 199, 0.28);
+      --grid-color: rgba(245, 158, 11, 0.2);
+      --axis-color: rgba(254, 243, 199, 0.55);
+      --pen-color: #fef3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-family);
+      overflow: hidden; width: 100vw; height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start; user-select: none; transition: background-color 0.3s ease;
+    }
+
+    /* Fixed Center Stage Scaling Viewport */
+    #viewport-container {
+      position: relative; width: 100vw; height: calc(100vh - 76px);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+
+    #slide-stage {
+      width: 1920px; height: 1080px; position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.65);
+      transform-origin: center center;
+      background: var(--stage-bg); border-radius: 20px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9);
+      overflow: hidden; transition: background 0.3s ease;
+    }
+
+    .slide {
+      position: absolute; inset: 0; padding: 50px 90px 40px 90px; opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateY(20px); transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+      display: flex; flex-direction: column; justify-content: flex-start; gap: 26px;
+    }
+
+    .slide.active { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+
+    .slide-header { margin-bottom: 2px; }
+    .slide-tag { font-size: 26px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .slide-title { font-size: 58px; font-weight: 900; line-height: 1.25; color: var(--text-main); margin-bottom: 8px; }
+    .slide-desc { font-size: 30px; color: var(--text-sub); font-weight: 500; line-height: 1.5; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: stretch; }
+
+    .card {
+      background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 24px;
+      padding: 32px 38px; display: flex; flex-direction: column; justify-content: flex-start;
+      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.35); position: relative; transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card.clickable { cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card.clickable:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 20px 45px -8px var(--primary-glow); }
+    .card.clickable.amber-card:hover { border-color: var(--amber); box-shadow: 0 20px 45px -8px rgba(251, 191, 36, 0.3); }
+
+    .card-title { font-size: 34px; font-weight: 800; color: var(--text-main); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .card-body { font-size: 28px; color: var(--text-sub); line-height: 1.6; }
+
+    .click-hint {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700; color: var(--primary);
+      background: rgba(56, 189, 248, 0.16); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+    .click-hint.amber { color: var(--amber); background: rgba(251, 191, 36, 0.16); border-color: rgba(251, 191, 36, 0.45); }
+
+    .math-callout {
+      background: var(--math-box-bg); border-left: 8px solid var(--primary); border-radius: 0 18px 18px 0;
+      padding: 18px 26px; margin: 12px 0; font-size: 30px; color: var(--text-main);
+    }
+    .math-callout.emerald { border-left-color: var(--emerald); }
+    .math-callout.amber { border-left-color: var(--amber); }
+
+    .hero-container { display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 35px; gap: 28px; }
+    .hero-title { font-size: 72px; font-weight: 900; line-height: 1.25; background: linear-gradient(135deg, var(--text-main) 45%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-subtitle { font-size: 34px; color: var(--text-sub); max-width: 1350px; line-height: 1.6; }
+    .objective-list { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 24px; padding: 36px 60px; width: 1300px; text-align: left; }
+    .objective-list h4 { font-size: 32px; color: var(--primary); margin-bottom: 16px; font-weight: 800; }
+    .objective-list ol { padding-left: 36px; font-size: 28px; color: var(--text-main); line-height: 1.8; }
+
+    .canvas-wrap {
+      background: var(--canvas-bg); border: 2px solid var(--card-border); border-radius: 20px;
+      overflow: hidden; position: relative; height: 100%; min-height: 440px; transition: background 0.3s ease;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    .sim-metric-badge {
+      position: absolute; top: 16px; right: 20px; background: var(--nav-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 8px 20px; font-size: 22px; font-weight: 700; backdrop-filter: blur(8px); color: var(--text-main);
+    }
+
+    .wide-controls-bar {
+      background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 20px;
+      padding: 16px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .slider-box { display: flex; align-items: center; gap: 20px; flex: 1.2; }
+    .slider-box label { font-size: 28px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+    input[type=range] { flex: 1; height: 14px; border-radius: 7px; background: var(--card-border); outline: none; -webkit-appearance: none; cursor: pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 34px; height: 34px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 16px var(--primary-glow); cursor: pointer; }
+    .presets-box { display: flex; align-items: center; gap: 12px; }
+    .sim-preset-btn {
+      background: var(--btn-bg); border: 1px solid var(--btn-border); color: var(--text-main); padding: 8px 18px;
+      border-radius: 10px; font-size: 22px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .sim-preset-btn:hover { background: var(--primary); color: #070a14; }
+
+    .step-tab-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+    .step-tab-btn {
+      width: 100%; text-align: left; padding: 12px 20px; background: var(--btn-bg); border: 2px solid var(--card-border);
+      border-radius: 14px; color: var(--text-muted); font-size: 22px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+    }
+    .step-tab-btn.active { background: var(--primary); color: #080c16; border-color: var(--primary); box-shadow: 0 0 16px var(--primary-glow); }
+    .step-content-pane { display: none; }
+    .step-content-pane.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 72px; background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(16px); z-index: 2000; display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.25s ease, visibility 0.25s;
+    }
+    #modal-whiteboard { z-index: 3000; transition: background 0.25s ease, backdrop-filter 0.25s ease; }
+    #modal-whiteboard.wb-level-1 { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(16px); }
+    #modal-whiteboard.wb-level-1 .whiteboard-content { background: var(--modal-bg); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9); }
+    #modal-whiteboard.wb-level-1 .whiteboard-canvas-wrap { background: var(--modal-bg); }
+    #modal-whiteboard.wb-level-2 { background: rgba(0, 0, 0, 0.25); backdrop-filter: none; }
+    #modal-whiteboard.wb-level-2 .whiteboard-content { background: color-mix(in srgb, var(--modal-bg) 50%, transparent); box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5); }
+    #modal-whiteboard.wb-level-2 .whiteboard-canvas-wrap { background: transparent; }
+    #modal-whiteboard.wb-level-3 { background: transparent; backdrop-filter: none; }
+    #modal-whiteboard.wb-level-3 .whiteboard-content { background: color-mix(in srgb, var(--modal-bg) 15%, transparent); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35); }
+    #modal-whiteboard.wb-level-3 .whiteboard-canvas-wrap { background: transparent; }
+
+    .wb-op-btn { padding: 6px 14px; font-size: 18px; font-weight: 700; border-radius: 8px; border: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text-main); cursor: pointer; transition: all 0.2s ease; }
+    .wb-op-btn:hover { background: var(--card-border); }
+    .wb-op-btn.active { background: var(--emerald) !important; color: #070a14 !important; border-color: var(--emerald) !important; }
+
+    body.editing-active .editable { outline: 2px dashed rgba(251, 191, 36, 0.7) !important; outline-offset: 4px; cursor: text !important; }
+    body.editing-active .editable:hover { outline-color: var(--amber) !important; background: rgba(251, 191, 36, 0.08) !important; }
+    .btn-nav.active { background: var(--amber) !important; color: #070a14 !important; border-color: var(--amber) !important; }
+
+    .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+    .modal-content {
+      background: var(--modal-bg); border: 3px solid var(--primary); border-radius: 30px; width: 1400px;
+      max-height: 880px; padding: 48px 58px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9); display: flex; flex-direction: column;
+      gap: 22px; transform: scale(0.96); transition: transform 0.25s ease, background 0.3s ease; overflow-y: auto;
+    }
+    .modal-overlay.active .modal-content { transform: scale(1); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--card-border); padding-bottom: 18px; }
+    .modal-title { font-size: 42px; font-weight: 900; color: var(--text-main); }
+    .modal-close-btn { background: var(--btn-bg); border: 2px solid var(--btn-border); color: var(--text-main); width: 58px; height: 58px; border-radius: 50%; font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close-btn:hover { background: var(--rose); border-color: var(--rose); color: #ffffff; }
+    .modal-body { font-size: 30px; color: var(--text-sub); line-height: 1.7; }
+
+    .whiteboard-content { width: 1760px; height: 980px; max-height: 980px; padding: 30px 40px; background: var(--modal-bg); border: 3px solid var(--emerald); border-radius: 28px; display: flex; flex-direction: column; gap: 16px; }
+    .whiteboard-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 2px solid var(--card-border); }
+    .whiteboard-tools { display: flex; align-items: center; gap: 14px; }
+    .whiteboard-canvas-wrap { flex: 1; border-radius: 18px; background: var(--modal-bg); border: 2px dashed var(--card-border); position: relative; overflow: hidden; cursor: crosshair; }
+    #whiteboard-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+    #bottom-nav {
+      position: fixed; bottom: 0; left: 0; width: 100vw; height: 72px; background: var(--nav-bg); backdrop-filter: blur(14px);
+      border-top: 2px solid var(--card-border); display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px; z-index: 4000; transition: background 0.3s ease;
+    }
+    .nav-left { display: flex; align-items: center; gap: 18px; font-size: 26px; font-weight: 800; }
+    .nav-badge { background: rgba(56, 189, 248, 0.16); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.5); padding: 6px 16px; border-radius: 9999px; font-size: 22px; font-weight: 800; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .btn-nav {
+      background: var(--btn-bg); border: 2px solid var(--btn-border); color: var(--text-main); padding: 10px 22px;
+      border-radius: 12px; font-size: 22px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease;
+    }
+    .btn-nav:hover { background: var(--card-border); }
+    .btn-nav.whiteboard-btn { background: rgba(52, 211, 153, 0.16); border-color: rgba(52, 211, 153, 0.45); color: var(--emerald); }
+    .btn-nav.whiteboard-btn:hover { background: var(--emerald); color: #070a14; }
+
+    .theme-select {
+      background: var(--btn-bg); border: 2px solid var(--btn-border); color: var(--text-main); padding: 10px 18px;
+      border-radius: 12px; font-size: 21px; font-weight: 700; cursor: pointer; outline: none; font-family: var(--font-family); transition: all 0.2s;
+    }
+    .theme-select option { background: var(--modal-bg); color: var(--text-main); font-size: 20px; }
+    .slide-counter { font-variant-numeric: tabular-nums; font-size: 28px; font-weight: 800; color: var(--text-muted); margin: 0 10px; }
+    .slide-counter span { color: var(--primary); }
+
+    #progress-container { position: fixed; bottom: 72px; left: 0; width: 100vw; height: 5px; background: var(--card-border); z-index: 4000; pointer-events: none; }
+    #progress-bar { height: 100%; width: 11.11%; background: linear-gradient(90deg, var(--primary), var(--emerald)); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body>
+
+  <main id="viewport-container">
+    <div id="slide-stage">
+
+      <!-- SLIDE 1: Cover -->
+      <section class="slide active" id="slide-1">
+        <div class="hero-container">
+          <div style="display: flex; gap: 18px;">
+            <span class="nav-badge" style="font-size: 22px; padding: 6px 22px;">고등학교 2학년</span>
+            <span class="nav-badge" style="font-size: 22px; padding: 6px 22px; border-color: var(--emerald); color: var(--emerald);">교과서 p.162~167</span>
+          </div>
+          <h1 class="hero-title editable">경사하강법의 직관과 미분계수의 역할</h1>
+          <p class="hero-subtitle editable">
+            안개 낀 손실 곡면 위에서 현재 위치의 접선 기울기(미분계수)를 감지하며<br>
+            가장 낮은 바닥으로 걸어 내려가는 인공지능의 최적화 알고리즘을 탐구합니다.
+          </p>
+          <div class="objective-list">
+            <h4>🎯 학습 목표</h4>
+            <ol>
+              <li>손실 곡면에서 접선의 기울기(미분계수)의 부호에 따른 <strong>이동 방향의 관계</strong> 를 직관적으로 설명할 수 있다. </li>
+              <li>손실이 최소가 되는 지점에서 접선의 기울기가 $0$ 이 됨($L'(a) = 0$)을 이해하고, 경사하강 알고리즘의 <strong>점화식 갱신 원리</strong> 를 도출할 수 있다. </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Foggy Mountain Animation -->
+      <section class="slide" id="slide-2">
+        <div class="slide-header">
+          <div class="slide-tag">p.162 생각 열기</div>
+          <h2 class="slide-title editable">안개 낀 곡선과 등산가의 탐색 (생각 열기)</h2>
+          <p class="slide-desc editable">전체 지형을 볼 수 없을 때, 오직 발밑의 경사만으로 최저점을 찾아가는 과정과 한계를 관찰합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 24px;">
+            <div class="card-title" style="font-size: 26px; margin-bottom: 12px;">
+              <span>🔦 안개 속 발밑 경사 탐색 애니메이션</span>
+              <button class="sim-preset-btn" onclick="startExplorerJourney()" style="font-size: 18px; padding: 6px 14px;">탐색 다시보기 ⟳</button>
+            </div>
+            <div class="canvas-wrap" style="height: 440px;">
+              <canvas id="canvas-explorer"></canvas>
+              <div class="sim-metric-badge" id="explorer-status-badge">발밑 탐색 중...</div>
+            </div>
+          </div>
+
+          <div class="card clickable" onclick="openModal('modal-fog-insight')">
+            <div class="card-title">
+              <span>🧠 인공지능 탐색의 비유와 질문</span>
+              <span class="click-hint">🔍 국소 탐색의 한계</span>
+            </div>
+            <div class="card-body">
+              <p style="margin-bottom: 16px;">
+                • <strong>안개 속 상황:</strong> 수천만 개의 매개변수를 갖는 실제 인공지능 곡면 전체를 컴퓨터는 한눈에 파악할 수 없습니다.
+              </p>
+              <p style="margin-bottom: 16px;">
+                • <strong>국소적 전진:</strong> 현재 위치에서 <strong>"발밑의 경사(접선의 기울기)"</strong> 만을 측정하여 아래로 한 걸음씩 이동합니다.
+              </p>
+              <div class="math-callout amber">
+                ⚠️ <strong>애니메이션 관찰 포인트:</strong><br>
+                경사가 $0$ 인 바닥에 안착했지만, 안개가 걷히면 <strong>"내가 도달한 곳이 국소적 골짜기(Local Minimum)일 뿐, 더 깊은 전역 최저점(Global Minimum)이 아닐 수 있음"</strong> 을 발견하게 됩니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: Secants converging to Tangent -->
+      <section class="slide" id="slide-3">
+        <div class="slide-header">
+          <div class="slide-tag">p.163~164 본문</div>
+          <h2 class="slide-title editable">곡선의 경사를 나타내는 수학적 도구: 미분계수 $L'(a)$ </h2>
+          <p class="slide-desc editable">두 점을 잇는 할선의 평균변화율에서 간격 $h$ 가 $0$ 으로 가까워짐에 따라 접선에 수렴하는 과정을 관찰합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-derivative-def')">
+            <div class="card-title">
+              <span>📐 순간변화율과 접선의 기울기</span>
+              <span class="click-hint">🔍 수학적 정의</span>
+            </div>
+            <div class="card-body">
+              <p style="margin-bottom: 14px;">
+                • 곡선 $y = L(a)$ 위의 점 $P(a, L(a))$ 와 점 $Q(a+h, L(a+h))$ 를 잇는 직선의 기울기는 <strong>평균변화율</strong> 입니다.
+              </p>
+              <div class="math-callout">
+                $$\lim_{h \to 0} \frac{L(a+h) - L(a)}{h} = L'(a)$$
+              </div>
+              <p style="margin-top: 14px;">
+                • 간격 $h$ 가 $0$ 에 한없이 가까워지면, 할선들은 점 $P$ 에서 스치는 <strong>접선(Tangent Line)</strong> 에 수렴합니다.
+              </p>
+              <p style="margin-top: 14px; color: var(--emerald); font-weight: 700;">
+                ✔ 즉, 접선의 기울기 $L'(a)$ 가 바로 현재 위치의 순간적인 경사도를 나타냅니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 24px;">
+            <div class="card-title" style="font-size: 26px; margin-bottom: 12px;">
+              <span>📈 할선의 접선 수렴 애니메이션</span>
+              <div style="display: flex; gap: 8px;">
+                <button class="sim-preset-btn" onclick="startSecantLoop()" style="font-size: 16px; padding: 4px 10px;">처음부터 ⟳</button>
+                <button class="sim-preset-btn" onclick="toggleSecantAnim()" id="btn-secant-toggle" style="font-size: 16px; padding: 4px 10px;">일시정지 ❚❚</button>
+              </div>
+            </div>
+            <div class="canvas-wrap" style="height: 460px;">
+              <canvas id="canvas-secants"></canvas>
+              <div class="sim-metric-badge">할선의 극한 ➔ 접선</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Curved Parabola & Wide Controls Lab with Magnetic Snap -->
+      <section class="slide" id="slide-4">
+        <div class="slide-header" style="margin-bottom: 10px;">
+          <div class="slide-tag">p.165 탐구 활동</div>
+          <h2 class="slide-title editable">미분계수의 부호와 이동 방향 탐구 랩</h2>
+          <p class="slide-desc editable">위치 $a$ 를 이동시키며 접선의 기울기 부호와 손실을 줄이기 위한 이동 방향을 관찰하세요. (최적점 근처 자석 효과 내장)</p>
+        </div>
+
+        <div class="wide-controls-bar">
+          <div class="slider-box">
+            <label for="slope-slider-2" id="label-slider-2">매개변수 $a = 0.45$ </label>
+            <input type="range" id="slope-slider-2" min="-0.2" max="1.1" step="0.01" value="0.45">
+          </div>
+          <div class="presets-box">
+            <button class="sim-preset-btn" onclick="setSlope2(-0.05)">왼쪽 언덕 ($a < 0.45$)</button>
+            <button class="sim-preset-btn" onclick="setSlope2(0.45)" style="border-color: var(--emerald); color: var(--emerald);">골짜기 바닥 ($a = 0.45$)</button>
+            <button class="sim-preset-btn" onclick="setSlope2(0.95)">오른쪽 언덕 ($a > 0.45$)</button>
+          </div>
+          <div style="font-size: 26px; font-weight: 800; color: #ffffff; white-space: nowrap;" id="derivative-indicator">
+            $L'(a) = 0.00$ 
+          </div>
+        </div>
+
+        <div class="canvas-wrap" style="height: 480px;">
+          <canvas id="canvas-sim-2"></canvas>
+          <div class="sim-metric-badge" id="sim-direction-badge">
+            방향 안내: 최적점 도달
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: Direction Rule with Completely Clean Parabola Interior -->
+      <section class="slide" id="slide-5">
+        <div class="slide-header">
+          <div class="slide-tag">p.166 본문</div>
+          <h2 class="slide-title editable">이동 방향의 규칙: 왜 반대 부호($-L'(a)$)인가?</h2>
+          <p class="slide-desc editable">기울기의 부호에 따라 손실을 감소시키기 위한 매개변수 $a$ 의 이동 방향이 결정됩니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-rule-direction')">
+            <div class="card-title">
+              <span>📉 부호에 따른 이동 방향 정리</span>
+              <span class="click-hint">🔍 세부 원리</span>
+            </div>
+            <div class="card-body">
+              <div style="margin-bottom: 20px;">
+                <h4 style="color: var(--primary); font-size: 28px; margin-bottom: 8px;">1. $L'(a) < 0$ (오른쪽 아래로 하강)</h4>
+                <p>• 현재 위치가 최적점의 왼쪽에 있음 $\implies a$ 를 <strong>증가(오른쪽 이동)</strong> 시켜야 손실 감소.</p>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <h4 style="color: var(--rose); font-size: 28px; margin-bottom: 8px;">2. $L'(a) > 0$ (오른쪽 위로 상승)</h4>
+                <p>• 현재 위치가 최적점의 오른쪽에 있음 $\implies a$ 를 <strong>감소(왼쪽 이동)</strong> 시켜야 손실 감소.</p>
+              </div>
+              <div class="math-callout emerald">
+                결론: 매개변수 $a$ 의 이동 방향은 항상<br>
+                <strong>접선 기울기의 반대 부호 ($-L'(a)$)</strong> 여야 합니다.
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 24px;">
+            <div class="card-title" style="font-size: 26px; margin-bottom: 12px;">
+              <span>🧭 기울기 부호와 이동 방향 다이어그램</span>
+              <span style="font-size: 18px; color: var(--emerald);">반대 부호 ($-L'(a)$) 이동</span>
+            </div>
+            <div class="canvas-wrap" style="height: 460px;">
+              <canvas id="canvas-direction-diagram"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Optimal Condition L'(a)=0 -->
+      <section class="slide" id="slide-6">
+        <div class="slide-header">
+          <div class="slide-tag">p.166 핵심 개념</div>
+          <h2 class="slide-title editable">최적점의 조건: $L'(a) = 0$ 은 왜 필요조건인가?</h2>
+          <p class="slide-desc editable">골짜기 바닥에서는 접선이 수평을 이루지만, 미분계수가 0이라고 해서 항상 최솟값은 아닙니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card clickable" onclick="openModal('modal-optimal-cond')">
+            <div class="card-title" style="color: var(--emerald);">
+              <span>🎯 최적점에서의 필요조건</span>
+              <span class="click-hint">🔍 필요조건 상세</span>
+            </div>
+            <div class="card-body">
+              <p style="margin-bottom: 14px;">
+                • 매끄러운 곡선에서 손실이 최소가 되는 극솟점에 도달하면 접선이 완전히 수평을 이룹니다.
+              </p>
+              <div class="math-callout emerald">
+                $$L'(a) = 0$$
+              </div>
+              <p style="margin-top: 14px;">
+                • 기울기가 $0$ 이 되면 이동 방향인 $-L'(a)$ 도 $0$ 이 되므로 <strong>더 이상 갱신이 일어나지 않고 탐색이 완료</strong> 됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="card clickable amber-card" onclick="openModal('modal-counter-examples')">
+            <div class="card-title" style="color: var(--amber);">
+              <span>⚠️ 왜 충분조건이 아닐까? (주의점)</span>
+              <span class="click-hint amber">🔍 극댓값과 안장점</span>
+            </div>
+            <div class="card-body">
+              <p style="margin-bottom: 14px;">
+                • <strong>반례 1 (극댓점):</strong> 산봉우리 정상에서도 접선의 기울기는 $L'(a) = 0$ 이지만 손실이 최대가 됩니다.
+              </p>
+              <p style="margin-bottom: 14px;">
+                • <strong>반례 2 (변곡점/안장점):</strong> 경사가 일시적으로 0이 되었다가 다시 감소하는 지점에서도 탐색이 멈춰버릴 위험이 있습니다.
+              </p>
+              <div class="math-callout amber">
+                교과서 속 이차함수는 <strong>아래로 볼록</strong> 하므로 $L'(a) = 0$ 인 유일한 점이 곧 최솟값이 보장됩니다!
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Step-size Dilemma -->
+      <section class="slide" id="slide-7">
+        <div class="slide-header">
+          <div class="slide-tag">p.167 생각 해보기</div>
+          <h2 class="slide-title editable">방향은 정했다, 보폭의 크기는 어떻게 할까?</h2>
+          <p class="slide-desc editable">내려갈 방향($-L'(a)$)을 찾아도, 한 걸음에 내딛는 보폭의 크기에 따라 학습의 성패가 갈립니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">❓ 보폭 크기의 딜레마</div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 20px;">
+              <div style="background: rgba(251, 113, 133, 0.14); border-left: 8px solid var(--rose); border-radius: 14px; padding: 22px;">
+                <h4 style="color: var(--rose); font-size: 28px; margin-bottom: 8px;">1. 보폭이 너무 클 때 (과대)</h4>
+                <p style="font-size: 26px; line-height: 1.6; margin: 0;">
+                  골짜기 바닥을 지나쳐 반대편 언덕으로 튕겨 나가며 <strong>좌우로 진동하거나, 손실값이 급격히 증가(발산)</strong> 합니다.
+                </p>
+              </div>
+              <div style="background: rgba(56, 189, 248, 0.14); border-left: 8px solid var(--primary); border-radius: 14px; padding: 22px;">
+                <h4 style="color: var(--primary); font-size: 28px; margin-bottom: 8px;">2. 보폭이 너무 작을 때 (과소)</h4>
+                <p style="font-size: 26px; line-height: 1.6; margin: 0;">
+                  안정적이기는 하지만 한 걸음이 너무 미세하여 <strong>최적점에 도달하기까지 과도한 시간과 횟수가 소요</strong> 됩니다.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 24px;">
+            <div class="card-title" style="font-size: 26px; margin-bottom: 12px;">
+              <span>📊 보폭 크기별 궤적 비교</span>
+              <span style="font-size: 18px; color: var(--amber);">발산 vs 적정 vs 지연</span>
+            </div>
+            <div class="canvas-wrap" style="height: 440px;">
+              <canvas id="canvas-step-dilemma"></canvas>
+              <div class="sim-metric-badge">보폭 크기 궤적 관찰</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Stepped Derivation with X-axis Projection -->
+      <section class="slide" id="slide-8">
+        <div class="slide-header">
+          <div class="slide-tag">p.167 점화식 유도</div>
+          <h2 class="slide-title editable">경사하강법 점화식의 단계별 유도 패널</h2>
+          <p class="slide-desc editable">각 단계를 선택하면 오른쪽 패널에 $x$ 축 정사영과 이중 화살표(사선 곡면 + 가로 보폭)가 실시간 연동됩니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 26px 32px;">
+            <div class="step-tab-nav">
+              <button class="step-tab-btn active" onclick="switchStep(0)">Step 1. 위치와 경사 ($a_n, L'(a_n)$)</button>
+              <button class="step-tab-btn" onclick="switchStep(1)">Step 2. 반대 방향 ($-L'(a_n)$)</button>
+              <button class="step-tab-btn" onclick="switchStep(2)">Step 3. 보폭 $\eta$ 도입과 조정 ($\Delta a$)</button>
+              <button class="step-tab-btn" onclick="switchStep(3)">Step 4. 수열 점화식 완성 ($a_{n+1}$)</button>
+            </div>
+
+            <div class="step-content-pane active" id="step-pane-0">
+              <h3 style="color: var(--primary); font-size: 28px; margin-bottom: 10px;">1단계: $x$ 축의 현재 위치 $a_n$ 과 접선 기울기 측정</h3>
+              <p style="font-size: 25px; line-height: 1.6; color: var(--text-sub);">
+                $x$ 축 위의 매개변수 값 $a_n$ 에 대응하는 곡선 위의 점 $P_n(a_n, L(a_n))$ 에서의 순간 경사는 미분계수 <strong>$L'(a_n)$ </strong> 으로 계산됩니다.
+              </p>
+              <div class="math-callout">
+                $$\text{위치: } a_n \implies \text{접선 기울기: } L'(a_n)$$
+              </div>
+            </div>
+
+            <div class="step-content-pane" id="step-pane-1">
+              <h3 style="color: var(--indigo); font-size: 28px; margin-bottom: 10px;">2단계: 손실을 줄이기 위한 반대 부호 방향 결정</h3>
+              <p style="font-size: 25px; line-height: 1.6; color: var(--text-sub);">
+                손실을 낮추려면 접선 기울기의 <strong>정반대 부호인 $-L'(a_n)$ 방향</strong> 으로 나아가야 함을 확인했습니다.
+              </p>
+              <div class="math-callout">
+                $$\text{이동 방향 벡터: } \Delta a \propto -L'(a_n)$$
+              </div>
+            </div>
+
+            <div class="step-content-pane" id="step-pane-2">
+              <h3 style="color: var(--amber); font-size: 28px; margin-bottom: 10px;">3단계: 보폭을 안전하게 조절하는 학습률($\eta$) 도입</h3>
+              <p style="font-size: 25px; line-height: 1.6; color: var(--text-sub);">
+                $x$ 축 상에서의 급격한 발산을 막고 이동 보폭의 크기를 알맞게 조절하기 위해 양의 상수 <strong>$\eta$ (학습률)</strong> 를 곱해 줍니다.
+              </p>
+              <div class="math-callout amber">
+                $$\Delta a = -\eta L'(a_n) \quad (\eta > 0)$$
+              </div>
+            </div>
+
+            <div class="step-content-pane" id="step-pane-3">
+              <h3 style="color: var(--emerald); font-size: 28px; margin-bottom: 10px;">4단계: 새로운 위치 $a_{n+1}$ 을 구하는 수열 점화식 확정</h3>
+              <p style="font-size: 25px; line-height: 1.6; color: var(--text-sub);">
+                현재의 $x$ 축 위치 $a_n$ 에 이동량 $\Delta a$ 를 더하여 다음 위치 $a_{n+1}$ 을 결정하는 공식이 완성됩니다!
+              </p>
+              <div class="math-callout emerald">
+                $$a_{n+1} = a_n - \eta L'(a_n)$$
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 24px;">
+            <div class="card-title" style="font-size: 26px; margin-bottom: 12px;">
+              <span id="step-canvas-title">Step 1 시각화: 현재 위치 $a_n$ 과 접선</span>
+              <span style="font-size: 18px; color: var(--emerald);">기하학적 투영 연동</span>
+            </div>
+            <div class="canvas-wrap" style="height: 440px;">
+              <canvas id="canvas-step-derivation"></canvas>
+              <div class="sim-metric-badge" id="step-canvas-badge">Step 1: 접선 기울기 측정</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Summary & Next Lesson -->
+      <section class="slide" id="slide-9">
+        <div class="slide-header">
+          <div class="slide-tag">Summary &amp; Outlook</div>
+          <h2 class="slide-title editable">2차시 정리 및 3차시 계산 훈련 예고</h2>
+          <p class="slide-desc editable">미분계수의 기하학적 의미와 경사하강법의 기본 점화식을 요약합니다.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📝 2차시 핵심 요약 3가지</div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 18px;">
+              <div>
+                <strong style="color: var(--primary);">1. 경사의 측정:</strong> 현재 위치의 경사는 접선의 기울기인 <strong>미분계수 $L'(a)$ </strong> 로 나타냄.
+              </div>
+              <div>
+                <strong style="color: var(--indigo);">2. 이동 방향:</strong> 손실을 줄이려면 항상 <strong>기울기의 반대 부호($-L'(a)$)</strong> 로 이동해야 함.
+              </div>
+              <div>
+                <strong style="color: var(--emerald);">3. 최적점 조건:</strong> 골짜기 바닥(극솟점)에서는 접선이 수평이 되므로 <strong>$L'(a) = 0$ </strong> 이 성립함.
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="border-color: rgba(251, 191, 36, 0.5); background: var(--card-bg);">
+            <div class="card-title" style="color: var(--amber);">🚀 [3차시] 수업 예고</div>
+            <div class="card-body">
+              <div style="background: var(--math-box-bg); border-left: 6px solid var(--amber); border-radius: 14px; padding: 20px; margin-bottom: 16px;">
+                <p style="font-size: 28px; color: var(--amber); font-weight: 800; margin: 0;">
+                  "점화식 $a_{n+1} = a_n - \eta L'(a_n)$ 손계산 집중 훈련"
+                </p>
+              </div>
+              <p style="font-size: 26px; line-height: 1.6; margin: 0;">
+                이차 손실함수 모델(예: $L(a) = a^2 - 6a + 10$)과 초깃값 $a_0 = 7$ , 학습률 $\eta = 0.1$ 을 대입하여, 값이 어떻게 바닥($a=3$)을 향해 다가가는지 1회·2회 반복 갱신 계산을 직접 손으로 훈련합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- POPUP MODALS -->
+  <div class="modal-overlay" id="modal-fog-insight" onclick="closeModalOnBackdrop(event, 'modal-fog-insight')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔍 [탐구] 국소 탐색과 전역 최저점의 딜레마</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-fog-insight')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>왜 국소 탐색(경사하강법)은 한계가 있을까?</strong></p>
+        <p>
+          안개 속에서 발밑의 경사만 보고 내려가면, 가장 먼저 마주친 골짜기 바닥에서 경사가 0이 되어 멈추게 됩니다. 이 지점을 <strong>국소 최솟값(Local Minimum)</strong> 이라고 합니다.
+        </p>
+        <p>
+          그러나 실제 산맥 너머에 훨씬 더 깊은 계곡인 <strong>전역 최솟값(Global Minimum)</strong> 이 존재할 수 있습니다. 경사하강법은 전체 지형을 보지 못하므로 언덕을 다시 거슬러 올라가지 못하고 국소 최저점에 갇히는 한계를 가집니다.
+        </p>
+        <p>
+          다행히 우리가 이번 단원에서 다루는 손실함수는 <strong>아래로 볼록한 이차함수(포물선)</strong> 이므로, 국소 최저점이 곧 전체의 최저점이 되는 가장 이상적인 형태입니다!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-derivative-def" onclick="closeModalOnBackdrop(event, 'modal-derivative-def')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔍 [수학] 미분계수와 순간변화율의 기하학적 정의</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-derivative-def')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>평균변화율에서 순간변화율(미분계수)로</strong></p>
+        <p>
+          곡선 위의 두 점 $P(a, L(a))$ 와 $Q(a+h, L(a+h))$ 를 지나는 직선의 기울기는 다음과 같이 주어집니다:
+        </p>
+        <div class="math-callout">
+          $$\text{평균변화율} = \frac{L(a+h) - L(a)}{h}$$
+        </div>
+        <p>
+          여기서 점 $Q$ 를 점 $P$ 를 향해 한없이 가깝게 이동시키면($h \to 0$), 두 점을 잇던 할선은 마침내 점 $P$ 에서 곡선에 스치는 <strong>단 하나의 접선(Tangent Line)</strong> 이 됩니다.
+        </p>
+        <p>
+          이 접선의 기울기가 바로 <strong>미분계수 $L'(a)$ </strong> 이며, 곡선 위 특정 지점에서 그래프가 순간적으로 얼마나 가파르게 상승 또는 하강하는지를 정량화합니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-rule-direction" onclick="closeModalOnBackdrop(event, 'modal-rule-direction')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔍 [원리] 기울기의 반대 부호로 이동해야 하는 이유</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-rule-direction')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>경사 부호와 매개변수의 이동 관계</strong></p>
+        <p>
+          • <strong>$L'(a) > 0$ 인 경우:</strong> 오른쪽으로 갈수록 손실이 커지는 상승 구간입니다. 바닥으로 가려면 $a$ 를 <strong>왼쪽(음의 방향)</strong> 으로 이동시켜야 하므로, 부호가 반대인 $-L'(a)$ 가 필요합니다.
+        </p>
+        <p>
+          • <strong>$L'(a) < 0$ 인 경우:</strong> 오른쪽으로 갈수록 손실이 낮아지는 하강 구간입니다. 바닥으로 가려면 $a$ 를 <strong>오른쪽(양의 방향)</strong> 으로 이동시켜야 합니다. 음수에 마이너스(-)를 붙이면 양수가 되므로 역시 $-L'(a)$ 가 성립합니다.
+        </p>
+        <div class="math-callout emerald">
+          어느 위치에 있든 <strong>$-L'(a)$ </strong> 를 취해주면 자동으로 골짜기 바닥을 향한 올바른 나침반 방향이 도출됩니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-optimal-cond" onclick="closeModalOnBackdrop(event, 'modal-optimal-cond')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔍 [원리] 최적점에서 왜 미분계수가 0이 될까?</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-optimal-cond')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>수평 접선과 갱신의 정지</strong></p>
+        <p>
+          곡선의 골짜기 가장 밑바닥(극솟값)에서는 왼쪽의 음의 기울기($L'(a) < 0$)와 오른쪽의 양의 기울기($L'(a) > 0$)가 만나는 정중앙 경계이므로, 연속함수의 성질에 의해 접선의 기울기가 반드시 <strong>$0$</strong> 이 됩니다.
+        </p>
+        <p>
+          기울기가 $0$ 이 되면 경사하강법 점화식에서 이동량 $-\eta L'(a)$ 역시 $0$ 이 되어 $a_{n+1} = a_n$ 이 성립합니다. 즉, 알고리즘이 스스로 바닥에 도착했음을 알고 멈추게 되는 수학적 정지 조건입니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-counter-examples" onclick="closeModalOnBackdrop(event, 'modal-counter-examples')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">⚠️ [주의] $L'(a) = 0$ 이 충분조건이 아닌 이유</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-counter-examples')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>$L'(a) = 0$ 이지만 최솟값이 아닌 반례들</strong></p>
+        <p>
+          1. <strong>극댓점 (Local Maximum):</strong> 산봉우리 정상에서도 접선은 수평($L'=0$)이지만, 이곳은 손실이 가장 큰 최악의 지점입니다.
+        </p>
+        <p>
+          2. <strong>변곡점 및 안장점 (Saddle Point):</strong> 삼차함수 $y = x^3$ 의 원점처럼 잠시 접선이 수평이 되었다가 다시 아래로 계속 떨어지는 구간에서도 $L'=0$ 이 되어 엉뚱한 곳에서 갱신이 멈출 수 있습니다.
+        </p>
+        <p>
+          따라서 엄밀한 미적분학에서는 이계도함수 판정($L''(a) > 0$)을 함께 확인하지만, 인공지능 수학 교과서의 손실함수는 <strong>항상 최고차항 계수가 양수인 이차함수</strong> 이므로 $L'(a)=0$ 을 만족하는 단 하나의 점이 곧 절대적인 최솟점이 됩니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHITEBOARD MODAL -->
+  <div class="modal-overlay wb-level-1" id="modal-whiteboard" onclick="closeModalOnBackdrop(event, 'modal-whiteboard')">
+    <div class="whiteboard-content" onclick="event.stopPropagation()">
+      <div class="whiteboard-header">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <h3 class="modal-title" style="font-size: 36px;">📋 화이트보드 (판서 공간)</h3>
+          <span style="font-size: 20px; color: var(--text-muted);">전자칠판 펜 또는 마우스 터치로 자유롭게 판서할 수 있습니다.</span>
+        </div>
+        <div class="whiteboard-tools">
+          <div style="display: flex; align-items: center; gap: 6px; background: var(--btn-bg); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--card-border);">
+            <span style="font-size: 18px; font-weight: 700; color: var(--text-muted); margin-right: 4px;">투명도:</span>
+            <button class="wb-op-btn active" id="btn-op-1" onclick="setWhiteboardOpacity(1)">100% 불투명</button>
+            <button class="wb-op-btn" id="btn-op-2" onclick="setWhiteboardOpacity(2)">50% 반투명</button>
+            <button class="wb-op-btn" id="btn-op-3" onclick="setWhiteboardOpacity(3)">15% 트레이싱</button>
+          </div>
+          <button class="btn-nav" onclick="clearWhiteboard()">🧹 보드 지우기</button>
+          <button class="modal-close-btn" onclick="closeModal('modal-whiteboard')" style="width: 50px; height: 50px; font-size: 26px;">✕</button>
+        </div>
+      </div>
+      <div class="whiteboard-canvas-wrap" id="whiteboard-wrap">
+        <canvas id="whiteboard-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CONTROL BAR -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <footer id="bottom-nav">
+    <div class="nav-left">
+      <span class="nav-badge">인공지능 수학</span>
+      <span class="nav-title">Ⅳ-2. 최적화 (2차시)</span>
+    </div>
+    <div class="nav-right">
+      <button class="btn-nav" onclick="prevSlide()">◀ 이전</button>
+      <div class="slide-counter"><span id="curr-num">01</span> / <span id="total-num">09</span></div>
+      <button class="btn-nav" onclick="nextSlide()">다음 ▶</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+      
+      <select class="theme-select" id="theme-selector" onchange="changeTheme(this.value)">
+        <option value="dark">🌙 다크 네이비</option>
+        <option value="light">☀️ 클린 라이트</option>
+        <option value="green">🌿 그린 칠판</option>
+        <option value="sepia">☕ 웜 세피아</option>
+      </select>
+
+      <button class="btn-nav whiteboard-btn" onclick="openWhiteboard()">📋 화이트보드</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+
+      <button class="btn-nav" id="btn-edit" onclick="toggleEditMode()">✏️ 편집 모드</button>
+      <button class="btn-nav" id="btn-save" onclick="saveHTML()">💾 HTML 저장</button>
+      
+      <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
+
+      <button class="btn-nav" onclick="toggleFullscreen()">⛶ 전체화면</button>
+    </div>
+  </footer>
+
+  <script>
+    /* ========================================================
+       1. Context Polyfill
+       ======================================================== */
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (typeof r === 'undefined') r = 0;
+        if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+        this.beginPath();
+        this.moveTo(x + r.tl, y);
+        this.lineTo(x + w - r.tr, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+        this.lineTo(x + w, y + h - r.br);
+        this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+        this.lineTo(x + r.bl, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+        this.lineTo(x, y + r.tl);
+        this.quadraticCurveTo(x, y, x + r.tl, y);
+        this.closePath();
+        return this;
+      };
+    }
+
+    /* ========================================================
+       2. Slide Scaling & Centering Engine
+       ======================================================== */
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const totalNumEl = document.getElementById('total-num');
+    if (totalNumEl) totalNumEl.textContent = String(totalSlides).padStart(2, '0');
+
+    function updateScale() {
+      const stage = document.getElementById('slide-stage');
+      const viewport = document.getElementById('viewport-container');
+      if (!stage) return;
+      const vw = (viewport && viewport.clientWidth) || window.innerWidth || 1920;
+      const vh = (viewport && viewport.clientHeight) || (window.innerHeight - 76) || 1080;
+      const scaleX = vw / 1920;
+      const scaleY = vh / 1080;
+      const scale = Math.min(scaleX, scaleY) * 0.96;
+      stage.style.transform = `translate(-50%, -50%) scale(${Math.max(scale, 0.15)})`;
+    }
+
+    function initAll() {
+      updateScale();
+      tryRenderKaTeX();
+      initExplorerAnim();
+      initSecantsAnim();
+      initSim2();
+      initDirectionDiagram();
+      initStepDilemmaCanvas();
+      initStepDerivationCanvas();
+      initWhiteboard();
+    }
+
+    // Call immediately and also hook to events
+    updateScale();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+    window.addEventListener('load', initAll);
+    window.addEventListener('resize', () => {
+      updateScale();
+      resizeWhiteboardCanvas();
+    });
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => updateScale()).observe(document.getElementById('viewport-container') || document.body);
+    }
+
+    function showSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      slides[currentSlide].classList.remove('active');
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+
+      const currEl = document.getElementById('curr-num');
+      if (currEl) currEl.textContent = String(currentSlide + 1).padStart(2, '0');
+      const progressEl = document.getElementById('progress-bar');
+      if (progressEl) progressEl.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+      if (currentSlide === 1) {
+        startExplorerJourney();
+      } else if (currentSlide === 2) {
+        startSecantLoop();
+      } else if (currentSlide === 3) {
+        requestAnimationFrame(renderSim2);
+      } else if (currentSlide === 4) {
+        requestAnimationFrame(renderDirectionDiagram);
+      } else if (currentSlide === 6) {
+        requestAnimationFrame(renderStepDilemmaCanvas);
+      } else if (currentSlide === 7) {
+        requestAnimationFrame(renderStepDerivation);
+      }
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { showSlide(currentSlide - 1); }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+        if (e.key === 'Escape') e.target.blur();
+        return;
+      }
+      if (e.key === 'Escape') {
+        closeTopModal();
+        return;
+      }
+      if (document.querySelector('.modal-overlay.active')) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    /* ========================================================
+       3. Modal & Inline Edit Engine
+       ======================================================== */
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.add('active');
+        renderAllKaTeX();
+        if (isEditing) applyEditModeToModals();
+      }
+    }
+
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('active');
+    }
+
+    function closeModalOnBackdrop(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    function closeTopModal() {
+      const wb = document.getElementById('modal-whiteboard');
+      if (wb && wb.classList.contains('active')) {
+        wb.classList.remove('active');
+        return;
+      }
+      const activeModals = Array.from(document.querySelectorAll('.modal-overlay.active'));
+      if (activeModals.length > 0) {
+        activeModals[activeModals.length - 1].classList.remove('active');
+      }
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    }
+
+    let isEditing = false;
+    function toggleEditMode() {
+      isEditing = !isEditing;
+      const btn = document.getElementById('btn-edit');
+      if (isEditing) {
+        btn.classList.add('active');
+        btn.innerHTML = '✏️ 편집 종료';
+        document.body.classList.add('editing-active');
+        applyEditModeToModals();
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '✏️ 편집 모드';
+        document.body.classList.remove('editing-active');
+        removeEditModeFromModals();
+      }
+    }
+
+    function applyEditModeToModals() {
+      document.querySelectorAll('.editable, .modal-title, .modal-body p, .modal-body .math-callout, .card-title span:first-child, .card-body p, .objective-list ol li, .slide-desc, .hero-subtitle').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+        el.classList.add('editable');
+      });
+    }
+
+    function removeEditModeFromModals() {
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => el.removeAttribute('contenteditable'));
+    }
+
+    function saveHTML() {
+      const wasEditing = isEditing;
+      if (wasEditing) toggleEditMode();
+      closeAllModals();
+
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '2026_태릉고_인공지능수학_최적화_2차시_슬라이드.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (wasEditing) toggleEditMode();
+    }
+
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      renderExplorerCanvas();
+      renderSecantsCanvas();
+      renderSim2();
+      renderDirectionDiagram();
+      renderStepDilemmaCanvas();
+      renderStepDerivation();
+      resizeWhiteboardCanvas();
+    }
+
+    function setupCanvas(canvas) {
+      const width = canvas.offsetWidth || canvas.clientWidth || 800;
+      const height = canvas.offsetHeight || canvas.clientHeight || 440;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width, height };
+    }
+
+    function drawArrow(ctx, fromX, fromY, toX, toY, color) {
+      const headlen = 11;
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    /* ========================================================
+       4. Slide 2: Stepping Fog of War Animation (Quartic Function)
+       ======================================================== */
+    function quartic(x) {
+      return Math.pow(x, 4) - (2.0 / 3.0) * Math.pow(x, 3) - 1.84 * Math.pow(x, 2) + 0.384 * x + 1.2;
+    }
+    function dQuartic(x) {
+      return 4 * Math.pow(x, 3) - 2 * Math.pow(x, 2) - 3.68 * x + 0.384;
+    }
+
+    let expX = -1.35;
+    let fogAlpha = 0.94;
+    let animTimer = null;
+    let animStage = 0;
+
+    function initExplorerAnim() {
+      renderExplorerCanvas();
+    }
+
+    function startExplorerJourney() {
+      if (animTimer) clearInterval(animTimer);
+      expX = -1.35;
+      fogAlpha = 0.94;
+      animStage = 0;
+      const badge = document.getElementById('explorer-status-badge');
+      if (badge) {
+        badge.innerHTML = "발밑 경사 탐색 중 (내리막길 이동)...";
+        badge.style.color = "var(--primary)";
+      }
+
+      animTimer = setInterval(() => {
+        if (animStage === 0) {
+          if (expX < -0.58) {
+            expX += 0.025;
+            renderExplorerCanvas();
+          } else {
+            animStage = 1;
+            if (badge) {
+              badge.innerHTML = "⚠️ 오르막 경사 감지 (L' > 0)! 최저점을 지나쳤으므로 다시 뒤로 복귀...";
+              badge.style.color = "var(--rose)";
+            }
+          }
+        } else if (animStage === 1) {
+          if (expX > -0.80) {
+            expX -= 0.02;
+            renderExplorerCanvas();
+          } else {
+            expX = -0.80;
+            animStage = 2;
+            renderExplorerCanvas();
+            clearInterval(animTimer);
+            revealLandscape();
+          }
+        }
+      }, 80);
+    }
+
+    function revealLandscape() {
+      const badge = document.getElementById('explorer-status-badge');
+      if (badge) {
+        badge.innerHTML = "★ 극솟값(Local Min, L'=0.00) 안착! (안개 서서히 해제)";
+        badge.style.color = "var(--amber)";
+      }
+
+      let revealTimer = setInterval(() => {
+        fogAlpha -= 0.035;
+        if (fogAlpha <= 0) {
+          fogAlpha = 0;
+          clearInterval(revealTimer);
+          if (badge) {
+            badge.innerHTML = "⚠️ 확인: 도착한 곳은 국소 극솟값(Local Min)일 뿐, 전역 최저점은 저 너머에 존재!";
+          }
+        }
+        renderExplorerCanvas();
+      }, 50);
+    }
+
+    function renderExplorerCanvas() {
+      const canvas = document.getElementById('canvas-explorer');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const primary = style.getPropertyValue('--primary').trim() || '#38bdf8';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const amber = style.getPropertyValue('--amber').trim() || '#fbbf24';
+
+      function toX(x) { return 60 + ((x + 1.5) / 3.0) * (width - 120); }
+      function toY(y) { return height - 50 - ((y + 0.3) / 2.8) * (height - 90); }
+
+      ctx.strokeStyle = '#818cf8';
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      let first = true;
+      for (let x = -1.45; x <= 1.42; x += 0.03) {
+        const px = toX(x); const py = toY(quartic(x));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      const ey = quartic(expX);
+      const sx = toX(expX);
+      const sy = toY(ey);
+      const slope = dQuartic(expX);
+
+      const tLen = 0.22;
+      ctx.strokeStyle = amber;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(expX - tLen), toY(ey - slope * tLen));
+      ctx.lineTo(toX(expX + tLen), toY(ey + slope * tLen));
+      ctx.stroke();
+
+      ctx.fillStyle = primary;
+      ctx.beginPath(); ctx.arc(sx, sy - 8, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = textMain; ctx.lineWidth = 2.5; ctx.stroke();
+
+      if (fogAlpha > 0) {
+        ctx.save();
+        ctx.fillStyle = `rgba(8, 12, 22, ${fogAlpha})`;
+        ctx.beginPath();
+        ctx.rect(0, 0, width, height);
+        ctx.arc(sx, sy, 80, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      if (fogAlpha < 0.4) {
+        const lx = toX(-0.80); const ly = toY(quartic(-0.80));
+        ctx.fillStyle = amber;
+        ctx.beginPath(); ctx.arc(lx, ly, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 20px Pretendard';
+        ctx.fillText('도착점: 국소 최솟값 (Local Min, L=0.47)', lx - 150, ly - 26);
+
+        const gx = toX(1.20); const gy = toY(quartic(1.20));
+        ctx.fillStyle = emerald;
+        ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillText('진짜 최저점: 전역 최솟값 (Global Min, L=-0.07)', gx - 190, gy + 32);
+      }
+    }
+
+    /* ========================================================
+       5. Slide 3: Secants converging to Tangent Animation
+       ======================================================== */
+    let secantAnimTimer = null;
+    let secantH = 1.40;
+    let isSecantPlaying = true;
+    let secantPauseCountdown = 0;
+
+    function initSecantsAnim() {
+      renderSecantsCanvas();
+    }
+
+    function startSecantLoop() {
+      if (secantAnimTimer) clearInterval(secantAnimTimer);
+      secantH = 1.40;
+      isSecantPlaying = true;
+      secantPauseCountdown = 0;
+      const btn = document.getElementById('btn-secant-toggle');
+      if (btn) btn.innerHTML = "일시정지 ❚❚";
+      renderSecantsCanvas();
+
+      secantAnimTimer = setInterval(() => {
+        if (!isSecantPlaying) return;
+
+        if (secantPauseCountdown > 0) {
+          secantPauseCountdown--;
+          if (secantPauseCountdown === 0) {
+            secantH = 1.40;
+          }
+          return;
+        }
+
+        if (secantH > 0.03) {
+          secantH -= 0.022;
+          if (secantH <= 0.03) {
+            secantH = 0.03;
+            secantPauseCountdown = 35;
+          }
+        }
+        renderSecantsCanvas();
+      }, 70);
+    }
+
+    function toggleSecantAnim() {
+      isSecantPlaying = !isSecantPlaying;
+      const btn = document.getElementById('btn-secant-toggle');
+      if (btn) btn.innerHTML = isSecantPlaying ? "일시정지 ❚❚" : "재생 ▶";
+    }
+
+    function renderSecantsCanvas() {
+      const canvas = document.getElementById('canvas-secants');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(148, 163, 184, 0.16)';
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+
+      function f(x) { return 0.55 * x * x + 0.3; }
+      function df(x) { return 1.1 * x; }
+
+      function toX(x) { return 80 + ((x + 1.2) / 3.4) * (width - 140); }
+      function toY(y) { return height - 60 - ((y - 0.1) / 3.2) * (height - 100); }
+
+      ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
+      for (let x = -1; x <= 2; x += 1) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 30); ctx.lineTo(toX(x), height - 40); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      let first = true;
+      for (let x = -1.1; x <= 2.1; x += 0.04) {
+        const px = toX(x); const py = toY(f(x));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      const px = 0.4; const py = f(px);
+      const sxP = toX(px); const syP = toY(py);
+
+      const qx = px + secantH; const qy = f(qx);
+      const sxQ = toX(qx); const syQ = toY(qy);
+      const m = (qy - py) / (qx - px);
+
+      const isConverged = secantH <= 0.05;
+
+      ctx.strokeStyle = isConverged ? emerald : rose;
+      ctx.lineWidth = isConverged ? 4.5 : 3.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(px - 0.7), toY(py - m * 0.7));
+      ctx.lineTo(toX(Math.max(qx + 0.5, px + 1.4)), toY(py + m * (Math.max(qx + 0.5, px + 1.4) - px)));
+      ctx.stroke();
+
+      if (!isConverged) {
+        ctx.fillStyle = rose;
+        ctx.beginPath(); ctx.arc(sxQ, syQ, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 20px Pretendard';
+        ctx.fillText(`점 Q (h = ${secantH.toFixed(2)})`, sxQ + 14, syQ - 10);
+      }
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(sxP, syP, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = emerald; ctx.lineWidth = 3; ctx.stroke();
+
+      ctx.fillStyle = textMain; ctx.font = 'bold 22px Pretendard';
+      ctx.fillText('고정점 P (a, L(a))', sxP - 165, syP - 15);
+
+      if (isConverged) {
+        ctx.fillStyle = emerald; ctx.font = 'bold 22px Pretendard';
+        ctx.fillText(`★ 극한 h ➔ 0 도달: 접선 완성! L'(a) = ${df(px).toFixed(2)}`, 30, 45);
+      } else {
+        ctx.fillStyle = rose; ctx.font = 'bold 22px Pretendard';
+        ctx.fillText(`할선 평균변화율 측정 중 (간격 h = ${secantH.toFixed(2)} ➔ 0)`, 30, 45);
+      }
+    }
+
+    /* ========================================================
+       6. Slide 4: Simulation 2 with Magnetic Snap
+       ======================================================== */
+    let simA = 0.45;
+
+    function initSim2() {
+      const slider = document.getElementById('slope-slider-2');
+      if (!slider) return;
+
+      slider.addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        if (Math.abs(val - 0.45) <= 0.035) {
+          val = 0.45;
+          slider.value = 0.45;
+        }
+        simA = val;
+        updateSim2UI();
+      });
+
+      function applyMagneticSnap() {
+        if (Math.abs(simA - 0.45) <= 0.055) {
+          simA = 0.45;
+          slider.value = 0.45;
+          updateSim2UI();
+        }
+      }
+
+      slider.addEventListener('change', applyMagneticSnap);
+      slider.addEventListener('mouseup', applyMagneticSnap);
+      slider.addEventListener('touchend', applyMagneticSnap);
+
+      updateSim2UI();
+    }
+
+    function setSlope2(val) {
+      simA = val;
+      const slider = document.getElementById('slope-slider-2');
+      if (slider) slider.value = val;
+      updateSim2UI();
+    }
+
+    function updateSim2UI() {
+      const label = document.getElementById('label-slider-2');
+      if (label) label.innerHTML = `매개변수 $a = ${simA.toFixed(2)}$ `;
+
+      const slope = 4.8 * (simA - 0.45);
+      const indicator = document.getElementById('derivative-indicator');
+      if (indicator) indicator.innerHTML = `미분계수 $L'(a) = ${slope.toFixed(2)}$ `;
+
+      const badge = document.getElementById('sim-direction-badge');
+      if (badge) {
+        if (Math.abs(simA - 0.45) < 0.01) {
+          badge.innerHTML = "🧲 자석 스냅 완착! 최적점 a = 0.45 (L'(a) = 0.00, 갱신 완료)";
+          badge.style.color = "var(--emerald)";
+        } else if (slope > 0) {
+          badge.innerHTML = `➔ 기울기 양수: a를 감소(← 왼쪽)시켜야 함 (-L'(a) = ${(-slope).toFixed(2)})`;
+          badge.style.color = "var(--rose)";
+        } else {
+          badge.innerHTML = `➔ 기울기 음수: a를 증가(오른쪽 →)시켜야 함 (-L'(a) = ${(-slope).toFixed(2)})`;
+          badge.style.color = "var(--primary)";
+        }
+      }
+
+      if (typeof renderMathInElement === 'function') {
+        if (label) renderMathInElement(label, { delimiters: [{ left: '$', right: '$', display: false }] });
+        if (indicator) renderMathInElement(indicator, { delimiters: [{ left: '$', right: '$', display: false }] });
+      }
+
+      renderSim2();
+    }
+
+    function renderSim2() {
+      const canvas = document.getElementById('canvas-sim-2');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const gridColor = style.getPropertyValue('--grid-color').trim() || 'rgba(148, 163, 184, 0.16)';
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const primary = style.getPropertyValue('--primary').trim() || '#38bdf8';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+
+      function L(a) { return 2.4 * Math.pow(a - 0.45, 2) + 0.4; }
+      function dL(a) { return 4.8 * (a - 0.45); }
+
+      function toX(a) { return 80 + ((a + 0.3) / 1.5) * (width - 160); }
+      function toY(l) { return height - 60 - ((l - 0.2) / 2.0) * (height - 100); }
+
+      ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
+      for (let a = -0.2; a <= 1.1; a += 0.2) {
+        ctx.beginPath(); ctx.moveTo(toX(a), 30); ctx.lineTo(toX(a), height - 40); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      let first = true;
+      for (let a = -0.2; a <= 1.1; a += 0.02) {
+        const px = toX(a); const py = toY(L(a));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      const curA = simA; const curL = L(curA); const slope = dL(curA);
+      const cx = toX(curA); const cy = toY(curL);
+
+      const len = 0.28;
+      ctx.strokeStyle = Math.abs(curA - 0.45) < 0.01 ? emerald : slope > 0 ? rose : primary;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(toX(curA - len), toY(curL - slope * len));
+      ctx.lineTo(toX(curA + len), toY(curL + slope * len));
+      ctx.stroke();
+
+      ctx.fillStyle = textMain;
+      ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = primary; ctx.lineWidth = 3; ctx.stroke();
+
+      ctx.fillStyle = textMain; ctx.font = 'bold 22px Pretendard';
+      ctx.fillText(`a = ${curA.toFixed(2)}, L(a) = ${curL.toFixed(3)}`, cx + 16, cy - 14);
+      ctx.fillText(`접선 기울기 L'(a) = ${slope.toFixed(2)}`, cx + 16, cy + 18);
+    }
+
+    /* ========================================================
+       7. Slide 5: Direction Diagram (Clean Non-overlapping Layout)
+       ======================================================== */
+    function initDirectionDiagram() {
+      renderDirectionDiagram();
+    }
+
+    function renderDirectionDiagram() {
+      const canvas = document.getElementById('canvas-direction-diagram');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const textMain = style.getPropertyValue('--text-main').trim() || '#ffffff';
+      const textSub = style.getPropertyValue('--text-sub').trim() || '#cbd5e1';
+      const primary = style.getPropertyValue('--primary').trim() || '#38bdf8';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+
+      // 1. Dynamic Non-overlapping Top Explanation Boxes
+      const margin = 20;
+      const gap = 20;
+      const boxW = Math.max(220, (width - margin * 2 - gap) / 2);
+      const boxH = 68;
+      const boxY = 18;
+
+      // Left Box (Negative slope)
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+      ctx.strokeStyle = primary;
+      ctx.lineWidth = 2;
+      ctx.roundRect(margin, boxY, boxW, boxH, 12);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard';
+      ctx.textAlign = 'left';
+      ctx.fillText("① L'(a) < 0 (기울기 음수)", margin + 18, boxY + 28);
+      ctx.fillStyle = textSub; ctx.font = '18px Pretendard';
+      ctx.fillText("➔ a 증가 (+ 오른쪽 이동)", margin + 18, boxY + 54);
+
+      // Right Box (Positive slope)
+      const rightBoxX = margin + boxW + gap;
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.15)';
+      ctx.strokeStyle = rose;
+      ctx.lineWidth = 2;
+      ctx.roundRect(rightBoxX, boxY, boxW, boxH, 12);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = rose; ctx.font = 'bold 20px Pretendard';
+      ctx.fillText("② L'(a) > 0 (기울기 양수)", rightBoxX + 18, boxY + 28);
+      ctx.fillStyle = textSub; ctx.font = '18px Pretendard';
+      ctx.fillText("➔ a 감소 (- 왼쪽 이동)", rightBoxX + 18, boxY + 54);
+
+      // 2. Parabola Curve
+      function f(x) { return 0.72 * Math.pow(x, 2) + 0.35; }
+      function df(x) { return 1.44 * x; }
+
+      function toX(x) { return 80 + ((x + 1.8) / 3.6) * (width - 160); }
+      function toY(y) { return height - 90 - ((y - 0.2) / 2.5) * (height - 180); }
+
+      ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      let first = true;
+      for (let x = -1.6; x <= 1.6; x += 0.04) {
+        const px = toX(x); const py = toY(f(x));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      // 3. Left Point & Tangent Line & Simple Downhill Arrow
+      const xL = -1.0; const yL = f(xL); const mL = df(xL);
+      const sxL = toX(xL); const syL = toY(yL);
+      ctx.strokeStyle = primary; ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(xL - 0.35), toY(yL - mL * 0.35));
+      ctx.lineTo(toX(xL + 0.35), toY(yL + mL * 0.35));
+      ctx.stroke();
+
+      ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxL, syL, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = textMain; ctx.lineWidth = 2; ctx.stroke();
+      drawArrow(ctx, sxL + 6, syL + 8, sxL + 45, syL + 35, primary);
+
+      // 4. Right Point & Tangent Line & Simple Downhill Arrow
+      const xR = 1.0; const yR = f(xR); const mR = df(xR);
+      const sxR = toX(xR); const syR = toY(yR);
+      ctx.strokeStyle = rose; ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(xR - 0.35), toY(yR - mR * 0.35));
+      ctx.lineTo(toX(xR + 0.35), toY(yR + mR * 0.35));
+      ctx.stroke();
+
+      ctx.fillStyle = rose; ctx.beginPath(); ctx.arc(sxR, syR, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = textMain; ctx.lineWidth = 2; ctx.stroke();
+      drawArrow(ctx, sxR - 6, syR + 8, sxR - 45, syR + 35, rose);
+
+      // 5. Center-Bottom Optimal Point (L'=0)
+      const vx = toX(0); const vy = toY(f(0));
+      ctx.fillStyle = emerald; ctx.beginPath(); ctx.arc(vx, vy, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = emerald; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.moveTo(toX(-0.4), vy); ctx.lineTo(toX(0.4), vy); ctx.stroke();
+      ctx.font = 'bold 20px Pretendard';
+      ctx.textAlign = 'center';
+      ctx.fillText("최적점: L'(a) = 0 (수평 접선)", vx, vy + 32);
+
+      // 6. Clean Bottom Conclusion Banner
+      const bannerW = width - 48;
+      const bannerH = 50;
+      const bannerX = 24;
+      const bannerY = height - bannerH - 14;
+
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.16)';
+      ctx.strokeStyle = emerald; ctx.lineWidth = 2;
+      ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 12);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = emerald; ctx.font = 'bold 21px Pretendard';
+      ctx.textAlign = 'center';
+      ctx.fillText("💡 결론: 매개변수 a는 항상 기울기의 반대 부호 ( -L'(a) ) 로 갱신!", width / 2, bannerY + 32);
+      ctx.textAlign = 'left';
+    }
+
+    /* ========================================================
+       8. Slide 7: Step-size Dilemma Canvas
+       ======================================================== */
+    function initStepDilemmaCanvas() {
+      renderStepDilemmaCanvas();
+    }
+
+    function renderStepDilemmaCanvas() {
+      const canvas = document.getElementById('canvas-step-dilemma');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+
+      function f(x) { return 0.7 * x * x + 0.3; }
+      function toX(x) { return 60 + ((x + 2.0) / 4.0) * (width - 120); }
+      function toY(y) { return height - 50 - ((y - 0.2) / 2.8) * (height - 90); }
+
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)'; ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      let first = true;
+      for (let x = -1.8; x <= 1.8; x += 0.05) {
+        const px = toX(x); const py = toY(f(x));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      const overPoints = [-1.5, 1.4, -1.2, 0.9];
+      ctx.setLineDash([6, 6]); ctx.strokeStyle = rose; ctx.lineWidth = 3;
+      ctx.beginPath();
+      overPoints.forEach((pt, i) => {
+        const sx = toX(pt); const sy = toY(f(pt));
+        if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      overPoints.forEach((pt) => {
+        ctx.fillStyle = rose;
+        ctx.beginPath(); ctx.arc(toX(pt), toY(f(pt)), 6, 0, Math.PI * 2); ctx.fill();
+      });
+
+      ctx.fillStyle = rose; ctx.font = 'bold 20px Pretendard';
+      ctx.fillText("과대 보폭: 튕겨나감(진동·발산)", toX(0.2), toY(2.2));
+
+      const optPoints = [-1.5, -0.9, -0.45, -0.15, 0.0];
+      ctx.strokeStyle = emerald; ctx.lineWidth = 3;
+      ctx.beginPath();
+      optPoints.forEach((pt, i) => {
+        const sx = toX(pt); const sy = toY(f(pt));
+        if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+      });
+      ctx.stroke();
+
+      optPoints.forEach((pt) => {
+        ctx.fillStyle = emerald;
+        ctx.beginPath(); ctx.arc(toX(pt), toY(f(pt)), 6, 0, Math.PI * 2); ctx.fill();
+      });
+
+      ctx.fillStyle = emerald;
+      ctx.fillText("적정 보폭: 안정적으로 골짜기 바닥 수렴", toX(-1.8), toY(0.7));
+    }
+
+    /* ========================================================
+       9. Slide 8: Stepped Derivation with X-axis Projection
+       ======================================================== */
+    let currentDerivationStep = 0;
+
+    function initStepDerivationCanvas() {
+      renderStepDerivation();
+    }
+
+    function switchStep(index) {
+      currentDerivationStep = index;
+      const btns = document.querySelectorAll('.step-tab-btn');
+      const panes = document.querySelectorAll('.step-content-pane');
+      btns.forEach((b, i) => b.classList.toggle('active', i === index));
+      panes.forEach((p, i) => p.classList.toggle('active', i === index));
+
+      const titleEl = document.getElementById('step-canvas-title');
+      const badgeEl = document.getElementById('step-canvas-badge');
+      if (index === 0) {
+        titleEl.innerHTML = "Step 1: 현재 위치 $a_n$ 과 접선 기울기 측정";
+        badgeEl.innerHTML = "Step 1: $L'(a_n)$ 측정";
+      } else if (index === 1) {
+        titleEl.innerHTML = "Step 2: 반대 방향 ($-L'(a_n)$) 벡터 결정";
+        badgeEl.innerHTML = "Step 2: $-L'(a_n)$ 방향";
+      } else if (index === 2) {
+        titleEl.innerHTML = "Step 3: 학습률 $\\eta$ 를 곱해 안전한 보폭 $\\Delta a$ 조정";
+        badgeEl.innerHTML = "Step 3: $\\Delta a = -\\eta L'(a_n)$";
+      } else {
+        titleEl.innerHTML = "Step 4: 새로운 위치 $a_{n+1}$ 로 갱신 완료";
+        badgeEl.innerHTML = "Step 4: $a_{n+1}$ 갱신 완료";
+      }
+
+      renderAllKaTeX();
+      renderStepDerivation();
+    }
+
+    function renderStepDerivation() {
+      const canvas = document.getElementById('canvas-step-derivation');
+      if (!canvas) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      ctx.clearRect(0, 0, width, height);
+
+      const style = getComputedStyle(document.documentElement);
+      const textMuted = style.getPropertyValue('--text-muted').trim() || '#94a3b8';
+      const primary = style.getPropertyValue('--primary').trim() || '#38bdf8';
+      const emerald = style.getPropertyValue('--emerald').trim() || '#34d399';
+      const rose = style.getPropertyValue('--rose').trim() || '#fb7185';
+      const amber = style.getPropertyValue('--amber').trim() || '#fbbf24';
+
+      function L(x) { return 0.8 * Math.pow(x - 0.4, 2) + 0.35; }
+      function dL(x) { return 1.6 * (x - 0.4); }
+
+      function toX(x) { return 70 + ((x + 1.2) / 3.0) * (width - 140); }
+      function toY(y) { return height - 90 - (y / 2.3) * (height - 140); }
+
+      const xAxisY = height - 45;
+
+      ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      let first = true;
+      for (let x = -1.1; x <= 1.7; x += 0.04) {
+        const px = toX(x); const py = toY(L(x));
+        if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(-1.1), xAxisY); ctx.lineTo(toX(1.7), xAxisY);
+      ctx.stroke();
+      ctx.fillStyle = textMuted; ctx.font = 'bold 18px Pretendard';
+      ctx.textAlign = 'left';
+      ctx.fillText("매개변수 축 (x축)", toX(1.18), xAxisY + 30);
+
+      const an = -0.25;
+      const nextA = 0.12;
+      const anY = L(an);
+      const nextAY = L(nextA);
+
+      const sxAn = toX(an);
+      const syAn = toY(anY);
+      const sxNext = toX(nextA);
+      const syNext = toY(nextAY);
+
+      if (currentDerivationStep === 0) {
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sxAn, syAn); ctx.lineTo(sxAn, xAxisY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxAn, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 22px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("aₙ", sxAn, xAxisY + 30);
+
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(sxAn, syAn, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = primary; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard'; ctx.textAlign = 'right';
+        ctx.fillText("Pₙ (aₙ, L(aₙ))", sxAn - 15, syAn - 12);
+
+        const slope = dL(an);
+        ctx.strokeStyle = rose; ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(toX(an - 0.35), toY(anY - slope * 0.35));
+        ctx.lineTo(toX(an + 0.35), toY(anY + slope * 0.35));
+        ctx.stroke();
+
+        ctx.fillStyle = rose; ctx.font = 'bold 22px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText(`접선의 기울기: L'(aₙ) = ${slope.toFixed(2)} < 0`, sxAn + 30, syAn - 48);
+      }
+      else if (currentDerivationStep === 1) {
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sxAn, syAn); ctx.lineTo(sxAn, xAxisY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxAn, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 22px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("aₙ", sxAn, xAxisY + 30);
+
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(sxAn, syAn, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = primary; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard'; ctx.textAlign = 'right';
+        ctx.fillText("Pₙ", sxAn - 15, syAn - 10);
+
+        // End x-coordinates of both arrows strictly aligned to sxNext
+        drawArrow(ctx, sxAn, syAn, sxNext, syNext, amber);
+        ctx.fillStyle = amber; ctx.font = 'bold 18px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("곡면 하강 방향", (sxAn + sxNext) / 2, (syAn + syNext) / 2 - 16);
+
+        drawArrow(ctx, sxAn + 6, xAxisY, sxNext, xAxisY, primary);
+        ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard';
+        ctx.fillText("이동 방향: -L'(aₙ) (양의 방향 ➔ 오른쪽)", (sxAn + sxNext) / 2, xAxisY - 14);
+
+        ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sxNext, syNext); ctx.lineTo(sxNext, xAxisY); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      else if (currentDerivationStep === 2) {
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sxAn, syAn); ctx.lineTo(sxAn, xAxisY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sxNext, syNext); ctx.lineTo(sxNext, xAxisY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxAn, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 22px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("aₙ", sxAn, xAxisY + 30);
+
+        ctx.fillStyle = emerald; ctx.beginPath(); ctx.arc(sxNext, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillText("aₙ₊₁", sxNext, xAxisY + 30);
+
+        ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxAn, syAn, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = emerald; ctx.beginPath(); ctx.arc(sxNext, syNext, 7, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard'; ctx.textAlign = 'right';
+        ctx.fillText("Pₙ", sxAn - 15, syAn - 8);
+        ctx.fillStyle = emerald; ctx.textAlign = 'left';
+        ctx.fillText("Pₙ₊₁", sxNext + 15, syNext - 8);
+
+        drawArrow(ctx, sxAn + 6, xAxisY, sxNext - 6, xAxisY, amber);
+        ctx.fillStyle = amber; ctx.font = 'bold 19px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("조절된 보폭: Δa = -η L'(aₙ)", (sxAn + sxNext) / 2, xAxisY - 14);
+      }
+      else if (currentDerivationStep === 3) {
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(sxAn, syAn); ctx.lineTo(sxAn, xAxisY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sxNext, syNext); ctx.lineTo(sxNext, xAxisY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(sxAn, syAn, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = primary; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = primary; ctx.font = 'bold 20px Pretendard'; ctx.textAlign = 'right';
+        ctx.fillText("Pₙ", sxAn - 15, syAn - 8);
+
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(sxNext, syNext, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = emerald; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = emerald; ctx.textAlign = 'left';
+        ctx.fillText("Pₙ₊₁", sxNext + 15, syNext - 8);
+
+        drawArrow(ctx, sxAn + 8, syAn + 3, sxNext - 8, syNext - 3, amber);
+        ctx.fillStyle = amber; ctx.font = 'bold 18px Pretendard'; ctx.textAlign = 'center';
+        ctx.fillText("곡면 하강 궤적", (sxAn + sxNext) / 2, (syAn + syNext) / 2 - 16);
+
+        ctx.fillStyle = primary; ctx.beginPath(); ctx.arc(sxAn, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 22px Pretendard'; ctx.fillText("aₙ", sxAn, xAxisY + 30);
+
+        ctx.fillStyle = emerald; ctx.beginPath(); ctx.arc(sxNext, xAxisY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillText("aₙ₊₁", sxNext, xAxisY + 30);
+
+        drawArrow(ctx, sxAn + 6, xAxisY, sxNext - 6, xAxisY, emerald);
+        ctx.fillStyle = emerald; ctx.font = 'bold 19px Pretendard';
+        ctx.fillText("가로 보폭: -η L'(aₙ)", (sxAn + sxNext) / 2, xAxisY - 14);
+
+        // Top-left formula banner (isolated from top-right badge)
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.2)'; ctx.strokeStyle = emerald; ctx.lineWidth = 2;
+        ctx.roundRect(24, 16, 360, 52, 12); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = emerald; ctx.font = 'bold 21px Pretendard'; ctx.textAlign = 'left';
+        ctx.fillText("aₙ₊₁ = aₙ - η L'(aₙ) 점화식 완성!", 40, 48);
+      }
+    }
+
+    /* ========================================================
+       10. Whiteboard Engine (Bézier Curve Smoothing)
+       ======================================================== */
+    let wbCanvas, wbCtx;
+    let isDrawing = false;
+    let points = [];
+    let currentWbOpacity = 1;
+
+    function initWhiteboard() {
+      wbCanvas = document.getElementById('whiteboard-canvas');
+      if (!wbCanvas) return;
+      wbCtx = wbCanvas.getContext('2d');
+
+      function getPos(e) {
+        const rect = wbCanvas.getBoundingClientRect();
+        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        return { x: clientX - rect.left, y: clientY - rect.top, time: Date.now() };
+      }
+
+      function startDraw(e) {
+        if (e.cancelable) e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        points = [pos, pos];
+        const penColor = getComputedStyle(document.documentElement).getPropertyValue('--pen-color').trim() || '#ffffff';
+        wbCtx.strokeStyle = penColor; wbCtx.fillStyle = penColor; wbCtx.lineWidth = 4; wbCtx.lineCap = 'round'; wbCtx.lineJoin = 'round';
+        wbCtx.beginPath(); wbCtx.arc(pos.x, pos.y, 2, 0, Math.PI * 2); wbCtx.fill();
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        if (e.cancelable) e.preventDefault();
+        const penColor = getComputedStyle(document.documentElement).getPropertyValue('--pen-color').trim() || '#ffffff';
+        wbCtx.strokeStyle = penColor; wbCtx.lineCap = 'round'; wbCtx.lineJoin = 'round';
+        const rawEvents = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+        for (let ev of rawEvents) {
+          const pos = getPos(ev);
+          points.push(pos);
+          if (points.length >= 3) {
+            const p0 = points[points.length - 3];
+            const p1 = points[points.length - 2];
+            const p2 = points[points.length - 1];
+            const midX = (p1.x + p2.x) / 2; const midY = (p1.y + p2.y) / 2;
+            const startMidX = (p0.x + p1.x) / 2; const startMidY = (p0.y + p1.y) / 2;
+            const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const dt = Math.max(1, p2.time - p1.time);
+            const speed = dist / dt;
+            const targetWidth = Math.max(2.5, Math.min(5.5, 6.0 - speed * 1.5));
+            wbCtx.lineWidth = wbCtx.lineWidth * 0.7 + targetWidth * 0.3;
+
+            wbCtx.beginPath(); wbCtx.moveTo(startMidX, startMidY); wbCtx.quadraticCurveTo(p1.x, p1.y, midX, midY); wbCtx.stroke();
+          }
+        }
+      }
+
+      function stopDraw() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        if (points.length >= 2) {
+          const p1 = points[points.length - 2]; const p2 = points[points.length - 1];
+          wbCtx.beginPath(); wbCtx.moveTo(p1.x, p1.y); wbCtx.lineTo(p2.x, p2.y); wbCtx.stroke();
+        }
+        points = [];
+      }
+
+      if (window.PointerEvent) {
+        wbCanvas.addEventListener('pointerdown', startDraw);
+        wbCanvas.addEventListener('pointermove', draw);
+        window.addEventListener('pointerup', stopDraw);
+        window.addEventListener('pointercancel', stopDraw);
+      } else {
+        wbCanvas.addEventListener('mousedown', startDraw);
+        wbCanvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDraw);
+        wbCanvas.addEventListener('touchstart', startDraw, { passive: false });
+        wbCanvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDraw);
+      }
+    }
+
+    function setWhiteboardOpacity(level) {
+      currentWbOpacity = level;
+      const modal = document.getElementById('modal-whiteboard');
+      if (!modal) return;
+      modal.classList.remove('wb-level-1', 'wb-level-2', 'wb-level-3');
+      modal.classList.add(`wb-level-${level}`);
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`btn-op-${i}`);
+        if (btn) btn.classList.toggle('active', i === level);
+      }
+    }
+
+    function openWhiteboard() {
+      openModal('modal-whiteboard');
+      setWhiteboardOpacity(currentWbOpacity);
+      setTimeout(resizeWhiteboardCanvas, 50);
+    }
+
+    function resizeWhiteboardCanvas() {
+      if (!wbCanvas) return;
+      const wrap = document.getElementById('whiteboard-wrap');
+      if (!wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = wbCanvas.width; tempCanvas.height = wbCanvas.height;
+      tempCanvas.getContext('2d').drawImage(wbCanvas, 0, 0);
+
+      wbCanvas.width = rect.width * dpr; wbCanvas.height = rect.height * dpr;
+      wbCtx = wbCanvas.getContext('2d'); wbCtx.scale(dpr, dpr);
+      wbCtx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+    }
+
+    function clearWhiteboard() {
+      if (!wbCanvas || !wbCtx) return;
+      const wrap = document.getElementById('whiteboard-wrap');
+      if (!wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      wbCtx.clearRect(0, 0, rect.width, rect.height);
+      points = [];
+    }
+
+    /* ========================================================
+       11. Utility & KaTeX
+       ======================================================== */
+    function tryRenderKaTeX() {
+      if (typeof renderMathInElement === 'function') {
+        renderAllKaTeX();
+      } else {
+        setTimeout(tryRenderKaTeX, 200);
+      }
+    }
+
+    function renderAllKaTeX() {
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('KaTeX render error:', e);
+        }
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>
