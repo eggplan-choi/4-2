@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[3차시] 경사하강법 점화식과 갱신 손계산 집중 훈련</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* CSS Variables for 4 Theme Presets */
+    :root, [data-theme="dark"] {
+      --bg-rgb: 15, 23, 42;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --math-box-bg: #0b132b;
+      --accent: #38bdf8;
+      --accent-sub: #818cf8;
+      --accent-warn: #fbbf24;
+      --accent-danger: #f87171;
+      --accent-success: #4ade80;
+      --nav-bg: rgba(15, 23, 42, 0.95);
+      --nav-border: #334155;
+      --modal-bg: #1e293b;
+      --table-row-even: #1e293b;
+      --table-row-odd: #182234;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-rgb: 248, 250, 252;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --text-main: #0f172a;
+      --text-sub: #475569;
+      --math-box-bg: #f1f5f9;
+      --accent: #0284c7;
+      --accent-sub: #6366f1;
+      --accent-warn: #d97706;
+      --accent-danger: #dc2626;
+      --accent-success: #16a34a;
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --nav-border: #cbd5e1;
+      --modal-bg: #ffffff;
+      --table-row-even: #ffffff;
+      --table-row-odd: #f8fafc;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="green"] {
+      --bg-rgb: 19, 42, 30;
+      --bg-color: #132a1e;
+      --card-bg: #1a3828;
+      --card-border: #2d5a42;
+      --text-main: #f0fdf4;
+      --text-sub: #86efac;
+      --math-box-bg: #0d1f16;
+      --accent: #4ade80;
+      --accent-sub: #2dd4bf;
+      --accent-warn: #fde047;
+      --accent-danger: #f87171;
+      --accent-success: #86efac;
+      --nav-bg: rgba(19, 42, 30, 0.95);
+      --nav-border: #2d5a42;
+      --modal-bg: #1a3828;
+      --table-row-even: #1a3828;
+      --table-row-odd: #152e21;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+    }
+
+    [data-theme="sepia"] {
+      --bg-rgb: 251, 240, 217;
+      --bg-color: #fbf0d9;
+      --card-bg: #f4e4c1;
+      --card-border: #dec79b;
+      --text-main: #2c2214;
+      --text-sub: #6e583b;
+      --math-box-bg: #ebd4a7;
+      --accent: #b45309;
+      --accent-sub: #92400e;
+      --accent-warn: #d97706;
+      --accent-danger: #b91c1c;
+      --accent-success: #15803d;
+      --nav-bg: rgba(251, 240, 217, 0.95);
+      --nav-border: #dec79b;
+      --modal-bg: #f4e4c1;
+      --table-row-even: #f4e4c1;
+      --table-row-odd: #ede0c2;
+      --shadow: 0 10px 25px -5px rgba(44, 34, 20, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 16:9 Presentation Scaler */
+    #viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #presentation-container {
+      width: 1920px;
+      height: 1080px;
+      position: absolute;
+      transform-origin: center center;
+      background-color: var(--bg-color);
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Slides Common Layout - Top Aligned */
+    .slide {
+      width: 100%;
+      height: 100%;
+      padding: 56px 80px 110px 80px;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Header Section */
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .slide-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background-color: var(--card-border);
+      color: var(--accent);
+    }
+
+    .page-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 600;
+      background-color: var(--math-box-bg);
+      color: var(--text-sub);
+    }
+
+    .slide-title {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      color: var(--text-main);
+    }
+
+    .slide-desc {
+      font-size: 26px;
+      color: var(--text-sub);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* Main Content Grids */
+    .content-grid {
+      display: grid;
+      gap: 32px;
+      flex: 1;
+      height: calc(100% - 150px);
+      align-items: stretch;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-custom-lab {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .card.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card.clickable:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .card.clickable::after {
+      content: '🔍 상세 탐구 모달 열기';
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      background-color: var(--math-box-bg);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    .card-title {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-title .icon {
+      font-size: 34px;
+    }
+
+    .card-body {
+      font-size: 28px;
+      line-height: 1.5;
+      color: var(--text-main);
+      flex: 1;
+    }
+
+    /* Math Formula Highlight Box */
+    .math-callout {
+      background-color: var(--math-box-bg);
+      border-left: 6px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 16px 0;
+      font-size: 32px;
+      text-align: center;
+    }
+
+    .math-callout.danger {
+      border-left-color: var(--accent-danger);
+    }
+
+    .math-callout.success {
+      border-left-color: var(--accent-success);
+    }
+
+    /* Bullet items */
+    .step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .step-list li {
+      position: relative;
+      padding-left: 42px;
+      font-size: 28px;
+    }
+
+    .step-list li::before {
+      content: '•';
+      position: absolute;
+      left: 12px;
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 32px;
+    }
+
+    /* Bottom Navigation Bar (Permanent, z-index: 4000) */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 76px;
+      background-color: var(--nav-bg);
+      border-top: 2px solid var(--nav-border);
+      backdrop-filter: blur(16px);
+      z-index: 4000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      background-color: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 20px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .nav-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
+    .nav-btn.primary {
+      background-color: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    #slide-indicator {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'Fira Code', monospace;
+      color: var(--accent);
+      padding: 4px 16px;
+      border-radius: 8px;
+      background-color: var(--math-box-bg);
+      border: 1px solid var(--card-border);
+    }
+
+    /* Popup Modal (z-index: 2000, bottom: 76px to not cover bottom-nav) */
+    #modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      bottom: 76px;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    #modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background-color: var(--modal-bg);
+      border: 2px solid var(--accent);
+      border-radius: 24px;
+      width: 1100px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 48px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      background-color: var(--math-box-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 24px;
+      font-weight: bold;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .modal-body {
+      font-size: 26px;
+      line-height: 1.7;
+      color: var(--text-main);
+    }
+
+    /* ========================================================
+       Whiteboard Overlay: Background Opacity Controlled!
+       Container changes background-color alpha.
+       Canvas itself stays 100% opaque to keep ink strokes vivid.
+       ======================================================== */
+    #whiteboard-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      bottom: 76px;
+      z-index: 3000;
+      display: none;
+      pointer-events: none;
+      transition: background-color 0.2s ease;
+    }
+
+    #whiteboard-container.active {
+      display: block;
+      pointer-events: auto;
+    }
+
+    #whiteboard-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      background: transparent;
+      opacity: 1 !important;
+    }
+
+    #whiteboard-toolbar {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      background-color: var(--nav-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .wb-btn {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .wb-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .wb-color-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    /* Interactive Lab Styling */
+    .lab-controls-bar {
+      display: flex;
+      gap: 24px;
+      background-color: var(--math-box-bg);
+      padding: 18px 28px;
+      border-radius: 16px;
+      border: 1.5px solid var(--card-border);
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .slider-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .slider-item input[type="range"] {
+      width: 160px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .slider-val {
+      font-family: 'Fira Code', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 55px;
+    }
+
+    .lab-canvas-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 520px;
+      background-color: var(--math-box-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    #labCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .data-table-wrap {
+      flex: 1;
+      height: 520px;
+      overflow-y: auto;
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      background-color: var(--card-bg);
+    }
+
+    .step-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .step-table th {
+      background-color: var(--math-box-bg);
+      color: var(--accent);
+      padding: 14px 10px;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .step-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--card-border);
+      font-family: 'Fira Code', monospace;
+    }
+
+    .step-table tr:nth-child(even) {
+      background-color: var(--table-row-even);
+    }
+    .step-table tr:nth-child(odd) {
+      background-color: var(--table-row-odd);
+    }
+    .step-table tr.highlight {
+      background-color: rgba(56, 189, 248, 0.2);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="presentation-container">
+
+    <!-- ==================== SLIDE 01: 표지 및 학습 목표 ==================== -->
+    <section class="slide active" id="slide-1">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">Ⅳ. 최적화</span>
+          <span class="page-badge">교과서 p.167~171</span>
+        </div>
+        <h1 class="slide-title">경사하강법 점화식과 갱신 손계산 집중 훈련</h1>
+        <p class="slide-desc">접선의 기울기와 보폭을 결합하여 최솟값을 귀납적으로 찾아가는 수치 연산 과정을 체계화합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card" style="justify-content: center;">
+          <h2 class="card-title"><span class="icon">🤔</span> 3차시를 여는 질문</h2>
+          <div class="card-body" style="font-size: 32px; display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+            <p><strong>"곡선의 경사에 보폭을 곱해 빼주기만 하면, 손실함수의 최솟값을 갖는 지점에 도달할 수 있을까?"</strong> </p>
+            <div class="math-callout">
+              $a_{n+1} = a_n - \eta L'(a_n)$ 
+            </div>
+            <p style="font-size: 26px; color: var(--text-sub);">
+              알고리즘의 점화식을 바탕으로, <strong>직접 수치를 계산하며 수열이 최적값으로 수렴해 가는 원리</strong> 를 검증합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="justify-content: center;">
+          <h2 class="card-title"><span class="icon">🎯</span> 오늘의 학습 목표</h2>
+          <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; gap: 32px;">
+            <div style="background-color: var(--math-box-bg); padding: 24px; border-radius: 16px; border-left: 6px solid var(--accent);">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 8px;">목표 1 · 점화식의 구조적 해석</div>
+              <p style="font-size: 28px;">경사하강법 점화식 $a_{n+1} = a_n - \eta L'(a_n)$ 의 각 항의 수학적 의미를 해석하고, <strong>부호 결정 원리</strong> 를 설명할 수 있다.</p>
+            </div>
+            <div style="background-color: var(--math-box-bg); padding: 24px; border-radius: 16px; border-left: 6px solid var(--accent-sub);">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent-sub); margin-bottom: 8px;">목표 2 · 2회 반복 손계산 및 감속 원리 도출</div>
+              <p style="font-size: 28px;">주어진 이차 손실함수 모델에서 <strong>1~2회 반복 갱신 수치를 정확히 손계산</strong> 하고, 보폭이 저절로 줄어드는 <strong>자동 감속 메커니즘</strong> 을 도출할 수 있다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 02: [구조 분석] 점화식 분해 (순서 재구성) ==================== -->
+    <section class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">공식 분석</span>
+          <span class="page-badge">교과서 p.167~168</span>
+        </div>
+        <h1 class="slide-title">경사하강법 점화식: 한 걸음의 이동을 결정하는 수식</h1>
+        <p class="slide-desc">현재 위치 $a_n$ 에서 접선의 기울기와 학습률의 곱을 빼서 다음 위치 $a_{n+1}$ 을 귀납적으로 결정합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="icon">📐</span> 공식 구조 요소 분석</h2>
+          <div class="card-body">
+            <div class="math-callout" style="font-size: 38px; padding: 24px 0;">
+              $\mathbf{\color{#38bdf8}{a_{n+1}}} = \mathbf{a_n} \mathbf{\color{#f87171}{-}} \mathbf{\color{#fbbf24}{\eta}} \cdot \mathbf{\color{#4ade80}{L'(a_n)}}$ 
+            </div>
+            <!-- 요청 순서: a_n -> L'(a_n) -> - -> eta -> a_{n+1} -->
+            <ul class="step-list" style="margin-top: 18px; font-size: 26px; gap: 14px;">
+              <li><strong>$a_n$ :</strong> 현재 단계의 매개변수 값 (출발 지점)</li>
+              <li><strong style="color: var(--accent-success);">$L'(a_n)$ :</strong> 현재 점에서의 <strong>미분계수(접선의 기울기)</strong></li>
+              <li><strong style="color: var(--accent-danger);">$-$ (마이너스):</strong> 접선의 기울기와 <strong>반대 방향</strong> 으로 이동시키는 부호</li>
+              <li><strong style="color: var(--accent-warn);">$\eta$ (에타, 또는 $k$ ):</strong> 한 번에 이동할 보폭을 결정하는 양의 상수 (<strong>학습률</strong>)</li>
+              <li><strong style="color: var(--accent);">$a_{n+1}$ :</strong> 갱신된 다음 단계의 매개변수 값 (도착 지점)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-recurrence')">
+          <h2 class="card-title"><span class="icon">🔄</span> 알고리즘과 수학의 연결</h2>
+          <div class="card-body">
+            <p style="margin-bottom: 20px;">
+              인공지능의 매개변수 갱신 과정은 고등학교 『대수』의 <strong>수열의 귀납적 정의(점화식)</strong> 와 대응됩니다.
+            </p>
+            <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="font-size: 22px; color: var(--accent); font-weight: bold; margin-bottom: 8px;">알고리즘 순서도와의 대응</div>
+              <p style="font-size: 24px; line-height: 1.7;">
+                ① 초깃값 $a_0$ 설정 $\rightarrow$ <strong>수열의 첫째항</strong><br>
+                ② $a_{n+1} = a_n - \eta L'(a_n)$ 반복 $\rightarrow$ <strong>이웃하는 두 항 사이의 관계식(점화식)</strong><br>
+                ③ $|L'(a_n)| < \epsilon$ 종료 판단 $\rightarrow$ <strong>수열의 수렴 판정</strong> 
+              </p>
+            </div>
+            <p style="color: var(--text-sub); font-size: 24px;">
+              ※ 카드를 터치하면 교과서 p.168 순서도와 점화식의 구조적 일치 과정을 상세히 확인할 수 있습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 03: [클리닉] 부호 충돌 방지 ==================== -->
+    <section class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">계산 클리닉</span>
+          <span class="page-badge">교과서 p.168~169</span>
+        </div>
+        <h1 class="slide-title">부호 충돌 클리닉: 마이너스와 음수 기울기가 만날 때</h1>
+        <p class="slide-desc">접선의 기울기가 음수일 때 공식의 마이너스 부호와 결합하는 계산 과정을 주의 깊게 점검합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card" style="border-color: var(--accent-danger);">
+          <h2 class="card-title" style="color: var(--accent-danger);"><span class="icon">⚠️</span> 자주 발생하는 부호 계산 오류</h2>
+          <div class="card-body">
+            <p style="margin-bottom: 12px;"><strong>상황:</strong> $a_n = 2$, $\eta = 0.1$, 접선의 기울기 $L'(a_n) = -4$ 일 때</p>
+            <div class="math-callout danger" style="text-align: left; padding: 20px 24px; font-size: 26px;">
+              <strong>[오류 풀이]</strong><br>
+              $a_{n+1} = 2 - 0.1 \times 4 = 1.6 \quad \color{#f87171}{\text{(음수 부호 누락)}}$<br>
+              $\implies$ <strong>반대 방향으로 이동하여 손실함수의 값이 증가함</strong> 
+            </div>
+            <ul class="step-list" style="margin-top: 18px; font-size: 24px;">
+              <li>공식의 뺄셈 기호($-$)와 미분계수 자체의 음의 부호($-$)를 중복으로 고려하지 않아 발생하는 오류입니다.</li>
+              <li>기울기가 음수이면 손실함수가 최소가 되는 지점은 현재 점보다 <strong>오른쪽</strong> 에 있으므로 $a$ 의 값은 증가해야 합니다.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-sign-clinic')" style="border-color: var(--accent-success);">
+          <h2 class="card-title" style="color: var(--accent-success);"><span class="icon">💊</span> 바른 계산 절차: 괄호 표기법</h2>
+          <div class="card-body">
+            <p style="margin-bottom: 12px;">음수 기울기 대입 시 반드시 <strong>괄호 $( )$</strong> 를 사용하는 규칙을 적용합니다.</p>
+            <div class="math-callout success" style="text-align: left; padding: 20px 24px; font-size: 26px;">
+              <strong>[바른 계산 절차]</strong><br>
+              $a_{n+1} = a_n - \eta \cdot \mathbf{\big( L'(a_n) \big)}$<br>
+              $\phantom{a_{n+1}} = 2 - 0.1 \times \mathbf{(-4)} = 2 \mathbf{\color{#4ade80}{+ 0.4}} = \mathbf{2.4}$ 
+            </div>
+            <div style="background-color: var(--math-box-bg); padding: 18px; border-radius: 12px; margin-top: 14px;">
+              <strong style="color: var(--accent-warn);">부호 계산 원칙:</strong><br>
+              $L'(a_n) < 0 \implies - \eta (- \text{기울기}) = \mathbf{+ \eta |\text{기울기}|}$<br>
+              $\implies$ 마이너스와 음수가 곱해져 결과적으로 <strong>우측(+)으로 이동</strong> 합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 04: [집중 훈련 1] 예제 모델 1회 갱신 ==================== -->
+    <section class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">손계산 훈련 1단계</span>
+          <span class="page-badge">교과서 p.169 함께하기 3 연계</span>
+        </div>
+        <h1 class="slide-title">표준 모델 1단계: 초깃값에서 1회 갱신값 산출하기</h1>
+        <p class="slide-desc">손실함수를 미분하여 도함수를 구하고, 초깃값을 대입하여 첫 번째 갱신 좌표 $a_1$ 을 계산합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="icon">📝</span> 문제 조건 및 도함수 산출</h2>
+          <div class="card-body">
+            <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="font-size: 22px; color: var(--accent); font-weight: bold; margin-bottom: 6px;">지필평가 예제 모델</div>
+              <p style="font-size: 30px; font-family: 'Fira Code', monospace; margin: 8px 0;">
+                $L(a) = a^2 - 6a + 10$ 
+              </p>
+              <p style="font-size: 24px; color: var(--text-sub);">
+                초깃값: $\mathbf{a_0 = 7}$ &nbsp;|&nbsp; 학습률: $\mathbf{\eta = 0.1}$ 
+              </p>
+            </div>
+            <ul class="step-list">
+              <li><strong>손실함수의 최솟값 위치(대칭축):</strong> $a = -\frac{-6}{2(1)} = \mathbf{3}$ 에서 최솟값 발생.</li>
+              <li><strong>일차도함수(미분계수 식):</strong>
+                <div class="math-callout" style="padding: 14px; font-size: 28px; margin: 10px 0;">
+                  $L'(a) = 2a - 6$ 
+                </div>
+              </li>
+              <li>현재 위치 $a_0 = 7$ 은 대칭축 $3$ 의 오른쪽에 위치함.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-step1-verify')">
+          <h2 class="card-title"><span class="icon">✏️</span> 1회 갱신 ($a_0 \rightarrow a_1$) 단계별 풀이</h2>
+          <div class="card-body">
+            <ul class="step-list">
+              <li>
+                <strong>Step 1 · 접선의 기울기 계산:</strong><br>
+                $L'(a_0) = L'(7) = 2(7) - 6 = \mathbf{+8}$<br>
+                <span style="font-size: 22px; color: var(--accent);">$\implies$ 기울기가 양수이므로 왼쪽(음의 방향)으로 이동해야 함을 지시</span>
+              </li>
+              <li>
+                <strong>Step 2 · 경사하강법 점화식 대입:</strong><br>
+                $a_1 = a_0 - \eta L'(a_0) = 7 - 0.1 \times (+8)$ 
+              </li>
+              <li>
+                <strong>Step 3 · 첫 번째 갱신값 산출:</strong><br>
+                $a_1 = 7 - 0.8 = \mathbf{6.2}$ 
+              </li>
+            </ul>
+            <div style="background-color: var(--math-box-bg); padding: 16px; border-radius: 12px; margin-top: 16px; font-size: 24px; border-left: 5px solid var(--accent-success);">
+              <strong>검증:</strong> 초깃값 $7.0$ 에서 최적점 $3.0$ 을 향해 <strong>$0.8$ 만큼 거리가 단축</strong> 되었습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 05: [집중 훈련 2] 연속 2회 갱신 ==================== -->
+    <section class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">손계산 훈련 2단계</span>
+          <span class="page-badge">교과서 p.169~170</span>
+        </div>
+        <h1 class="slide-title">표준 모델 2단계: 연속 2회 갱신과 수렴 궤적 관찰</h1>
+        <p class="slide-desc">1회 갱신된 값 $a_1=6.2$ 를 새로운 출발점으로 삼아 2회 갱신값 $a_2$ 를 계산하고 궤적을 확인합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="icon">🔢</span> 2회 갱신 ($a_1 \rightarrow a_2$) 손계산</h2>
+          <div class="card-body">
+            <ul class="step-list">
+              <li>
+                <strong>Step 1 · 새로운 위치에서의 기울기 계산:</strong><br>
+                $L'(a_1) = L'(6.2) = 2(6.2) - 6 = 12.4 - 6 = \mathbf{+6.4}$ 
+              </li>
+              <li>
+                <strong>Step 2 · 점화식 2회차 대입:</strong><br>
+                $a_2 = a_1 - \eta L'(a_1) = 6.2 - 0.1 \times (+6.4)$ 
+              </li>
+              <li>
+                <strong>Step 3 · 두 번째 갱신값 산출:</strong><br>
+                $a_2 = 6.2 - 0.64 = \mathbf{5.56}$ 
+              </li>
+            </ul>
+            <div class="math-callout success" style="margin-top: 24px; font-size: 26px;">
+              최적점 $a=3$ 과의 거리 변화:<br>
+              $a_0(7.0) \rightarrow \mathbf{4.0}$ 차이 &nbsp;|&nbsp;
+              $a_1(6.2) \rightarrow \mathbf{3.2}$ 차이 &nbsp;|&nbsp;
+              $a_2(5.56) \rightarrow \mathbf{2.56}$ 차이
+            </div>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-convergence')">
+          <h2 class="card-title"><span class="icon">📉</span> 매개변수 축($x$ 축) 상의 이동 궤적</h2>
+          <div class="card-body">
+            <p style="margin-bottom: 20px;">
+              갱신이 진행될수록 점들이 최솟값의 위치($a=3$)를 향해 좁혀지는 과정을 수직선 위에서 확인할 수 있습니다.
+            </p>
+            <div style="background-color: var(--math-box-bg); padding: 24px; border-radius: 16px; text-align: center; font-family: 'Fira Code', monospace; font-size: 26px; line-height: 2;">
+              $a_0 = 7.00$ <br>
+              $\downarrow \quad \mathbf{\Delta a_0 = -0.80}$ (1회 이동량)<br>
+              $a_1 = 6.20$ <br>
+              $\downarrow \quad \mathbf{\Delta a_1 = -0.64}$ (2회 이동량)<br>
+              $a_2 = 5.56$ <br>
+              $\dots \rightarrow \mathbf{[ \text{목표 바닥 } a = 3.00 ]}$ 
+            </div>
+            <p style="color: var(--accent); font-size: 24px; margin-top: 20px; font-weight: bold;">
+              💡 이동 거리(보폭)가 $0.80 \rightarrow 0.64$ 로 스스로 감소하고 있습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 06: [핵심 발견] 자동 감속 메커니즘 ==================== -->
+    <section class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">핵심 원리</span>
+          <span class="page-badge">교과서 p.170 지식 Plus</span>
+        </div>
+        <h1 class="slide-title">경사하강법의 자가 조절: 바닥에 다가갈수록 저절로 멈춘다</h1>
+        <p class="slide-desc">학습률이 일정하더라도 미분계수의 절댓값이 작아짐에 따라 이동 거리가 자연스럽게 감속됩니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="icon">📊</span> 미분계수의 크기 감소 추적</h2>
+          <div class="card-body">
+            <p style="margin-bottom: 16px;">각 스텝에서 계산된 기울기와 실제 이동 보폭의 변화입니다.</p>
+            <div style="background-color: var(--math-box-bg); border-radius: 12px; overflow: hidden; border: 1.5px solid var(--card-border);">
+              <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 24px;">
+                <tr style="background-color: var(--card-border); color: var(--accent); font-weight: bold;">
+                  <th style="padding: 12px;">단계 ($n$)</th>
+                  <th style="padding: 12px;">위치 ($a_n$)</th>
+                  <th style="padding: 12px;">기울기 ($L'(a_n)$)</th>
+                  <th style="padding: 12px;">실제 이동량 ($|\Delta a|$)</th>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--card-border);">
+                  <td style="padding: 12px;">$0$ </td>
+                  <td>$7.00$ </td>
+                  <td style="color: var(--accent-danger); font-weight: bold;">$8.0$ </td>
+                  <td style="color: var(--accent-warn); font-weight: bold;">$0.80$ </td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--card-border);">
+                  <td style="padding: 12px;">$1$ </td>
+                  <td>$6.20$ </td>
+                  <td style="color: var(--accent-danger); font-weight: bold;">$6.4$ </td>
+                  <td style="color: var(--accent-warn); font-weight: bold;">$0.64$ </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px;">$2$ </td>
+                  <td>$5.56$ </td>
+                  <td style="color: var(--accent-danger); font-weight: bold;">$5.12$ </td>
+                  <td style="color: var(--accent-warn); font-weight: bold;">$0.512$ </td>
+                </tr>
+              </table>
+            </div>
+            <p style="font-size: 24px; color: var(--text-sub); margin-top: 20px;">
+              손실함수가 최소인 지점에 가까워질수록 곡선의 경사가 완만해져 $|L'(a_n)| \rightarrow 0$ 이 됩니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-auto-brake')">
+          <h2 class="card-title"><span class="icon">🛡️</span> 알고리즘 수렴의 안정성</h2>
+          <div class="card-body">
+            <ul class="step-list">
+              <li>
+                <strong>수학적 원리:</strong><br>
+                $\text{이동량 } \Delta a = -\eta \cdot L'(a_n)$<br>
+                $\eta$ 는 고정된 상수이지만, <strong>$L'(a_n)$ 의 절댓값이 0에 수렴</strong> 하므로 이동량 자체가 자연스럽게 축소됩니다.
+              </li>
+              <li>
+                <strong>알고리즘의 안정성:</strong><br>
+                만약 일정한 보폭으로만 이동한다면 최솟값 지점 주변에서 진동할 수 있으나, 미분계수에 비례하여 이동하면 <strong>최솟값 근처에서 이동량이 미세해져 안정적으로 안착</strong> 합니다.
+              </li>
+            </ul>
+            <div style="background-color: var(--math-box-bg); padding: 16px; border-radius: 12px; margin-top: 16px; border-left: 5px solid var(--accent);">
+              <strong>교과서 결론:</strong> 경사하강법은 손실함수의 최솟값을 직접 구하기 어려운 복잡한 모델에서도 반복 연산을 통해 최적의 매개변수를 근사적으로 찾아냅니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 07: [인터랙티브 랩] 단계별 갱신 계산기 (x축 점선 및 테마 대응) ==================== -->
+    <section class="slide" id="slide-7">
+      <div class="slide-header" style="margin-bottom: 16px;">
+        <div class="slide-tag-row">
+          <span class="tag-badge">인터랙티브 랩</span>
+          <span class="page-badge">교과서 p.170~171 활동</span>
+        </div>
+        <h1 class="slide-title" style="font-size: 48px;">손계산 검증 랩: 단계별 갱신 시뮬레이터</h1>
+        <p class="slide-desc" style="font-size: 22px;">초깃값과 학습률을 설정하고 [1단계 갱신]을 클릭하여 포물선 위 점과 $x$ 축 상의 $a$ 값, 수치 테이블을 비교합니다.</p>
+      </div>
+
+      <!-- Lab Controls Bar -->
+      <div class="lab-controls-bar">
+        <div class="slider-item">
+          <span>초깃값 ($a_0$):</span>
+          <input type="range" id="param-a0" min="0.0" max="7.0" step="0.5" value="7.0">
+          <span class="slider-val" id="val-a0">7.0</span>
+        </div>
+        <div class="slider-item">
+          <span>학습률 ($\eta$):</span>
+          <input type="range" id="param-eta" min="0.05" max="0.30" step="0.05" value="0.10">
+          <span class="slider-val" id="val-eta">0.10</span>
+        </div>
+        <button class="nav-btn primary" id="btn-lab-step" style="font-size: 18px; padding: 8px 18px;">▶ 1단계 갱신</button>
+        <button class="nav-btn" id="btn-lab-reset" style="font-size: 18px; padding: 8px 18px;">↺ 초기화</button>
+        <button class="nav-btn" id="btn-lab-preset" style="font-size: 18px; padding: 8px 18px;">교과서 예제 ($a_0=7, \eta=0.1$)</button>
+      </div>
+
+      <div class="content-grid grid-custom-lab" style="height: calc(100% - 190px);">
+        <!-- 1:1 Canvas Visualization with Projection Lines to x-axis -->
+        <div class="card" style="padding: 16px; align-items: center; justify-content: center;">
+          <div class="lab-canvas-container">
+            <canvas id="labCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Real-time Data Table -->
+        <div class="card" style="padding: 20px;">
+          <h2 class="card-title" style="font-size: 26px; margin-bottom: 12px;"><span class="icon">📋</span> 실시간 갱신 데이터 시트</h2>
+          <div class="data-table-wrap">
+            <table class="step-table">
+              <thead>
+                <tr>
+                  <th>$n$</th>
+                  <th>$a_n$</th>
+                  <th>$L'(a_n)$</th>
+                  <th>$\Delta a$</th>
+                  <th>$L(a_n)$</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- Dynamically Inserted -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 08: [정리 & 예고] ==================== -->
+    <section class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-tag-row">
+          <span class="tag-badge">정리 & 예고</span>
+          <span class="page-badge">교과서 p.171</span>
+        </div>
+        <h1 class="slide-title">3차시 핵심 요약 및 4차시 거동 분석 예고</h1>
+        <p class="slide-desc">손계산 원리를 정리하고, 다음 차시에서 다룰 학습률 크기에 따른 거동 차이를 예고합니다.</p>
+      </div>
+
+      <div class="content-grid grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="icon">✅</span> 3차시 핵심 요약</h2>
+          <div class="card-body">
+            <ul class="step-list">
+              <li>
+                <strong>점화식 구조:</strong><br>
+                $a_{n+1} = a_n - \eta L'(a_n)$ (현재 위치 $-$ 보폭비율 $\times$ 접선의 기울기).
+              </li>
+              <li>
+                <strong>부호 계산 원칙:</strong><br>
+                기울기가 음수($L' < 0$)이면 마이너스와 음수가 곱해져 결과적으로 <strong>우측(+)으로 이동</strong>.
+              </li>
+              <li>
+                <strong>자동 감속 메커니즘:</strong><br>
+                손실함수의 최솟값에 근접할수록 기울기가 $0$ 에 수렴하여 이동 보폭이 스스로 줄어듦.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-next-preview')">
+          <h2 class="card-title"><span class="icon">🚀</span> 4차시 탐구 예고: 학습률의 조절</h2>
+          <div class="card-body">
+            <p style="font-size: 30px; font-weight: bold; color: var(--accent-warn); margin-bottom: 16px;">
+              "학습률 $\eta$ 의 크기에 따라 어떤 현상이 일어날까?"
+            </p>
+            <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin-bottom: 16px;">
+              <p style="font-size: 24px; line-height: 1.6;">
+                • $\eta$ 가 너무 작을 때: 최적점에 도달하기까지 지나치게 많은 연산 단계가 소요됨.<br>
+                • $\eta$ 가 너무 클 때: <strong>최솟값 지점을 지나쳐 진동하거나 최적화 과정이 발산함!</strong> 
+              </p>
+            </div>
+            <p style="color: var(--text-sub); font-size: 24px;">
+              ※ 카드를 터치하여 4차시 학습률 거동 분석 및 관련 평가 문항 유형을 미리 살펴볼 수 있습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ==================== POPUP MODAL CONTAINER ==================== -->
+<div id="modal-overlay">
+  <div class="modal-window">
+    <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    <div id="modal-content-area">
+      <!-- Injected by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WHITEBOARD OVERLAY ==================== -->
+<div id="whiteboard-container">
+  <canvas id="whiteboard-canvas"></canvas>
+  <div id="whiteboard-toolbar">
+    <div class="wb-color-dot" style="background-color: #38bdf8;" onclick="setPenColor('#38bdf8')" title="스카이블루"></div>
+    <div class="wb-color-dot" style="background-color: #f87171;" onclick="setPenColor('#f87171')" title="레드"></div>
+    <div class="wb-color-dot" style="background-color: #fde047;" onclick="setPenColor('#fde047')" title="옐로우"></div>
+    <div class="wb-color-dot" style="background-color: #4ade80;" onclick="setPenColor('#4ade80')" title="그린"></div>
+    <div class="wb-color-dot" style="background-color: #ffffff;" onclick="setPenColor('#ffffff')" title="화이트"></div>
+    <!-- Background Opacity Toggle Button -->
+    <button class="wb-btn" onclick="cycleBgOpacity()" id="btn-bg-opacity">배경: 불투명(100%)</button>
+    <button class="wb-btn" onclick="clearWhiteboard()">판서 지우기</button>
+    <button class="wb-btn" onclick="toggleWhiteboard()" style="background-color: var(--accent-danger); color: #ffffff; border: none;">닫기</button>
+  </div>
+</div>
+
+<!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
+<nav id="bottom-nav">
+  <div class="nav-group">
+    <button class="nav-btn" onclick="prevSlide()">◀ 이전</button>
+    <button class="nav-btn" onclick="nextSlide()">다음 ▶</button>
+    <div id="slide-indicator">01 / 08</div>
+  </div>
+
+  <div class="nav-group">
+    <select class="nav-btn" id="theme-selector" onchange="changeTheme(this.value)">
+      <option value="dark">🌙 다크 네이비</option>
+      <option value="light">☀️ 클린 라이트</option>
+      <option value="green">🌿 그린 칠판</option>
+      <option value="sepia">☕ 웜 세피아</option>
+    </select>
+    <button class="nav-btn" onclick="toggleWhiteboard()">✏️ 판서 펜</button>
+    <button class="nav-btn" onclick="toggleFullScreen()">⛶ 전체화면</button>
+  </div>
+</nav>
+
+<script>
+  /* ========================================================
+     1. Slide Engine & Responsive Scaler
+     ======================================================== */
+  let currentSlide = 1;
+  const totalSlides = 8;
+
+  function updateScale() {
+    const container = document.getElementById('presentation-container');
+    const scaleX = window.innerWidth / 1920;
+    const scaleY = window.innerHeight / 1080;
+    const scale = Math.min(scaleX, scaleY);
+    container.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('resize', () => {
+    updateScale();
+    resizeWhiteboard();
+    if (currentSlide === 7) resizeLabCanvas();
+  });
+  window.addEventListener('DOMContentLoaded', () => {
+    updateScale();
+    renderAllKaTeX();
+    initLab();
+    initWhiteboard();
+  });
+
+  function showSlide(n) {
+    if (n < 1 || n > totalSlides) return;
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById(`slide-${n}`).classList.add('active');
+    currentSlide = n;
+    document.getElementById('slide-indicator').textContent = `${String(n).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+    
+    // Close modal if open
+    closeModal();
+
+    // Trigger canvas resize when switching to slide 7
+    if (n === 7) {
+      setTimeout(resizeLabCanvas, 50);
+    }
+    renderAllKaTeX();
+  }
+
+  function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+  function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (document.getElementById('modal-overlay').classList.contains('active')) {
+      if (e.key === 'Escape') closeModal();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      prevSlide();
+    } else if (e.key === 'Home') {
+      showSlide(1);
+    } else if (e.key === 'End') {
+      showSlide(totalSlides);
+    }
+  });
+
+  // Touch Swipe on mobile/tablet
+  let touchStartX = 0;
+  window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+  window.addEventListener('touchend', e => {
+    let diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 80) {
+      if (diff < 0) nextSlide();
+      else prevSlide();
+    }
+  }, false);
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  function changeTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    applyWhiteboardBg();
+    if (currentSlide === 7) drawLab();
+  }
+
+  /* ========================================================
+     2. KaTeX Auto-Render Helper
+     ======================================================== */
+  function renderAllKaTeX() {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  /* ========================================================
+     3. Modal Database and Interaction
+     ======================================================== */
+  const modalData = {
+    'modal-recurrence': {
+      title: '🔍 [수학 탐구] 수열의 귀납적 정의와 알고리즘 순서도 대응',
+      body: `
+        <p>교과서 p.168 지도 TIP에 제시된 바와 같이, 경사하강법의 갱신 구조는 고등학교 『대수』의 <strong>수열의 귀납적 정의</strong> 와 부합합니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 24px; border-radius: 12px; margin: 20px 0;">
+          <p style="font-size: 26px; font-weight: bold; color: var(--accent); margin-bottom: 12px;">수열의 귀납적 정의 (점화식)</p>
+          $$a_0 = \\text{(임의의 초깃값)}$$
+          $$a_{n+1} = a_n - \\eta L'(a_n) \\quad (n = 0, 1, 2, \\dots)$$
+        </div>
+        <p>1. <strong>초깃값의 설정:</strong> 첫째항 $a_0$ 을 어디서 시작하더라도 아래로 볼록한 이차함수에서는 최솟값을 갖는 지점으로 접근합니다.</p>
+        <p>2. <strong>알고리즘의 반복 제어:</strong> 순서도의 판단 조건(예: <code>|L'(a)| < 0.001</code>)을 통해 충분히 가까워졌을 때 반복 연산을 종료합니다.</p>
+      `
+    },
+    'modal-sign-clinic': {
+      title: '🔍 [클리닉] 지필평가 빈출 부호 계산 문항 정밀 분석',
+      body: `
+        <p>교과서 p.169 [확인하기 4] 유형을 통해 부호 계산 절차를 엄밀히 점검합니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 24px; border-radius: 12px; margin: 20px 0;">
+          <p style="font-size: 24px; font-weight: bold; color: var(--accent);">[교과서 문제]</p>
+          <p style="font-size: 24px;">손실함수 $L(a) = a^2 + 4a + 5$ 에 대하여 $a_0 = -9$ 에서 1회 갱신한 $a_1$ 의 값이 $12$ 일 때, 학습률 $k$ 를 구하시오.</p>
+          <hr style="border: 0.5px solid var(--card-border); margin: 16px 0;">
+          <p style="font-size: 24px; line-height: 1.8;">
+            ① 도함수: $L'(a) = 2a + 4$<br>
+            ② 미분계수: $L'(-9) = 2(-9) + 4 = \\mathbf{-14}$ (음수)<br>
+            ③ 점화식 대입: $a_1 = a_0 - k \\cdot L'(a_0)$<br>
+            $$\\implies 12 = -9 - k \\cdot (-14)$$
+            $$\\implies 12 = -9 + 14k \\implies 14k = 21 \\implies k = \\frac{21}{14} = \\mathbf{1.5}$$
+          </p>
+        </div>
+        <p style="color: var(--accent-warn); font-weight: bold;">주의: 공식의 $-$ 와 기울기의 $-$ 가 곱해져 $+14k$ 가 되는 부호 규칙에 유의해야 합니다.</p>
+      `
+    },
+    'modal-step1-verify': {
+      title: '🔍 [검증] 대칭축 공식 $a=3$ 과의 거리 단축 확인',
+      body: `
+        <p>이차함수 꼭짓점의 대칭축 공식과 매개변수의 이동 거리를 비교합니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin: 16px 0;">
+          $$L(a) = a^2 - 6a + 10 = (a - 3)^2 + 1$$
+          <p style="text-align: center; font-size: 24px; color: var(--accent);">대칭축 $a = 3$, 최솟값 $L(3) = 1$</p>
+        </div>
+        <p>• <strong>초기 위치:</strong> $a_0 = 7$ 일 때 목표점 $3$ 과의 거리는 $|7 - 3| = \\mathbf{4.0}$</p>
+        <p>• <strong>1회 갱신 위치:</strong> $a_1 = 6.2$ 일 때 목표점 $3$ 과의 거리는 $|6.2 - 3| = \\mathbf{3.2}$</p>
+        <p>• <strong>거리 단축률:</strong> $\\frac{3.2}{4.0} = 0.8 \\implies$ 거리가 $20\\%$ 단축되어 최적점에 근접했습니다.</p>
+      `
+    },
+    'modal-convergence': {
+      title: '🔍 [수학] 반복 갱신 시 극한값 $a_\\infty = 3$ 으로의 대수적 수렴성',
+      body: `
+        <p>점화식을 대수적으로 정리하면 공비가 $1$ 보다 작은 <strong>등비수열의 극한</strong> 이 도출됩니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin: 16px 0;">
+          $$a_{n+1} = a_n - \\eta (2a_n - 6)$$
+          $$a_{n+1} - 3 = (a_n - 3) - 2\\eta (a_n - 3) = \\mathbf{(1 - 2\\eta)(a_n - 3)}$$
+        </div>
+        <p>학습률 $\\eta = 0.1$ 을 대입하면:</p>
+        $$a_{n+1} - 3 = (1 - 0.2)(a_n - 3) = \\mathbf{0.8(a_n - 3)}$$
+        <p>수열 $\\{a_n - 3\\}$ 은 첫째항이 $a_0 - 3 = 4$, 공비가 $0.8$ 인 등비수열이므로:</p>
+        $$a_n - 3 = 4 \\cdot (0.8)^n \\implies a_n = 3 + 4 \\cdot (0.8)^n$$
+        <p style="color: var(--accent-success); font-weight: bold; margin-top: 12px;">
+          $\\lim_{n \\to \\infty} a_n = 3 + 4 \\cdot 0 = \\mathbf{3}$ (손실함수의 최솟값을 갖는 지점으로 수렴)
+        </p>
+      `
+    },
+    'modal-auto-brake': {
+      title: '🔍 [비교] 고정 보폭 이동과 미분계수 비례 이동의 비교',
+      body: `
+        <p>일정한 보폭으로 이동할 때와 미분계수에 비례하여 이동할 때의 거동 차이를 비교합니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin: 16px 0;">
+          <p><strong>고정 보폭 $\\Delta a = 0.5$ 이동 예시</strong></p>
+          <p>• 현재 위치 $a = 3.2$ 에서 최솟값 위치는 $3.0$ 임.<br>
+          • 왼쪽으로 $0.5$ 이동 $\\implies a = 2.7$ (최솟값을 지나침)<br>
+          • 오른쪽으로 $0.5$ 이동 $\\implies a = 3.2$ (원위치)<br>
+          $\\implies$ <strong>최솟값 주변에서 계속 진동하여 최적점에 수렴하지 못함.</strong></p>
+        </div>
+        <p><strong>경사하강법:</strong> 최솟값 지점에서 미분계수가 $0$ 이 되므로, 이동량 $\\Delta a = -\\eta L'(a)$ 가 바닥 근처에서 자연스럽게 $0$ 으로 줄어들어 안정적으로 정지합니다.</p>
+      `
+    },
+    'modal-next-preview': {
+      title: '🔍 [4차시 예고] 학습률 $\\eta$ 의 크기와 인공지능의 학습 거동',
+      body: `
+        <p>4차시에서는 학습률 $\\eta$ 의 설정에 따라 나타나는 다양한 학습 양상을 탐구합니다.</p>
+        <div style="background-color: var(--math-box-bg); padding: 20px; border-radius: 12px; margin: 16px 0;">
+          <p><strong>1. 교과서 p.171 확인하기 5 내용</strong></p>
+          <p>손실함수 $L(a) = a^2 - a + 1$ 에서 $\\eta = 0.5$ 일 때:<br>
+          $a_0 = 0 \\rightarrow a_1 = 0.5 \\rightarrow a_2 = 0 \\rightarrow a_3 = 0.5 \\dots$<br>
+          $\\implies$ <strong>최적점에 도달하지 못하고 일정한 구간을 진동하는 현상 확인</strong></p>
+        </div>
+        <p><strong>2. 주요 평가 유형:</strong> "2회 갱신값 $a_2$ 가 주어진 부등식을 만족하도록 하는 학습률 $\\eta$ 의 범위를 구하시오."와 같은 조건 역추적 문제를 다룹니다.</p>
+      `
+    }
+  };
+
+  function openModal(key) {
+    const data = modalData[key];
+    if (!data) return;
+    const contentArea = document.getElementById('modal-content-area');
+    contentArea.innerHTML = `
+      <h2 class="modal-title">${data.title}</h2>
+      <div class="modal-body">${data.body}</div>
+    `;
+    document.getElementById('modal-overlay').classList.add('active');
+    renderMathInElement(contentArea, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ],
+      throwOnError: false
+    });
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+  }
+
+  /* ========================================================
+     4. Interactive Simulation Lab (Slide 7)
+     - Explicit Projection Lines to x-axis
+     - Adaptive Text & Point Colors across All Themes
+     ======================================================== */
+  let labSteps = [];
+  const labCanvas = document.getElementById('labCanvas');
+  const labCtx = labCanvas.getContext('2d');
+
+  function getLoss(a) { return a * a - 6 * a + 10; }
+  function getGrad(a) { return 2 * a - 6; }
+
+  function initLab() {
+    const a0Input = document.getElementById('param-a0');
+    const etaInput = document.getElementById('param-eta');
+    const valA0 = document.getElementById('val-a0');
+    const valEta = document.getElementById('val-eta');
+
+    a0Input.addEventListener('input', (e) => {
+      valA0.textContent = parseFloat(e.target.value).toFixed(1);
+      resetLab();
+    });
+
+    etaInput.addEventListener('input', (e) => {
+      valEta.textContent = parseFloat(e.target.value).toFixed(2);
+      resetLab();
+    });
+
+    document.getElementById('btn-lab-step').addEventListener('click', stepLab);
+    document.getElementById('btn-lab-reset').addEventListener('click', resetLab);
+    document.getElementById('btn-lab-preset').addEventListener('click', () => {
+      a0Input.value = 7.0;
+      valA0.textContent = "7.0";
+      etaInput.value = 0.10;
+      valEta.textContent = "0.10";
+      resetLab();
+    });
+
+    resetLab();
+  }
+
+  function resizeLabCanvas() {
+    const rect = labCanvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    labCanvas.width = rect.width * dpr;
+    labCanvas.height = rect.height * dpr;
+    labCtx.resetTransform();
+    labCtx.scale(dpr, dpr);
+    drawLab();
+  }
+
+  function resetLab() {
+    const a0 = parseFloat(document.getElementById('param-a0').value);
+    const L0 = getLoss(a0);
+    const dL0 = getGrad(a0);
+    const eta = parseFloat(document.getElementById('param-eta').value);
+    const delta0 = -eta * dL0;
+
+    labSteps = [{
+      step: 0,
+      a: a0,
+      L: L0,
+      dL: dL0,
+      delta: delta0
+    }];
+
+    updateTable();
+    drawLab();
+  }
+
+  function stepLab() {
+    if (labSteps.length >= 8) {
+      alert("최대 8회차까지 시연할 수 있습니다. 초기화 후 다시 실행해 보세요.");
+      return;
+    }
+    const last = labSteps[labSteps.length - 1];
+    const eta = parseFloat(document.getElementById('param-eta').value);
+    const nextA = last.a + last.delta;
+    const nextL = getLoss(nextA);
+    const nextDL = getGrad(nextA);
+    const nextDelta = -eta * nextDL;
+
+    labSteps.push({
+      step: labSteps.length,
+      a: nextA,
+      L: nextL,
+      dL: nextDL,
+      delta: nextDelta
+    });
+
+    updateTable();
+    drawLab();
+  }
+
+  function updateTable() {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    labSteps.forEach((s, idx) => {
+      const tr = document.createElement('tr');
+      if (idx === labSteps.length - 1 && idx > 0) tr.classList.add('highlight');
+      tr.innerHTML = `
+        <td><strong>${s.step}</strong></td>
+        <td>${s.a.toFixed(3)}</td>
+        <td style="color:${s.dL >= 0 ? 'var(--accent-danger)' : 'var(--accent)'}">${(s.dL >= 0 ? '+' : '') + s.dL.toFixed(3)}</td>
+        <td style="color:var(--accent-warn)">${(s.delta >= 0 ? '+' : '') + s.delta.toFixed(3)}</td>
+        <td>${s.L.toFixed(3)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    tbody.parentElement.parentElement.scrollTop = tbody.parentElement.parentElement.scrollHeight;
+  }
+
+  function drawLab() {
+    const rect = labCanvas.parentElement.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    if (w === 0 || h === 0) return;
+
+    labCtx.clearRect(0, 0, w, h);
+
+    // Get dynamic theme colors to prevent invisibility on light/sepia themes
+    const computedStyle = getComputedStyle(document.documentElement);
+    const textColor = computedStyle.getPropertyValue('--text-main').trim() || '#ffffff';
+    const textSubColor = computedStyle.getPropertyValue('--text-sub').trim() || '#94a3b8';
+    const borderColor = computedStyle.getPropertyValue('--card-border').trim() || '#334155';
+    const accentColor = computedStyle.getPropertyValue('--accent').trim() || '#38bdf8';
+    const successColor = computedStyle.getPropertyValue('--accent-success').trim() || '#4ade80';
+
+    // Coordinate mapping: a from -0.5 to 8.5, L from 0 to 20
+    const minA = -0.5, maxA = 8.5;
+    const minL = 0, maxL = 20;
+
+    function toX(a) { return ((a - minA) / (maxA - minA)) * (w - 70) + 45; }
+    function toY(L) { return h - 55 - ((L - minL) / (maxL - minL)) * (h - 85); }
+
+    // Axes
+    labCtx.strokeStyle = textSubColor;
+    labCtx.lineWidth = 1.5;
+    labCtx.beginPath();
+    // X Axis (a-axis)
+    labCtx.moveTo(35, toY(0));
+    labCtx.lineTo(w - 20, toY(0));
+    // Y Axis (L(a)-axis)
+    labCtx.moveTo(toX(0), h - 35);
+    labCtx.lineTo(toX(0), 20);
+    labCtx.stroke();
+
+    // Axis Labels
+    labCtx.fillStyle = textColor;
+    labCtx.font = 'bold 15px Pretendard';
+    labCtx.fillText('x축 (매개변수 a)', w - 120, toY(0) + 38);
+    labCtx.fillText('L(a)', toX(0) - 38, 25);
+
+    // Origin
+    labCtx.font = '13px Fira Code';
+    labCtx.fillStyle = textSubColor;
+    labCtx.fillText('O', toX(0) - 15, toY(0) + 18);
+
+    // Target vertical dashed line at a=3
+    labCtx.save();
+    labCtx.setLineDash([4, 4]);
+    labCtx.strokeStyle = successColor;
+    labCtx.lineWidth = 1.5;
+    labCtx.beginPath();
+    labCtx.moveTo(toX(3), toY(0));
+    labCtx.lineTo(toX(3), toY(getLoss(3)));
+    labCtx.stroke();
+    labCtx.fillStyle = successColor;
+    labCtx.font = 'bold 14px Pretendard';
+    labCtx.fillText('최적점 a=3', toX(3) - 28, toY(0) + 34);
+    labCtx.restore();
+
+    // Draw Parabola Curve
+    labCtx.strokeStyle = accentColor;
+    labCtx.lineWidth = 3;
+    labCtx.beginPath();
+    for (let a = minA; a <= maxA; a += 0.1) {
+      const px = toX(a);
+      const py = toY(getLoss(a));
+      if (a === minA) labCtx.moveTo(px, py);
+      else labCtx.lineTo(px, py);
+    }
+    labCtx.stroke();
+
+    // Draw Steps: Curve Points + Projection Dashed Lines + X-axis Points
+    labSteps.forEach((s, idx) => {
+      const px = toX(s.a);
+      const py = toY(s.L);
+      const pyAxis = toY(0);
+
+      // 1. Vertical Projection Dashed Line (곡선 위 점 -> x축 a_n 점)
+      labCtx.save();
+      labCtx.setLineDash([4, 4]);
+      labCtx.strokeStyle = idx === labSteps.length - 1 ? '#f87171' : 'rgba(148, 163, 184, 0.6)';
+      labCtx.lineWidth = 1.5;
+      labCtx.beginPath();
+      labCtx.moveTo(px, py);
+      labCtx.lineTo(px, pyAxis);
+      labCtx.stroke();
+      labCtx.restore();
+
+      // 2. Point on x-axis (x축 위의 a_n 점)
+      labCtx.beginPath();
+      labCtx.arc(px, pyAxis, 4.5, 0, Math.PI * 2);
+      labCtx.fillStyle = idx === 0 ? '#fbbf24' : (idx === labSteps.length - 1 ? '#f87171' : accentColor);
+      labCtx.fill();
+      labCtx.lineWidth = 1.5;
+      labCtx.strokeStyle = textColor;
+      labCtx.stroke();
+
+      // x-axis label (a0, a1...)
+      labCtx.fillStyle = textColor;
+      labCtx.font = 'bold 13px Fira Code';
+      labCtx.fillText(`a${s.step}`, px - 8, pyAxis + 18);
+
+      // 3. Point on Curve (포물선 위 점)
+      labCtx.beginPath();
+      labCtx.arc(px, py, idx === labSteps.length - 1 ? 8 : 6, 0, Math.PI * 2);
+      labCtx.fillStyle = idx === 0 ? '#fbbf24' : (idx === labSteps.length - 1 ? '#f87171' : accentColor);
+      labCtx.fill();
+      labCtx.lineWidth = 2;
+      labCtx.strokeStyle = textColor; // Contrasts with both light and dark themes
+      labCtx.stroke();
+
+      // Curve Point Label with Coordinates (Theme-adapted text color)
+      labCtx.fillStyle = textColor;
+      labCtx.font = 'bold 14px Pretendard';
+      labCtx.fillText(`(${s.a.toFixed(1)}, ${s.L.toFixed(1)})`, px - 25, py - 14);
+
+      // 4. Arrow connecting points along the curve
+      if (idx < labSteps.length - 1) {
+        const next = labSteps[idx + 1];
+        const npx = toX(next.a);
+        const npy = toY(next.L);
+
+        labCtx.strokeStyle = '#fde047';
+        labCtx.lineWidth = 2.5;
+        labCtx.beginPath();
+        labCtx.moveTo(px, py);
+        labCtx.quadraticCurveTo((px + npx) / 2, Math.min(py, npy) - 10, npx, npy);
+        labCtx.stroke();
+      }
+    });
+  }
+
+  /* ========================================================
+     5. Whiteboard Drawing Engine
+     - Bezier curve smoothing for high-fidelity inking.
+     - Background Opacity Modes: 100% Solid / 50% Translucent / 0% Tracing.
+     - Ink strokes strictly stay 100% opaque.
+     ======================================================== */
+  const wbContainer = document.getElementById('whiteboard-container');
+  const wbCanvas = document.getElementById('whiteboard-canvas');
+  const wbCtx = wbCanvas.getContext('2d');
+  let isDrawing = false;
+  let penColor = '#38bdf8';
+  let penSize = 4;
+  let points = [];
+  let bgOpacityMode = 0; // 0: 100% 불투명, 1: 50% 반투명, 2: 0% 완전투명 트레이싱
+
+  function initWhiteboard() {
+    resizeWhiteboard();
+    applyWhiteboardBg();
+
+    wbCanvas.addEventListener('pointerdown', (e) => {
+      isDrawing = true;
+      points = [{ x: e.clientX, y: e.clientY }];
+    });
+
+    wbCanvas.addEventListener('pointermove', (e) => {
+      if (!isDrawing) return;
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+      for (let ev of events) {
+        points.push({ x: ev.clientX, y: ev.clientY });
+        if (points.length >= 3) {
+          const xc = (points[points.length - 2].x + points[points.length - 1].x) / 2;
+          const yc = (points[points.length - 2].y + points[points.length - 1].y) / 2;
+          wbCtx.strokeStyle = penColor;
+          wbCtx.lineWidth = penSize;
+          wbCtx.lineCap = 'round';
+          wbCtx.lineJoin = 'round';
+          wbCtx.beginPath();
+          wbCtx.moveTo(points[points.length - 3].x, points[points.length - 3].y);
+          wbCtx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, xc, yc);
+          wbCtx.stroke();
+        }
+      }
+    });
+
+    window.addEventListener('pointerup', () => { isDrawing = false; points = []; });
+    window.addEventListener('pointercancel', () => { isDrawing = false; points = []; });
+  }
+
+  function resizeWhiteboard() {
+    const dpr = window.devicePixelRatio || 1;
+    wbCanvas.width = window.innerWidth * dpr;
+    wbCanvas.height = (window.innerHeight - 76) * dpr;
+    wbCtx.resetTransform();
+    wbCtx.scale(dpr, dpr);
+  }
+
+  function toggleWhiteboard() {
+    wbContainer.classList.toggle('active');
+    if (wbContainer.classList.contains('active')) {
+      applyWhiteboardBg();
+    }
+  }
+
+  function setPenColor(color) { penColor = color; }
+
+  function clearWhiteboard() {
+    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+  }
+
+  function applyWhiteboardBg() {
+    const computedStyle = getComputedStyle(document.documentElement);
+    const bgRgb = computedStyle.getPropertyValue('--bg-rgb').trim() || '15, 23, 42';
+    const btn = document.getElementById('btn-bg-opacity');
+
+    if (bgOpacityMode === 0) {
+      wbContainer.style.backgroundColor = `rgba(${bgRgb}, 1.0)`;
+      btn.textContent = '배경: 불투명 (100%)';
+    } else if (bgOpacityMode === 1) {
+      wbContainer.style.backgroundColor = `rgba(${bgRgb}, 0.55)`;
+      btn.textContent = '배경: 반투명 (50%)';
+    } else {
+      wbContainer.style.backgroundColor = 'transparent';
+      btn.textContent = '배경: 트레이싱 (완전투명)';
+    }
+  }
+
+  function cycleBgOpacity() {
+    bgOpacityMode = (bgOpacityMode + 1) % 3;
+    applyWhiteboardBg();
+  }
+</script>
+</body>
+</html>
