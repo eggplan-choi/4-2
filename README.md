@@ -3,4 +3,6 @@
 
 1차시(손실함수) : [https://eggplan-choi.github.io/4-2/1차시.html](https://eggplan-choi.github.io/4-2/1차시.html)  
 <br>
-2차시(경사하강법) : [https://eggplan-choi.github.io/4-2/2차시.html](https://eggplan-choi.github.io/4-2/2차시.html)
+2차시(경사하강법) : [https://eggplan-choi.github.io/4-2/2차시.html](https://eggplan-choi.github.io/4-2/2차시.html)  
+<br>
+3차시(경사하강법 실습) : [https://eggplan-choi.github.io/4-2/3차시.html](https://eggplan-choi.github.io/4-2/3차시.html)  
