@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ⅳ-2. 최적화 [4차시] 학습률 거동 분석 및 최적화 종합 문제 해결</title>
+  
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --font-main: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
+      --transition-speed: 0.25s;
+    }
+
+    /* 테마 1: 🌙 다크 네이비 (기본) */
+    .theme-dark {
+      --bg-canvas: #090d16;
+      --bg-slide: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --bg-nav: #090d16ee;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --text-accent: #38bdf8;
+      --border-color: #334155;
+      --accent-color: #38bdf8;
+      --accent-warm: #f59e0b;
+      --accent-danger: #f43f5e;
+      --accent-success: #10b981;
+      --math-bg: #1e293b;
+      --modal-bg: #0f172ae6;
+      --chalk-color: #f8fafc;
+    }
+
+    /* 테마 2: ☀️ 클린 라이트 */
+    .theme-light {
+      --bg-canvas: #e2e8f0;
+      --bg-slide: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #f1f5f9;
+      --bg-nav: #ffffffee;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --text-accent: #0284c7;
+      --border-color: #cbd5e1;
+      --accent-color: #0284c7;
+      --accent-warm: #d97706;
+      --accent-danger: #e11d48;
+      --accent-success: #059669;
+      --math-bg: #f1f5f9;
+      --modal-bg: #ffffffe6;
+      --chalk-color: #0f172a;
+    }
+
+    /* 테마 3: 🌿 그린 칠판 */
+    .theme-chalkboard {
+      --bg-canvas: #132219;
+      --bg-slide: #1e382b;
+      --bg-card: #274737;
+      --bg-card-hover: #315845;
+      --bg-nav: #132219ee;
+      --text-main: #fbfbf2;
+      --text-sub: #a3c2b1;
+      --text-accent: #fef08a;
+      --border-color: #3e6b54;
+      --accent-color: #fef08a;
+      --accent-warm: #fdba74;
+      --accent-danger: #fca5a5;
+      --accent-success: #86efac;
+      --math-bg: #172c22;
+      --modal-bg: #1e382be6;
+      --chalk-color: #fef08a;
+    }
+
+    /* 테마 4: ☕ 웜 세피아 */
+    .theme-sepia {
+      --bg-canvas: #dcd6cd;
+      --bg-slide: #f4efe6;
+      --bg-card: #e9e2d5;
+      --bg-card-hover: #dfd6c6;
+      --bg-nav: #f4efe6ee;
+      --text-main: #3e3223;
+      --text-sub: #786b59;
+      --text-accent: #9a3412;
+      --border-color: #cfc4b2;
+      --accent-color: #9a3412;
+      --accent-warm: #b45309;
+      --accent-danger: #be123c;
+      --accent-success: #15803d;
+      --math-bg: #ece5d8;
+      --modal-bg: #f4efe6e6;
+      --chalk-color: #3e3223;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    [contenteditable="true"] {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      outline: 2px dashed var(--accent-warm) !important;
+      outline-offset: 4px;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color var(--transition-speed);
+    }
+
+    /* 16:9 반응형 뷰포트 (1280 x 720 기준 스케일) */
+    #viewport {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      background-color: var(--bg-slide);
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      transform-origin: center center;
+    }
+
+    /* 상단 밀착 및 하단 안전 여백(Clearance) 극대화: 높이 600px로 제한 */
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 605px;
+      padding: 28px 56px 12px 56px;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 14px;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* 슬라이드 상단 헤더 */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tag-badge {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--accent-color);
+    }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text-main);
+    }
+
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    /* 레이아웃 그리드: 높이를 490px 내로 엄격히 제한 */
+    .content-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-height: 490px;
+    }
+
+    /* 카드 컴포넌트: 내부 패딩 압축 */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      transition: all var(--transition-speed);
+    }
+
+    .card.clickable {
+      cursor: pointer;
+    }
+
+    .card.clickable:hover {
+      background-color: var(--bg-card-hover);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-body {
+      font-size: 16.5px;
+      line-height: 1.5;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .math-callout {
+      background-color: var(--math-bg);
+      border-left: 4px solid var(--accent-color);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 16.5px;
+    }
+
+    .step-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      background-color: var(--accent-color);
+      color: #000;
+      width: fit-content;
+    }
+
+    /* 캔버스 시뮬레이터: 높이 250px로 컴팩트화 */
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      background-color: var(--math-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    canvas.sim-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--bg-card);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .sim-btn {
+      padding: 6px 12px;
+      background-color: var(--accent-color);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13.5px;
+    }
+
+    .sim-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* OX 퀴즈 카드: 2x2 그리드 높이 190px 최적화 */
+    .quiz-card {
+      cursor: pointer;
+      height: 190px;
+    }
+
+    .quiz-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all var(--transition-speed);
+    }
+
+    .quiz-card.revealed .quiz-inner {
+      border-color: var(--accent-color);
+      background-color: var(--bg-card-hover);
+    }
+
+    .quiz-badge {
+      font-size: 24px;
+      font-weight: 900;
+      display: none;
+    }
+
+    .quiz-card.revealed .quiz-badge {
+      display: inline-block;
+    }
+
+    .badge-o { color: var(--accent-success); }
+    .badge-x { color: var(--accent-danger); }
+
+    /* 모달 팝업 */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 648px;
+      background-color: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 860px;
+      max-height: 520px;
+      background-color: var(--bg-slide);
+      border: 2px solid var(--accent-color);
+      border-radius: 16px;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-accent);
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      font-size: 30px;
+      line-height: 1;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 하단 고정 내비게이션 바 (#bottom-nav, z-index: 4000) */
+    #bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 1280px;
+      height: 72px;
+      background-color: var(--bg-nav);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 32px;
+      z-index: 4000;
+    }
+
+    .nav-left, .nav-center, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color var(--transition-speed);
+    }
+
+    .nav-btn:hover {
+      background-color: var(--bg-card-hover);
+      border-color: var(--accent-color);
+    }
+
+    .nav-btn.primary {
+      background-color: var(--accent-color);
+      color: #000;
+      border: none;
+    }
+
+    .slide-counter {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-accent);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .theme-select {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* 화이트보드 캔버스 (#whiteboard-container, z-index: 3000) */
+    #whiteboard-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 648px;
+      display: none;
+      z-index: 3000;
+      pointer-events: none;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+    }
+
+    #whiteboard-container.active {
+      display: block;
+      pointer-events: auto;
+    }
+
+    #wb-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    #wb-toolbar {
+      position: absolute;
+      top: 16px;
+      right: 32px;
+      background-color: var(--bg-nav);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 3001;
+    }
+
+    .color-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    .color-dot.active {
+      transform: scale(1.2);
+      box-shadow: 0 0 8px #fff;
+    }
+  </style>
+</head>
+<body class="theme-dark">
+
+  <div id="viewport">
+    
+    <!-- ==========================================
+         [Slide 01] 표지 및 학습 목표 (교과서 p.172)
+         ========================================== -->
+    <section class="slide active" id="slide-1">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">Ⅳ-2. 최적화 | 교과서 p.172</span>
+          <h1 class="slide-title">학습률 거동 분석 및 최적화 종합 문제 해결</h1>
+          <p class="slide-subtitle">경사의 반대 방향으로 이동하더라도, 학습률의 크기에 따라 최적화의 수렴 여부가 결정됩니다.</p>
+        </div>
+      </div>
+      
+      <div class="content-grid-2">
+        <div class="card clickable" onclick="openModal('modal-s1-q')">
+          <div class="card-title">
+            <span>💡 생각 열기: 학습률의 필요성</span>
+            <span class="step-badge">개념 도입</span>
+          </div>
+          <div class="card-body">
+            <p><strong>"접선의 기울기 부호와 반대 방향($-L'(a)$) 으로 이동하더라도, 학습률($k$) 이 부적절하면 왜 최적화가 원활하게 이루어지지 않을까?"</strong> </p>
+            <p>• 이전 차시에서 우리는 경사하강법 점화식 $a_{n+1} = a_n - k L'(a_n)$ 을 통하여 매개변수 갱신 과정을 다루었습니다.</p>
+            <p>• 학습률 $k$ 의 값이 지나치게 크면 최솟값을 지나쳐 진동하거나 발산하고, 지나치게 작으면 최적점에 도달하기까지 과도한 갱신 횟수와 계산 시간이 소요됩니다.</p>
+            <div class="math-callout">
+              🔍 <strong>초매개변수(Hyperparameter) 의 개념:</strong> 모델이 데이터로부터 스스로 갱신하는 매개변수와 달리, 사용자가 사전에 직접 설정해야 하는 비례상수를 학습률이라 합니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>🎯 4차시 핵심 학습 목표</span>
+            <span class="step-badge">성취 기준</span>
+          </div>
+          <div class="card-body">
+            <p><strong>1. 학습률 $k$ 의 크기에 따른 3대 거동 분석</strong> <br>
+            • 과대, 과소, 적정 학습률에 따른 손실함수의 <strong>수렴, 지연, 진동 및 발산</strong> 거동을 시각적이고 수학적으로 설명할 수 있다.</p>
+            <p><strong>2. 교과서 대표 문항 및 심화 문제 해결</strong> <br>
+            • 미분계수 측정 데이터로부터 최적값을 추론하는 문항과 부등식을 만족하는 학습률 조건을 대수적으로 해결할 수 있다.</p>
+            <p><strong>3. 최적화 단원의 종합적 이해</strong> <br>
+            • 최적점의 필요조건($L'(a)=0$) 과 다변수 모델로의 확장을 이해하고 최적화 단원을 완결한다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 02] [교과서 탐구] 학습률 3대 거동 시연 (p.172~173)
+         ========================================== -->
+    <section class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">공학 도구 탐구 활동 | 교과서 p.172~173</span>
+          <h1 class="slide-title">학습률 크기별 3대 거동 비교 시뮬레이터</h1>
+          <p class="slide-subtitle">매개변수 갱신에 따른 점 $(a_n, L(a_n))$ 은 손실함수 곡선 $y = L(a)$ 위를 이동합니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card" style="padding: 12px 16px;">
+          <div class="canvas-container">
+            <canvas id="sim-canvas-2" class="sim-canvas"></canvas>
+          </div>
+          <div class="sim-controls">
+            <button class="sim-btn" onclick="runSim(0.02)">과소 (k = 0.02)</button>
+            <button class="sim-btn" onclick="runSim(0.20)">적정 (k = 0.20)</button>
+            <button class="sim-btn" onclick="runSim(0.85)">과대 (k = 0.85)</button>
+            <button class="nav-btn" onclick="resetSim()" style="margin-left: auto; padding: 4px 10px; font-size: 13px;">↺ 초기화</button>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s2-hyper')">
+          <div class="card-title">
+            <span>📊 3가지 거동의 수학적 특성</span>
+            <span class="step-badge">교과서 핵심</span>
+          </div>
+          <div class="card-body">
+            <p><strong>1. 지나치게 작은 학습률 ($k = 0.02$) — 수렴 지연</strong> <br>
+            • 매 갱신마다 매개변수의 변화량이 너무 작아, 최적점에 도달하기까지 매우 많은 계산 횟수가 요구됩니다.</p>
+            <p><strong>2. 적절한 학습률 ($k = 0.20$) — 안정적 수렴</strong> <br>
+            • 최적점에 가까워질수록 $|L'(a)|$ 가 감소하여 보폭이 자동으로 줄어들며, 안정적으로 최솟값에 도달합니다.</p>
+            <p><strong>3. 지나치게 큰 학습률 ($k = 0.85$) — 뚜렷한 좌우 진동 (Oscillation)</strong> <br>
+            • 매개변수의 변화량이 과도하여 최적점($a^* = 2.0$) 을 건너뛰며 반대편 언덕으로 튕겨 나가는 왕복 진동 궤적이 발생합니다.</p>
+            <div class="math-callout" style="font-size: 15px;">
+              🔍 <strong>상세 설명:</strong> 모델이 스스로 조절하지 못하는 초매개변수 학습률의 특성을 확인합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 03] [교과서 확인] 확인하기 5 집중 계산 (p.173)
+         ========================================== -->
+    <section class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">개념 적용 및 계산 | 교과서 p.173 확인하기 5</span>
+          <h1 class="slide-title">교과서 모델 $L(a) = 2a^2 - a + 4$ 수치 검증</h1>
+          <p class="slide-subtitle">학습률 $k$ 의 값이 클 때 발생하는 진동 현상을 점화식 계산을 통해 분석합니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📝 손실함수 및 도함수 산출</span>
+            <span class="step-badge">Step 1</span>
+          </div>
+          <div class="card-body">
+            <p>• 손실함수: $L(a) = 2a^2 - a + 4$ </p>
+            <p>• 도함수(미분계수 식): $L'(a) = 4a - 1$ </p>
+            <p>• 최적점(필요조건): $L'(a) = 0 \iff 4a - 1 = 0 \iff \mathbf{a^* = 0.25}$ </p>
+            <p>• 초깃값: $a_0 = 0$ </p>
+            <div class="math-callout">
+              <strong>경사하강법 점화식:</strong> <br>
+              $$a_{n+1} = a_n - k(4a_n - 1)$$
+            </div>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s3-calc')">
+          <div class="card-title">
+            <span>⚡ 학습률 $k = 0.4$ 적용 시 수열의 변화</span>
+            <span class="step-badge">Step 2 (진동 관찰)</span>
+          </div>
+          <div class="card-body">
+            <p><strong>• 0회차:</strong> $a_0 = 0 \implies L'(0) = -1$ </p>
+            <p><strong>• 1회차:</strong> $a_1 = 0 - 0.4(-1) = \mathbf{0.400}$ (최적값 $0.25$ 초과 이동)</p>
+            <p><strong>• 2회차:</strong> $L'(0.4) = 4(0.4)-1 = +0.60 \implies a_2 = \mathbf{0.160}$ </p>
+            <p><strong>• 3회차:</strong> $L'(0.16) = -0.36 \implies a_3 = \mathbf{0.304}$ </p>
+            <div class="math-callout" style="border-left-color: var(--accent-warm);">
+              🔍 매개변수의 값이 $0 \to 0.400 \to 0.160 \to 0.304$ 로 최적값 $0.25$ 의 좌우를 교차하며 수렴하는 <strong>진동(Oscillation)</strong> 현상이 나타납니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 04] [교과서 문항] 대단원 마무리 07번 (교과서 p.177)
+         ========================================== -->
+    <section class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">교과서 대표 문항 | 대단원 마무리 p.177 07번</span>
+          <h1 class="slide-title">미분계수 측정 데이터 기반 최적 매개변수 산출</h1>
+          <p class="slide-subtitle">미분계수의 부호를 통한 기하학적 판별법과 도함수 일차식 복원법을 함께 학습합니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📋 교과서 원본 문항</span>
+            <span class="step-badge">p.177 07번</span>
+          </div>
+          <div class="card-body">
+            <p>최적의 예측 모델 $f(x)=ax$ 를 구하고자 한다. 손실함수 $L(a)$ 의 미분계수 $L'(a)$ 의 값을 측정한 결과가 다음 표와 같다.</p>
+            <div style="background-color: var(--math-bg); border-radius: 6px; padding: 8px; margin: 2px 0;">
+              <table style="width: 100%; text-align: center; font-size: 17px; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <th style="padding: 4px;">$a$</th>
+                  <td style="padding: 4px;">$1.8$</td>
+                  <td style="padding: 4px;">$2.0$</td>
+                  <td style="padding: 4px;">$2.2$</td>
+                  <td style="padding: 4px;">$2.5$</td>
+                </tr>
+                <tr>
+                  <th style="padding: 4px;">$L'(a)$</th>
+                  <td style="padding: 4px;">$-6$</td>
+                  <td style="padding: 4px;">$-2$</td>
+                  <td style="padding: 4px;">$2$</td>
+                  <td style="padding: 4px;">$8$</td>
+                </tr>
+              </table>
+            </div>
+            <p><strong>문항:</strong> 손실함수 $L(a)$ 를 최소로 만드는 $a$ 의 값을 $m$ 이라 할 때, $10m$ 의 값을 구하시오. (단, $10m$ 은 자연수이다.)</p>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s4-proof')">
+          <div class="card-title">
+            <span>📐 해법 1: 교과서 기하학적 풀이</span>
+            <span class="step-badge">부호 판별법</span>
+          </div>
+          <div class="card-body">
+            <p><strong>1단계: 포물선 개형과 접선 기울기 확인</strong> <br>
+            • 손실함수 $L(a)$ 는 아래로 볼록한 이차함수 포물선입니다.</p>
+            <p><strong>2단계: 최솟값 $m$ 의 위치 범위 한정</strong> <br>
+            • $a=1.8, 2.0$ 에서 $L'(a) < 0$ $\implies$ 최솟값은 오른쪽에 위치 ($m > 2.0$)<br>
+            • $a=2.2, 2.5$ 에서 $L'(a) > 0$ $\implies$ 최솟값은 왼쪽에 위치 ($m < 2.2$)</p>
+            <p><strong>3단계: 자연수 조건으로 최종값 확정</strong> <br>
+            • $2.0 < m < 2.2 \iff 20 < 10m < 22 \implies \mathbf{10m = 21 \implies m = 2.1}$</p>
+            <div class="math-callout" style="font-size: 15px;">
+              🔍 <strong>터치하여 확인:</strong> 도함수를 일차식($L'(a)=20a-42$) 으로 복원하는 대수적 풀이
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 05] [교과서 발전 문항] 문제로 확인하기 발전 문제 (교과서 p.175)
+         ========================================== -->
+    <section class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">교과서 발전 문제 | 중단원 마무리 p.175 발전</span>
+          <h1 class="slide-title">1회 갱신 범위 조건을 만족하는 학습률 판별</h1>
+          <p class="slide-subtitle">경사하강법 갱신 식과 일차부등식을 연계하여 학습률의 조건을 도출합니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📋 교과서 원본 문항</span>
+            <span class="step-badge">p.175 발전</span>
+          </div>
+          <div class="card-body">
+            <p>손실함수 $L(a) = a^2 - 4a + 5$ 에 대하여 $a$ 의 초깃값 $a_0 = 10$ 을 학습을 위한 식</p>
+            <div class="math-callout">
+              $$a_1 = a_0 - k L'(a_0)$$
+            </div>
+            <p>을 이용하여 $1$ 회 갱신한 $a$ 의 값을 $a_1$ 이라 하자.</p>
+            <p><strong>문항:</strong> 부등식 $\mathbf{-2 < a_1 < 6}$ 을 만족하는 학습률 $k$ 에 대하여 $20k$ 의 값으로 가능한 <strong>자연수의 개수</strong> 를 구하시오.</p>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s5-textbook')">
+          <div class="card-title">
+            <span>✏️ 단계별 부등식 대수 풀이</span>
+            <span class="step-badge">풀이 과정</span>
+          </div>
+          <div class="card-body">
+            <p><strong>1단계: 도함수 및 1회차 미분계수 산출</strong> <br>
+            • $L'(a) = 2a - 4 \implies L'(a_0) = L'(10) = 2(10) - 4 = \mathbf{16}$</p>
+            <p><strong>2단계: 1회 갱신 값 $a_1$ 표현</strong> <br>
+            • $a_1 = a_0 - k L'(a_0) = \mathbf{10 - 16k}$</p>
+            <p><strong>3단계: 부등식 연립 및 $20k$ 의 자연수 개수 판정</strong> <br>
+            • $-2 < 10 - 16k < 6 \iff \mathbf{\dfrac{1}{4} < k < \dfrac{3}{4}}$<br>
+            • 각 변에 20을 곱하면: $\mathbf{5 < 20k < 15}$<br>
+            • 가능한 자연수: $6, 7, 8, 9, 10, 11, 12, 13, 14$ $\implies$ <strong>총 9개</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 06] [개념 점검] 최적화 판단 OX 퀴즈 (p.174~175)
+         ========================================== -->
+    <section class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge">개념 점검 | 교과서 p.174~175</span>
+          <h1 class="slide-title">최적화 개념 점검 OX 퀴즈</h1>
+          <p class="slide-subtitle">카드를 터치하여 명제의 참·거짓 여부와 해설을 확인합니다.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-height: 490px;">
+        <!-- 퀴즈 1 -->
+        <div class="quiz-card" onclick="toggleQuiz(this)">
+          <div class="quiz-inner">
+            <div style="font-size: 18px; font-weight: 700;">
+              Q1. $L'(a) = 0$ 이면 손실함수는 항상 최솟값을 갖는다?
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+              <span class="quiz-badge badge-x">❌ 거짓</span>
+              <span style="font-size: 14px; color: var(--text-sub);">터치하여 해설 확인</span>
+            </div>
+            <div class="quiz-explain" style="display: none; font-size: 15px; color: var(--text-main); margin-top: 6px;">
+              • <strong>해설:</strong> 일반 함수에서는 극댓값이나 변곡점일 수 있습니다. 단, 교과서의 손실함수는 <strong>아래로 볼록한 이차함수</strong> 이므로 $L'(a) = 0$ 인 지점이 유일한 최솟값이 됩니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 퀴즈 2 -->
+        <div class="quiz-card" onclick="toggleQuiz(this)">
+          <div class="quiz-inner">
+            <div style="font-size: 18px; font-weight: 700;">
+              Q2. 학습률 $k$ 의 값은 작을수록 항상 이상적이다?
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+              <span class="quiz-badge badge-x">❌ 거짓</span>
+              <span style="font-size: 14px; color: var(--text-sub);">터치하여 해설 확인</span>
+            </div>
+            <div class="quiz-explain" style="display: none; font-size: 15px; color: var(--text-main); margin-top: 6px;">
+              • <strong>해설:</strong> 학습률이 지나치게 작으면 최적점에 도달하기까지 과도한 갱신 횟수와 시간이 소요되며, 복잡한 함수에서는 국소 최솟값(Local Minimum)에 안착하여 멈출 위험이 있습니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 퀴즈 3 -->
+        <div class="quiz-card" onclick="toggleQuiz(this)">
+          <div class="quiz-inner">
+            <div style="font-size: 18px; font-weight: 700;">
+              Q3. 갱신을 반복하여 최적점에 접근할수록 매회 이동하는 보폭은 감소한다?
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+              <span class="quiz-badge badge-o">⭕ 참</span>
+              <span style="font-size: 14px; color: var(--text-sub);">터치하여 해설 확인</span>
+            </div>
+            <div class="quiz-explain" style="display: none; font-size: 15px; color: var(--text-main); margin-top: 6px;">
+              • <strong>해설:</strong> 1회 이동 거리 $|a_{n+1} - a_n| = k |L'(a_n)|$ 이므로, 최적점에 가까워져 접선의 기울기 크기 $|L'(a_n)|$ 이 줄어들면 보폭 또한 스스로 줄어듭니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 퀴즈 4 -->
+        <div class="quiz-card" onclick="toggleQuiz(this)">
+          <div class="quiz-inner">
+            <div style="font-size: 18px; font-weight: 700;">
+              Q4. 매개변수가 최적점($L'=0$)에 도달하면 점화식에 의한 갱신은 스스로 정지한다?
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+              <span class="quiz-badge badge-o">⭕ 참</span>
+              <span style="font-size: 14px; color: var(--text-sub);">터치하여 해설 확인</span>
+            </div>
+            <div class="quiz-explain" style="display: none; font-size: 15px; color: var(--text-main); margin-top: 6px;">
+              • <strong>해설:</strong> $L'(a^*) = 0$ 이므로 점화식에 대입하면 $a_{n+1} = a_n - k \cdot 0 = a_n$ 이 되어, 추가적인 이동 없이 현재 매개변수 값이 유지됩니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 07] [부록 1: 심화 탐구] 발산과 진동의 임계 조건
+         ========================================== -->
+    <section class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge" style="color: var(--accent-warm);">[부록 1: 심화 탐구] 지도서 내용연구 p.173</span>
+          <h1 class="slide-title">등비수열의 공비 수렴 조건과 학습률 임계값</h1>
+          <p class="slide-subtitle">손실함수 $L(a) = A a^2 + \dots$ 에서 진동과 발산이 일어나는 수학적 조건을 유도합니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📐 점화식의 등비수열 변형</span>
+            <span class="step-badge">대수 증명</span>
+          </div>
+          <div class="card-body">
+            <p>이차 손실함수 $L(a) = A a^2 + Ba + C$ ($A > 0$)의 최적점을 $a^*$ 라 하면:</p>
+            <div class="math-callout">
+              $$L'(a) = 2Aa + B = 2A(a - a^*)$$
+              경사하강법 식에 대입하면:
+              $$a_{n+1} = a_n - k \cdot 2A(a_n - a^*)$$
+              양변에서 $a^*$ 를 빼면 오차 수열 $e_n = a_n - a^*$ 에 대한 점화식이 유도됩니다:
+              $$a_{n+1} - a^* = \mathbf{(1 - 2Ak)}(a_n - a^*)$$
+            </div>
+            <p>• 최적점과의 오차 수열 $e_n$ 은 <strong>공비가 $r = 1 - 2Ak$ 인 등비수열</strong> 을 이룹니다.</p>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s7-eigen')">
+          <div class="card-title">
+            <span>🎯 수렴 임계값 판정 ($|r| < 1$)</span>
+            <span class="step-badge">공비별 거동</span>
+          </div>
+          <div class="card-body">
+            <p>등비수열이 $0$ 으로 수렴하기 위한 필요충분조건은 $|r| < 1$ 입니다.</p>
+            <div class="math-callout" style="border-left-color: var(--accent-success);">
+              $$-1 < 1 - 2Ak < 1 \iff 0 < 2Ak < 2 \iff \mathbf{0 < k < \frac{1}{A}}$$
+            </div>
+            <p><strong>• $0 < k < \dfrac{1}{2A}$ ($0 < r < 1$):</strong> 진동 없는 단조 수렴</p>
+            <p><strong>• $\dfrac{1}{2A} < k < \dfrac{1}{A}$ ($-1 < r < 0$):</strong> 좌우 진동하며 감쇠 수렴</p>
+            <p><strong>• $k \ge \dfrac{1}{A}$ ($r \le -1$):</strong> 진동하며 발산</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         [Slide 08] [부록 2: 심화 탐구] 다변수 최적화와 그레이디언트
+         ========================================== -->
+    <section class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="header-left">
+          <span class="tag-badge" style="color: var(--accent-warm);">[부록 2: 심화 탐구] 딥러닝 최적화 연결</span>
+          <h1 class="slide-title">다변수 최적화: 편미분과 그레이디언트 벡터</h1>
+          <p class="slide-subtitle">추세선 $f(x) = ax + b$ 및 다층 신경망으로의 확장을 위한 수학적 도구입니다.</p>
+        </div>
+      </div>
+
+      <div class="content-grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>🌐 다변수 모델과 편미분</span>
+            <span class="step-badge">편미분의 도입</span>
+          </div>
+          <div class="card-body">
+            <p>• 기울기 $a$ 와 $y$ 절편 $b$ 를 모두 갖는 모델 $f(x) = ax + b$ 에서는 손실함수 $L(a, b)$ 의 독립변수가 2개가 됩니다.</p>
+            <p>• 각 변수 방향의 순간변화율을 독립적으로 구하기 위해 <strong>편미분(Partial Derivative)</strong> 을 적용합니다:</p>
+            <div class="math-callout">
+              $$\frac{\partial L}{\partial a}, \quad \frac{\partial L}{\partial b}$$
+            </div>
+            <p>• 편미분 성분을 모은 벡터를 <strong>그레이디언트 벡터(Gradient Vector, $\nabla L$)</strong> 라 합니다.</p>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="openModal('modal-s8-deep')">
+          <div class="card-title">
+            <span>🚀 다변수 경사하강법 점화식</span>
+            <span class="step-badge">일반형 공식</span>
+          </div>
+          <div class="card-body">
+            <p>매개변수 벡터를 $\mathbf{w} = (a, b)^T$ 라 할 때 다변수 경사하강법 공식은 다음과 같습니다:</p>
+            <div class="math-callout" style="border-left-color: var(--accent-color);">
+              $$\mathbf{w}_{n+1} = \mathbf{w}_n - \eta \nabla L(\mathbf{w}_n)$$
+            </div>
+            <p>• 일변수 공식 $a_{n+1} = a_n - k L'(a_n)$ 의 직접적인 벡터 확장입니다.</p>
+            <p>• 딥러닝 신경망의 오차 역전파(Backpropagation) 알고리즘 또한 이 원리를 바탕으로 작동합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         팝업 모달 모음 (.modal-overlay)
+         ========================================== -->
+    <!-- 모달: S1 생각 열기 -->
+    <div id="modal-s1-q" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 초매개변수(Hyperparameter) 의 수학적 정의</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s1-q')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>• <strong>매개변수 (Parameter, $a$):</strong> 데이터에 의해 경사하강법 알고리즘이 스스로 값을 갱신해 나가는 대상입니다.</p>
+          <p>• <strong>초매개변수 (Hyperparameter, $k$):</strong> 알고리즘이 스스로 결정하지 못하며, 사용자가 학습 전에 외부에서 직접 설정해야 하는 상수입니다.</p>
+          <p>• 학습률이 지나치게 크거나 작으면 수학적 알고리즘의 유효성과 무관하게 실제 연산 과정에서 수렴에 도달하지 못합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S2 초매개변수 지도 팁 -->
+    <div id="modal-s2-hyper" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 교과서 p.172 지도 TIP: 학습률의 공학적 의미</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s2-hyper')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>• 교과서에서는 학습률 $k$ 를 <strong>"파라미터를 조절하는 비례상수로서 보폭(발걸음 폭)을 결정하는 역할"</strong> 로 정의합니다.</p>
+          <p>• 실제 인공지능 모델 훈련에서는 $0.001 \sim 0.01$ 수준의 값을 초깃값으로 설정하여 점진적으로 조절합니다.</p>
+          <p>• <strong>과대 학습률의 영향:</strong> 단순히 수렴 속도가 느려지는 것이 아니라, 최솟값을 지나쳐 반대편으로 넘어가며 손실함수 값이 증가하는 <strong>발산(Divergence)</strong> 현상을 유발합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S3 확인하기 5 정밀 계산표 -->
+    <div id="modal-s3-calc" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 교과서 p.173 [확인하기 5] 정밀 오차표</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s3-calc')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>• $L(a) = 2a^2 - a + 4 \implies L'(a) = 4a - 1$, 최적점 $a^* = 0.25$ </p>
+          <table style="width: 100%; text-align: center; border-collapse: collapse; margin-top: 10px;">
+            <tr style="border-bottom: 2px solid var(--border-color);">
+              <th style="padding: 6px;">갱신 회차 ($n$)</th>
+              <th>$a_n$</th>
+              <th>$L'(a_n) = 4a_n - 1$</th>
+              <th>이동량 $\Delta a = -0.4 L'$</th>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 4px;">0 (초깃값)</td><td>0.000</td><td>-1.000</td><td>+0.400</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 4px;">1회</td><td>0.400</td><td>+0.600</td><td>-0.240</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 4px;">2회</td><td>0.160</td><td>-0.360</td><td>+0.144</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px;">3회</td><td>0.304</td><td>+0.216</td><td>-0.086</td>
+            </tr>
+          </table>
+          <p style="margin-top: 8px;">• 매개변수의 값이 $0.25$ 를 중심으로 좌우 부호가 반전되며 진동하지만, 오차의 절댓값이 점차 감소하며 수렴함을 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S4 교과서 풀이 vs 대수적 일차도함수 복원 비교 -->
+    <div id="modal-s4-proof" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 해법 2: 대수적 일차도함수 복원 풀이</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s4-proof')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>[일차도함수 복원 및 방정식 풀이]</strong> </p>
+          <p>• 예측 모델이 $f(x)=ax$ 일 때 손실함수 $L(a) = \frac{1}{n}\sum (y_i - ax_i)^2$ 은 $a$ 에 대한 최고차항이 양수인 이차함수입니다.</p>
+          <p>• 따라서 도함수 $L'(a)$ 는 반드시 일차식 $pa + q$ 꼴입니다.</p>
+          <p>• 표의 두 점 $(1.8, -6)$ 과 $(2.0, -2)$ 를 대입하여 기울기 $p$ 를 구하면:</p>
+          <div class="math-callout">
+            $$p = \frac{-2 - (-6)}{2.0 - 1.8} = \frac{4}{0.2} = 20$$
+          </div>
+          <p>• $L'(2.0) = 20(2.0) + q = -2 \implies 40 + q = -2 \implies q = -42$ </p>
+          <p>• 복원된 도함수: $\mathbf{L'(a) = 20a - 42}$ </p>
+          <p>• 최적 조건 $L'(m) = 0$ 을 적용하면:</p>
+          <div class="math-callout" style="border-left-color: var(--accent-success);">
+            $$20m - 42 = 0 \implies m = \frac{42}{20} = 2.1 \implies \mathbf{10m = 21}$$
+          </div>
+          <p>• 교과서의 기하학적 부호 판별 풀이 결과($m = 2.1$) 와 완벽히 일치함을 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S5 교과서 발전 문제 상세 해설 -->
+    <div id="modal-s5-textbook" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 교과서 p.175 발전 문제 정밀 해설 (교과서 p.210 연계)</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s5-textbook')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>[문제 출제 의도 및 풀이 정밀 분석]</strong> </p>
+          <p>• <strong>손실함수:</strong> $L(a) = a^2 - 4a + 5$ </p>
+          <p>• <strong>도함수 산출:</strong> $L'(a) = 2a - 4$ 이므로 초깃값 $a_0 = 10$ 에서의 미분계수는 $L'(10) = 2(10) - 4 = 16$ 입니다.</p>
+          <p>• <strong>경사하강법 1회 갱신:</strong> </p>
+          <div class="math-callout">
+            $$a_1 = a_0 - k L'(a_0) = 10 - 16k$$
+          </div>
+          <p>• <strong>조건 부등식 대입:</strong> </p>
+          <div class="math-callout" style="border-left-color: var(--accent-color);">
+            $$-2 < 10 - 16k < 6$$
+            각 변에서 $10$ 을 빼면:
+            $$-12 < -16k < -4$$
+            각 변을 $-16$ 으로 나누면 부등호 방향이 바뀌므로:
+            $$\frac{4}{16} < k < \frac{12}{16} \iff \mathbf{\frac{1}{4} < k < \frac{3}{4}}$$
+          </div>
+          <p>• <strong>$20k$ 의 값의 범위 산출:</strong> </p>
+          <p>&nbsp;&nbsp;각 변에 $20$ 을 곱하면: $20 \times \dfrac{1}{4} < 20k < 20 \times \dfrac{3}{4} \iff \mathbf{5 < 20k < 15}$ </p>
+          <p>• <strong>결론:</strong> $5$ 와 $15$ 사이의 자연수는 $6, 7, 8, 9, 10, 11, 12, 13, 14$ 로 <strong>총 9개</strong> 입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S7 고유값/임계값 증명 -->
+    <div id="modal-s7-eigen" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 심화: 2차 곡률과 학습률 한계값의 관계</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s7-eigen')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>• 손실함수 $L(a) = A a^2 + \dots$ 에서 2차 계수 $A$ 는 곡선의 곡률(가파른 정도)을 결정합니다.</p>
+          <p>• 공비 $r = 1 - 2Ak$ 에서 수렴 임계값은 $\mathbf{k_{\text{max}} = \dfrac{1}{A}}$ 입니다.</p>
+          <p>• 곡선이 가파를수록($A$ 가 클수록) 동일한 보폭에 대해 반대편으로 넘어가기 쉬우므로, 안정적인 수렴을 위해 허용되는 최대 학습률 $k_{\text{max}}$ 은 반비례하여 작아집니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모달: S8 딥러닝 연결 -->
+    <div id="modal-s8-deep" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">🔍 심화: 다변수 최적화와 역전파(Backpropagation)</h2>
+          <button class="btn-close-modal" onclick="closeModal('modal-s8-deep')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>• 다층 인공신경망은 복합적인 합성함수 구조로 설계되어 있습니다.</p>
+          <p>• 출력층에서 계산된 오차를 바탕으로 각 가중치에 대한 편미분을 구하기 위해 <strong>미분의 연쇄법칙(Chain Rule)</strong> 을 활용하며, 이를 <strong>역전파 알고리즘</strong> 이라 합니다.</p>
+          <p>• 계산된 편미분 벡터($\nabla L$) 는 본 단원에서 다룬 경사하강법 점화식 $\mathbf{w} \leftarrow \mathbf{w} - \eta \nabla L$ 에 대입되어 일괄적으로 매개변수를 갱신합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         독립 중첩 화이트보드 캔버스 (#whiteboard-container)
+         ========================================== -->
+    <div id="whiteboard-container">
+      <canvas id="wb-canvas"></canvas>
+      <div id="wb-toolbar">
+        <div class="color-dot active" style="background-color: #f8fafc;" onclick="setPenColor('#f8fafc', this)"></div>
+        <div class="color-dot" style="background-color: #f43f5e;" onclick="setPenColor('#f43f5e', this)"></div>
+        <div class="color-dot" style="background-color: #38bdf8;" onclick="setPenColor('#38bdf8', this)"></div>
+        <div class="color-dot" style="background-color: #f59e0b;" onclick="setPenColor('#f59e0b', this)"></div>
+        <button class="nav-btn" onclick="toggleWbOpacity()" id="btn-wb-opacity">투명도: 트레이싱(0%)</button>
+        <button class="nav-btn" onclick="clearWhiteboard()">전체 지우기</button>
+        <button class="nav-btn primary" onclick="toggleWhiteboard()">판서 닫기</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         하단 상시 노출 내비게이션 바 (#bottom-nav)
+         ========================================== -->
+    <nav id="bottom-nav">
+      <div class="nav-left">
+        <button class="nav-btn" onclick="prevSlide()">◀ 이전</button>
+        <button class="nav-btn" onclick="nextSlide()">다음 ▶</button>
+        <span class="slide-counter" id="slide-num">01 / 08</span>
+      </div>
+
+      <div class="nav-center">
+        <select class="theme-select" id="theme-selector" onchange="changeTheme(this.value)">
+          <option value="theme-dark">🌙 다크 네이비</option>
+          <option value="theme-light">☀️ 클린 라이트</option>
+          <option value="theme-chalkboard">🌿 그린 칠판</option>
+          <option value="theme-sepia">☕ 웜 세피아</option>
+        </select>
+        <button class="nav-btn" onclick="toggleWhiteboard()">✏️ 판서 펜</button>
+      </div>
+
+      <div class="nav-right">
+        <button class="nav-btn" onclick="toggleEditMode()" id="btn-edit">📝 편집 모드</button>
+        <button class="nav-btn" onclick="savePresentation()" id="btn-save">💾 슬라이드 저장</button>
+        <button class="nav-btn" onclick="toggleFullscreen()">⛶ 전체화면</button>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- ==========================================
+       통합 스크립트 엔진
+       ========================================== -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+    let editMode = false;
+
+    // 16:9 반응형 스케일러
+    function resizeViewport() {
+      const vp = document.getElementById('viewport');
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+      const scale = Math.min(winW / 1280, winH / 720);
+      vp.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', resizeViewport);
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeViewport();
+      initSimCanvas();
+      initWhiteboard();
+      renderAllMath();
+    });
+
+    // 슬라이드 내비게이션
+    function showSlide(n) {
+      if (n < 1 || n > totalSlides) return;
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(`slide-${n}`);
+      if (target) {
+        target.classList.add('active');
+        currentSlide = n;
+        document.getElementById('slide-num').innerText = `${String(n).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+        renderAllMath();
+        if (n === 2) {
+          requestAnimationFrame(drawSimInitial);
+        }
+      }
+    }
+
+    function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+    function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+
+    // 키보드 제어
+    window.addEventListener('keydown', (e) => {
+      if (editMode) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Escape') {
+        closeAllModals();
+        if (wbActive) toggleWhiteboard();
+      }
+    });
+
+    // 테마 전환
+    function changeTheme(themeName) {
+      document.body.className = themeName;
+      drawSimInitial();
+    }
+
+    // 모달 제어
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('active');
+        renderAllMath();
+      }
+    }
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('active');
+    }
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+
+    // OX 퀴즈 토글
+    function toggleQuiz(el) {
+      el.classList.toggle('revealed');
+      const exp = el.querySelector('.quiz-explain');
+      if (exp) {
+        exp.style.display = el.classList.contains('revealed') ? 'block' : 'none';
+      }
+    }
+
+    // 편집 모드 토글
+    function toggleEditMode() {
+      editMode = !editMode;
+      const btn = document.getElementById('btn-edit');
+      document.querySelectorAll('.card-body, .card-title, .slide-title, .slide-subtitle, .modal-body, .modal-title').forEach(el => {
+        el.contentEditable = editMode ? "true" : "false";
+      });
+      btn.innerText = editMode ? "✅ 편집 완료" : "📝 편집 모드";
+      btn.classList.toggle('primary', editMode);
+    }
+
+    // 슬라이드 저장 (다운로드)
+    function savePresentation() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'AI_Math_Lesson4_Optimization.html';
+      a.click();
+    }
+
+    // 전체화면 토글
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // KaTeX 자동 렌더링
+    function renderAllMath() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // ==========================================
+    // Slide 2: 인터랙티브 캔버스 시뮬레이터 (높이 250px 최적화 엔진)
+    // ==========================================
+    let simCanvas, simCtx;
+    let animTimer = null;
+    let simSteps = [];
+    let currentStepIdx = 0;
+
+    // 수학 모델: L(a) = (a - 2)^2 + 1, L'(a) = 2(a - 2), a^* = 2
+    function lossFunc(a) { return (a - 2) * (a - 2) + 1; }
+    function lossDeriv(a) { return 2 * (a - 2); }
+
+    function initSimCanvas() {
+      simCanvas = document.getElementById('sim-canvas-2');
+      if (!simCanvas) return;
+      simCanvas.width = 540;
+      simCanvas.height = 250;
+      simCtx = simCanvas.getContext('2d');
+      drawSimInitial();
+    }
+
+    function toScreenX(a) {
+      return 40 + ((a - 0.2) / (3.8 - 0.2)) * 460;
+    }
+    function toScreenY(loss) {
+      return 215 - ((loss - 0.8) / (5.0 - 0.8)) * 185;
+    }
+
+    function drawSimCurve() {
+      const styles = getComputedStyle(document.body);
+      const curveColor = styles.getPropertyValue('--accent-color').trim() || '#38bdf8';
+      const gridColor = styles.getPropertyValue('--border-color').trim() || '#334155';
+      const textColor = styles.getPropertyValue('--text-sub').trim() || '#94a3b8';
+
+      simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+
+      simCtx.strokeStyle = gridColor;
+      simCtx.lineWidth = 1;
+      simCtx.setLineDash([4, 4]);
+
+      const xOpt = toScreenX(2.0);
+      simCtx.beginPath();
+      simCtx.moveTo(xOpt, 20);
+      simCtx.lineTo(xOpt, 225);
+      simCtx.stroke();
+      simCtx.setLineDash([]);
+
+      simCtx.fillStyle = textColor;
+      simCtx.font = '12px Pretendard, sans-serif';
+      simCtx.fillText('최적점 a* = 2.0', xOpt - 38, 240);
+
+      simCtx.strokeStyle = curveColor;
+      simCtx.lineWidth = 3;
+      simCtx.beginPath();
+      for (let a = 0.3; a <= 3.7; a += 0.05) {
+        const sx = toScreenX(a);
+        const sy = toScreenY(lossFunc(a));
+        if (a === 0.3) simCtx.moveTo(sx, sy);
+        else simCtx.lineTo(sx, sy);
+      }
+      simCtx.stroke();
+    }
+
+    function drawSimInitial() {
+      if (!simCtx) return;
+      drawSimCurve();
+      const a0 = 3.6;
+      const sx = toScreenX(a0);
+      const sy = toScreenY(lossFunc(a0));
+      simCtx.fillStyle = '#f43f5e';
+      simCtx.beginPath();
+      simCtx.arc(sx, sy, 6, 0, Math.PI * 2);
+      simCtx.fill();
+
+      simCtx.fillStyle = '#f8fafc';
+      simCtx.font = 'bold 12px Pretendard, sans-serif';
+      simCtx.fillText('초깃값 a₀ = 3.6', sx - 84, sy - 10);
+    }
+
+    function runSim(lr) {
+      if (animTimer) clearInterval(animTimer);
+      simSteps = [];
+      let a = 3.6;
+      for (let i = 0; i < 10; i++) {
+        simSteps.push({ a: a, loss: lossFunc(a) });
+        const grad = lossDeriv(a);
+        a = a - lr * grad;
+        if (a < 0.2 || a > 3.8) {
+          simSteps.push({ a: a, loss: lossFunc(a) });
+          break;
+        }
+      }
+
+      currentStepIdx = 0;
+      drawSimCurve();
+
+      animTimer = setInterval(() => {
+        if (currentStepIdx >= simSteps.length) {
+          clearInterval(animTimer);
+          return;
+        }
+        drawTrajectoryStep(currentStepIdx);
+        currentStepIdx++;
+      }, 240);
+    }
+
+    function resetSim() {
+      if (animTimer) clearInterval(animTimer);
+      drawSimInitial();
+    }
+
+    function drawTrajectoryStep(idx) {
+      const pt = simSteps[idx];
+      const sx = toScreenX(pt.a);
+      const sy = toScreenY(pt.loss);
+
+      if (idx > 0) {
+        const prevPt = simSteps[idx - 1];
+        const psx = toScreenX(prevPt.a);
+        const psy = toScreenY(prevPt.loss);
+
+        simCtx.strokeStyle = '#f59e0b';
+        simCtx.lineWidth = 2;
+        simCtx.setLineDash([3, 3]);
+        simCtx.beginPath();
+        simCtx.moveTo(psx, psy);
+        simCtx.lineTo(sx, sy);
+        simCtx.stroke();
+        simCtx.setLineDash([]);
+      }
+
+      simCtx.fillStyle = idx === 0 ? '#f43f5e' : '#10b981';
+      simCtx.beginPath();
+      simCtx.arc(sx, sy, 5.5, 0, Math.PI * 2);
+      simCtx.fill();
+      simCtx.strokeStyle = '#fff';
+      simCtx.lineWidth = 1.5;
+      simCtx.stroke();
+
+      simCtx.fillStyle = '#f8fafc';
+      simCtx.font = '11px Pretendard, sans-serif';
+      simCtx.fillText(`a${idx}`, sx + 7, sy - 5);
+    }
+
+    // ==========================================
+    // 화이트보드 필기 엔진 (연속 Bézier 실선 보간)
+    // ==========================================
+    let wbContainer, wbCanvas, wbCtx;
+    let wbActive = false;
+    let isDrawing = false;
+    let penColor = '#f8fafc';
+    let penSize = 3;
+    let lastPoint = null;
+    let lastMidPoint = null;
+    let wbOpacityMode = 0;
+
+    function initWhiteboard() {
+      wbContainer = document.getElementById('whiteboard-container');
+      wbCanvas = document.getElementById('wb-canvas');
+      if (!wbCanvas) return;
+      wbCanvas.width = 1280;
+      wbCanvas.height = 648;
+      wbCtx = wbCanvas.getContext('2d');
+      wbCtx.lineCap = 'round';
+      wbCtx.lineJoin = 'round';
+
+      wbCanvas.addEventListener('pointerdown', (e) => {
+        isDrawing = true;
+        const rect = wbCanvas.getBoundingClientRect();
+        const scale = 1280 / rect.width;
+        const pt = {
+          x: (e.clientX - rect.left) * scale,
+          y: (e.clientY - rect.top) * scale
+        };
+        lastPoint = pt;
+        lastMidPoint = pt;
+
+        wbCtx.fillStyle = penColor;
+        wbCtx.beginPath();
+        wbCtx.arc(pt.x, pt.y, penSize / 2, 0, Math.PI * 2);
+        wbCtx.fill();
+      });
+
+      wbCanvas.addEventListener('pointermove', (e) => {
+        if (!isDrawing) return;
+        const rect = wbCanvas.getBoundingClientRect();
+        const scale = 1280 / rect.width;
+        const currentPoint = {
+          x: (e.clientX - rect.left) * scale,
+          y: (e.clientY - rect.top) * scale
+        };
+
+        const currentMidPoint = {
+          x: (lastPoint.x + currentPoint.x) / 2,
+          y: (lastPoint.y + currentPoint.y) / 2
+        };
+
+        wbCtx.strokeStyle = penColor;
+        wbCtx.lineWidth = penSize;
+        wbCtx.beginPath();
+        wbCtx.moveTo(lastMidPoint.x, lastMidPoint.y);
+        wbCtx.quadraticCurveTo(lastPoint.x, lastPoint.y, currentMidPoint.x, currentMidPoint.y);
+        wbCtx.stroke();
+
+        lastPoint = currentPoint;
+        lastMidPoint = currentMidPoint;
+      });
+
+      wbCanvas.addEventListener('pointerup', () => { isDrawing = false; });
+      wbCanvas.addEventListener('pointerleave', () => { isDrawing = false; });
+    }
+
+    function toggleWhiteboard() {
+      wbActive = !wbActive;
+      wbContainer.classList.toggle('active', wbActive);
+      if (wbActive) applyWbBackground();
+    }
+
+    function setPenColor(color, el) {
+      penColor = color;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function clearWhiteboard() {
+      if (wbCtx) wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+    }
+
+    function toggleWbOpacity() {
+      wbOpacityMode = (wbOpacityMode + 1) % 3;
+      applyWbBackground();
+    }
+
+    function applyWbBackground() {
+      const btn = document.getElementById('btn-wb-opacity');
+      if (wbOpacityMode === 0) {
+        wbContainer.style.backgroundColor = 'transparent';
+        btn.innerText = '투명도: 트레이싱(0%)';
+      } else if (wbOpacityMode === 1) {
+        wbContainer.style.backgroundColor = 'rgba(15, 23, 42, 0.65)';
+        btn.innerText = '투명도: 반투명(50%)';
+      } else {
+        wbContainer.style.backgroundColor = 'rgba(15, 23, 42, 0.98)';
+        btn.innerText = '투명도: 불투명(100%)';
+      }
+    }
+  </script>
+</body>
+</html>
