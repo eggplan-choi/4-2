@@ -181,7 +181,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 30px;
+      gap: 26px;
     }
 
     .slide.active {
@@ -206,7 +206,7 @@
     }
 
     .slide-title {
-      font-size: 60px;
+      font-size: 58px;
       font-weight: 900;
       line-height: 1.25;
       color: var(--text-main);
@@ -214,7 +214,7 @@
     }
 
     .slide-desc {
-      font-size: 30px;
+      font-size: 29px;
       color: var(--text-sub);
       font-weight: 500;
       line-height: 1.5;
@@ -225,14 +225,14 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 36px;
-      align-items: flex-start;
+      align-items: stretch;
     }
 
     .card {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
       border-radius: 24px;
-      padding: 34px 40px;
+      padding: 32px 38px;
       display: flex;
       flex-direction: column;
       box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.35);
@@ -256,18 +256,23 @@
       box-shadow: 0 20px 45px -8px rgba(251, 191, 36, 0.3);
     }
 
+    .card.clickable.rose-card:hover {
+      border-color: var(--rose);
+      box-shadow: 0 20px 45px -8px rgba(251, 113, 133, 0.3);
+    }
+
     .card-title {
-      font-size: 34px;
+      font-size: 33px;
       font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .card-body {
-      font-size: 29px;
+      font-size: 28px;
       color: var(--text-sub);
       line-height: 1.6;
     }
@@ -276,11 +281,11 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 700;
       color: var(--primary);
       background: rgba(56, 189, 248, 0.16);
-      padding: 8px 16px;
+      padding: 7px 15px;
       border-radius: 10px;
       border: 1px solid rgba(56, 189, 248, 0.45);
     }
@@ -291,14 +296,20 @@
       border-color: rgba(251, 191, 36, 0.45);
     }
 
-    /* Large Math Box */
+    .click-hint.rose {
+      color: var(--rose);
+      background: rgba(251, 113, 133, 0.16);
+      border-color: rgba(251, 113, 133, 0.45);
+    }
+
+    /* Math Box Callout */
     .math-callout {
       background: var(--math-box-bg);
       border-left: 8px solid var(--primary);
       border-radius: 0 18px 18px 0;
-      padding: 20px 28px;
+      padding: 18px 26px;
       margin: 14px 0;
-      font-size: 32px;
+      font-size: 30px;
       color: var(--text-main);
     }
 
@@ -310,16 +321,20 @@
       border-left-color: var(--amber);
     }
 
-    /* Large Custom Table */
+    .math-callout.rose {
+      border-left-color: var(--rose);
+    }
+
+    /* Custom Table */
     .custom-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 12px 0;
-      font-size: 29px;
+      margin: 10px 0;
+      font-size: 27px;
     }
 
     .custom-table th, .custom-table td {
-      padding: 14px 18px;
+      padding: 12px 16px;
       text-align: center;
       border-bottom: 2px solid var(--card-border);
     }
@@ -336,12 +351,12 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      margin-top: 35px;
-      gap: 28px;
+      margin-top: 30px;
+      gap: 26px;
     }
 
     .hero-title {
-      font-size: 74px;
+      font-size: 72px;
       font-weight: 900;
       line-height: 1.25;
       background: linear-gradient(135deg, var(--text-main) 45%, var(--primary) 100%);
@@ -350,7 +365,7 @@
     }
 
     .hero-subtitle {
-      font-size: 34px;
+      font-size: 33px;
       color: var(--text-sub);
       max-width: 1350px;
       line-height: 1.6;
@@ -360,7 +375,7 @@
       background: var(--card-bg);
       border: 2px solid var(--card-border);
       border-radius: 24px;
-      padding: 38px 60px;
+      padding: 36px 58px;
       width: 1300px;
       text-align: left;
     }
@@ -374,16 +389,16 @@
 
     .objective-list ol {
       padding-left: 36px;
-      font-size: 30px;
+      font-size: 29px;
       color: var(--text-main);
       line-height: 1.8;
     }
 
-    /* Slide 4 Simulator Layout */
+    /* Slide Simulator Layout */
     .sim-panel {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       width: 100%;
     }
 
@@ -406,7 +421,7 @@
     }
 
     .sim-slider-group label {
-      font-size: 30px;
+      font-size: 29px;
       font-weight: 800;
       color: var(--primary);
       white-space: nowrap;
@@ -438,7 +453,7 @@
       color: var(--text-main);
       padding: 10px 22px;
       border-radius: 12px;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -480,13 +495,13 @@
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 10px 22px;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 700;
       backdrop-filter: blur(8px);
       color: var(--text-main);
     }
 
-    /* Modal / Popups (Positioned strictly above bottom-nav) */
+    /* Modal / Popups */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -505,13 +520,11 @@
       transition: opacity 0.25s ease, visibility 0.25s;
     }
 
-    /* Whiteboard Opacity & Tracing Mode Hierarchy */
     #modal-whiteboard {
       z-index: 3000;
       transition: background 0.25s ease, backdrop-filter 0.25s ease;
     }
 
-    /* Level 1: 100% Solid (Default) */
     #modal-whiteboard.wb-level-1 {
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(16px);
@@ -524,7 +537,6 @@
       background: var(--modal-bg);
     }
 
-    /* Level 2: 50% Semi-transparent (Underlying slide visible) */
     #modal-whiteboard.wb-level-2 {
       background: rgba(0, 0, 0, 0.25);
       backdrop-filter: none;
@@ -537,7 +549,6 @@
       background: transparent;
     }
 
-    /* Level 3: 15% High-transparency Tracing Mode (Sharp, clear tracing) */
     #modal-whiteboard.wb-level-3 {
       background: transparent;
       backdrop-filter: none;
@@ -550,7 +561,6 @@
       background: transparent;
     }
 
-    /* Whiteboard Opacity Button Styles */
     .wb-op-btn {
       padding: 6px 14px;
       font-size: 18px;
@@ -571,18 +581,15 @@
       border-color: var(--emerald) !important;
     }
 
-    /* Editable Outline Styling */
     body.editing-active .editable {
       outline: 2px dashed rgba(251, 191, 36, 0.7) !important;
       outline-offset: 4px;
       cursor: text !important;
     }
-
     body.editing-active .editable:hover {
       outline-color: var(--amber) !important;
       background: rgba(251, 191, 36, 0.08) !important;
     }
-
     .btn-nav.active {
       background: var(--amber) !important;
       color: #070a14 !important;
@@ -601,7 +608,7 @@
       border-radius: 30px;
       width: 1400px;
       max-height: 880px;
-      padding: 48px 58px;
+      padding: 46px 56px;
       box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
       display: flex;
       flex-direction: column;
@@ -625,7 +632,7 @@
     }
 
     .modal-title {
-      font-size: 42px;
+      font-size: 40px;
       font-weight: 900;
       color: var(--text-main);
     }
@@ -634,10 +641,10 @@
       background: var(--btn-bg);
       border: 2px solid var(--btn-border);
       color: var(--text-main);
-      width: 58px;
-      height: 58px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      font-size: 32px;
+      font-size: 30px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -652,14 +659,12 @@
     }
 
     .modal-body {
-      font-size: 30px;
+      font-size: 29px;
       color: var(--text-sub);
       line-height: 1.7;
     }
 
-    /* ========================================================
-       Whiteboard Modal Specifics
-       ======================================================== */
+    /* Whiteboard Modal */
     .whiteboard-content {
       width: 1760px;
       height: 980px;
@@ -704,10 +709,10 @@
       width: 100%;
       height: 100%;
       display: block;
-      touch-action: none; /* Prevents scrolling lag on touchscreens */
+      touch-action: none;
     }
 
-    /* Bottom Navigation Bar (Always on Top) */
+    /* Bottom Navigation Bar */
     #bottom-nav {
       position: fixed;
       bottom: 0;
@@ -779,7 +784,6 @@
       color: #070a14;
     }
 
-    /* Styled Theme Selector */
     .theme-select {
       background: var(--btn-bg);
       border: 2px solid var(--btn-border);
@@ -812,7 +816,6 @@
       color: var(--primary);
     }
 
-    /* Bottom Progress Bar */
     #progress-container {
       position: fixed;
       bottom: 72px;
@@ -826,7 +829,7 @@
 
     #progress-bar {
       height: 100%;
-      width: 14.28%;
+      width: 11.11%;
       background: linear-gradient(90deg, var(--primary), var(--emerald));
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -853,25 +856,28 @@
           <div class="objective-list">
             <h4>🎯 학습 목표</h4>
             <ol>
-              <li>예측 오차의 부호 상쇄 현상을 이해하고, <strong>평균제곱오차(MSE)</strong> 의 필요성을 설명할 수 있다. </li>
+              <li>예측 오차의 부호 상쇄 현상을 이해하고, <strong>손실함수(평균제곱오차, MSE)</strong> 의 의미와 필요성을 설명할 수 있다. </li>
               <li>데이터 좌표를 바탕으로 손실함수 $L(a)$ 를 전개하고, <strong>이차함수의 성질</strong> 로 최적의 기울기를 산출할 수 있다. </li>
             </ol>
           </div>
         </div>
       </section>
 
-      <!-- ==================== SLIDE 2: Error Dilemma ==================== -->
+      <!-- ==================== SLIDE 2: Error Dilemma (수정본: 평균점을 지나는 두 직선 대비) ==================== -->
       <section class="slide" id="slide-2">
         <div class="slide-header">
           <div class="slide-tag">Review &amp; Motivation</div>
           <h2 class="slide-title">4-1단원 복습: 오차의 단순 합산과 부호 상쇄 현상</h2>
-          <p class="slide-desc">원점과 평균점을 지나는 직선은 오차의 단순 총합이 $0$ 이 되지만, 과연 최적의 선일까요?</p>
+          <p class="slide-desc">
+            데이터의 평균점 $(\bar{x}, \bar{y}) = (4, 2)$ 를 지나는 직선은 <strong>기울기와 무관하게 항상 단순 오차합이 $0$ </strong> 이 됩니다.
+          </p>
         </div>
 
         <div class="grid-2">
-          <div class="card clickable" onclick="openModal('modal-review-calc')">
+          <!-- Left: Candidate 1 (f_1(x) = 0.5x) -->
+          <div class="card clickable" onclick="openModal('modal-review-calc1')">
             <div class="card-title">
-              <span>📐 후보 직선 $f(x) = 0.5x$ (원점과 평균점 통과)</span>
+              <span>📐 후보 1: $f_1(x) = 0.5x$ (기울기 $0.5$)</span>
               <span class="click-hint">🔍 상세 계산</span>
             </div>
             <div class="card-body">
@@ -879,58 +885,88 @@
                 <thead>
                   <tr>
                     <th>데이터 점</th>
-                    <th>예측값 $f(x_i)$ </th>
-                    <th>오차 ($y_i - f(x_i)$)</th>
+                    <th>예측값 $f_1(x_i)$ </th>
+                    <th>오차 ($y_i - f_1(x_i)$)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>$(3, 1)$ </td>
-                    <td>$f(3) = 1.5$ </td>
+                    <td>$f_1(3) = 1.5$ </td>
                     <td><strong style="color: var(--rose);">-0.5</strong> </td>
                   </tr>
                   <tr>
                     <td>$(2, 2)$ </td>
-                    <td>$f(2) = 1.0$ </td>
+                    <td>$f_1(2) = 1.0$ </td>
                     <td><strong style="color: var(--primary);">+1.0</strong> </td>
                   </tr>
                   <tr>
                     <td>$(7, 3)$ </td>
-                    <td>$f(7) = 3.5$ </td>
+                    <td>$f_1(7) = 3.5$ </td>
                     <td><strong style="color: var(--rose);">-0.5</strong> </td>
                   </tr>
                 </tbody>
               </table>
-              <div class="math-callout" style="font-size: 32px; text-align: center;">
+              <div class="math-callout" style="font-size: 28px; text-align: center;">
                 오차의 단순 총합: $(-0.5) + (+1.0) + (-0.5) = 0$ 
               </div>
             </div>
           </div>
 
-          <div class="card clickable" onclick="openModal('modal-review-insight')">
+          <!-- Right: Candidate 2 (f_2(x) = -x + 6, also passes through (4, 2)) -->
+          <div class="card clickable amber-card" style="border-color: rgba(251, 191, 36, 0.45);" onclick="openModal('modal-review-calc2')">
             <div class="card-title">
-              <span>⚠️ 단순 합산 방식의 수학적 한계</span>
-              <span class="click-hint">🔍 개념 해설</span>
+              <span>📐 후보 2: $f_2(x) = -x + 6$ (기울기 $-1.0$)</span>
+              <span class="click-hint amber">🔍 상세 계산</span>
             </div>
-            <div class="card-body" style="display: flex; flex-direction: column; gap: 18px;">
-              <div style="background: rgba(251, 113, 133, 0.14); border-left: 8px solid var(--rose); border-radius: 14px; padding: 22px;">
-                <h4 style="color: var(--rose); font-size: 30px; margin-bottom: 8px;">부호 상쇄로 인한 판정 왜곡</h4>
-                <p style="font-size: 27px; line-height: 1.6; margin: 0;">
-                  세 점 모두 직선에서 벗어나 있으나, 양과 음의 오차가 상쇄되어 오차가 전혀 없는 것처럼 오판됩니다.
-                </p>
-              </div>
-              <div style="background: rgba(52, 211, 153, 0.14); border-left: 8px solid var(--emerald); border-radius: 14px; padding: 22px;">
-                <h4 style="color: var(--emerald); font-size: 30px; margin-bottom: 8px;">수학적 해결 원리</h4>
-                <p style="font-size: 27px; line-height: 1.6; margin: 0;">
-                  부호와 무관하게 <strong>실제 데이터와의 순수한 거리(크기)</strong> 만을 정량화하는 새로운 목적함수가 필요합니다. 
-                </p>
+            <div class="card-body">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>데이터 점</th>
+                    <th>예측값 $f_2(x_i)$ </th>
+                    <th>오차 ($y_i - f_2(x_i)$)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>$(3, 1)$ </td>
+                    <td>$f_2(3) = 3.0$ </td>
+                    <td><strong style="color: var(--rose);">-2.0</strong> </td>
+                  </tr>
+                  <tr>
+                    <td>$(2, 2)$ </td>
+                    <td>$f_2(2) = 4.0$ </td>
+                    <td><strong style="color: var(--rose);">-2.0</strong> </td>
+                  </tr>
+                  <tr>
+                    <td>$(7, 3)$ </td>
+                    <td>$f_2(7) = -1.0$ </td>
+                    <td><strong style="color: var(--primary);">+4.0</strong> </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="math-callout amber" style="font-size: 28px; text-align: center;">
+                오차의 단순 총합: $(-2.0) + (-2.0) + (+4.0) = 0$ 
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Bottom Insight Bar -->
+        <div class="card clickable" style="padding: 20px 36px; border-color: rgba(251, 113, 133, 0.5);" onclick="openModal('modal-review-insight')">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <p style="font-size: 27px; line-height: 1.6; margin: 0; color: var(--text-main);">
+              ⚠️ <strong>핵심 딜레마:</strong> 양수와 음수의 오차가 상쇄되어, <strong>전혀 엉뚱한 방향의 직선(기울기 $-1$)조차 오차 총합이 $0$</strong> 이 됩니다. 즉, 단순 합산으로는 어떤 직선이 더 좋은지 전혀 판별할 수 없습니다.
+            </p>
+            <span class="click-hint rose" style="white-space: nowrap; margin-left: 20px;">
+              🔍 대수적 증명 보기
+            </span>
+          </div>
+        </div>
       </section>
 
-      <!-- ==================== SLIDE 3: Defining Loss Function ==================== -->
+      <!-- ==================== SLIDE 3: Defining Loss Function (MAE vs MSE) ==================== -->
       <section class="slide" id="slide-3">
         <div class="slide-header">
           <div class="slide-tag">Formalization</div>
@@ -948,8 +984,8 @@
               <div class="math-callout">
                 $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} |y_i - f(x_i)|$$
               </div>
-              <p style="margin-top: 14px;">• 오차의 물리적 크기를 직접 반영함.</p>
-              <p>• 꺾인 점(첨점)에서 <strong>미분이 불가능</strong> 하여 최적화 알고리즘 적용이 까다로움. </p>
+              <p style="margin-top: 14px;">오차의 물리적 크기를 직접 반영함.</p>
+              <p>꺾인 점(첨점)에서 <strong>미분이 불가능</strong> 하여 최적화 알고리즘 적용이 까다로움.</p>
             </div>
           </div>
 
@@ -962,59 +998,75 @@
               <div class="math-callout emerald">
                 $$L(a) = \frac{1}{n}\sum_{i=1}^{n} (y_i - ax_i)^2$$
               </div>
-              <p style="margin-top: 14px;">• 실수의 제곱 성질($e_i^2 \ge 0$)로 부호 상쇄를 완전 차단함.</p>
-              <p>• 매끄러운 <strong>2차 포물선 곡선</strong> 을 형성하여 대칭축 및 미분 적용에 이상적임. </p>
+              <p style="margin-top: 14px;">실수의 제곱 성질($e_i^2 \ge 0$)로 부호 상쇄를 완전 차단함.</p>
+              <p>매끄러운 <strong>2차 포물선 곡선</strong> 을 형성하여 대칭축 및 미분 적용에 이상적임.</p>
             </div>
           </div>
         </div>
 
         <div class="card" style="padding: 22px 38px;">
-          <h3 style="font-size: 32px; color: var(--primary); margin-bottom: 8px;">📖 [정의] 손실함수 (Loss Function)</h3>
-          <p style="font-size: 29px; line-height: 1.6;">
-            모델이 주어진 데이터에 얼마나 부합하지 못하는지를 수치화한 함수이며, 인공지능의 최적화는 곧 <strong>손실함수 $L(a)$ 를 최소화하는 매개변수 $a$ 를 구하는 과정</strong> 입니다. 
+          <h3 style="font-size: 31px; color: var(--primary); margin-bottom: 8px;">💡 부호 제거의 핵심 원리</h3>
+          <p style="font-size: 28px; line-height: 1.6;">
+            오차의 부호를 없애는 두 가지 방법 중, 전 구간에서 <strong>미분이 가능하고 계산이 매끄러운 다항함수 형태</strong> 를 제공하는 것은 바로 <strong>오차 제곱의 평균(MSE)</strong> 입니다.
           </p>
         </div>
       </section>
 
-      <!-- ==================== SLIDE 4: Interactive Simulation ==================== -->
+      <!-- ==================== SLIDE 4: NEW - Concept of Loss & Function Definition ==================== -->
       <section class="slide" id="slide-4">
-        <div class="slide-header" style="margin-bottom: 10px;">
-          <div class="slide-tag">Interactive Simulation</div>
-          <h2 class="slide-title">기울기 $a$ 에 따른 잔차 면적과 손실 곡면 비교</h2>
-          <p class="slide-desc">가로로 확장된 1:1 격자 데이터 공간과 정방형 손실 포물선의 움직임을 확인하세요.</p>
+        <div class="slide-header">
+          <div class="slide-tag">Conceptual Foundation</div>
+          <h2 class="slide-title">손실(Loss)의 실생활 의미와 손실함수의 정의</h2>
+          <p class="slide-desc">왜 오차의 크기를 '손실(Loss)'이라고 부르며, 인공지능은 이를 어떻게 수학적으로 정의할까요?</p>
         </div>
 
-        <div class="sim-panel">
-          <div class="sim-controls">
-            <div class="sim-slider-group">
-              <label for="slope-slider" id="label-slider-a">추세선 기울기 $a = 0.45$ </label>
-              <input type="range" id="slope-slider" min="0.0" max="1.1" step="0.01" value="0.45">
+        <div class="grid-2">
+          <!-- Left: Real-world Analogy & Math Definition -->
+          <div class="card clickable" onclick="openModal('modal-loss-names')">
+            <div class="card-title">
+              <span>🚦 실생활 속 '손실'과 수학적 정의</span>
+              <span class="click-hint">🔍 다른 명칭 탐구</span>
             </div>
-            <div style="display: flex; gap: 14px;">
-              <button class="sim-preset-btn" onclick="setSlope(0.20)">a = 0.20</button>
-              <button class="sim-preset-btn" onclick="setSlope(0.45)" style="border-color: var(--emerald); color: var(--emerald);">a = 0.45 (최적)</button>
-              <button class="sim-preset-btn" onclick="setSlope(0.50)" style="border-color: var(--amber); color: var(--amber);">a = 0.50 (오차합 0)</button>
-              <button class="sim-preset-btn" onclick="setSlope(0.80)">a = 0.80</button>
-            </div>
-            <div style="font-size: 29px; font-weight: 800; color: var(--text-main);" id="loss-indicator">
-              손실 $L(a) = 0.452$ 
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+              <p style="font-size: 27px; line-height: 1.6;">
+                <strong>교과서 속 생각 열기:</strong> 교차로의 신호등이 특정 신호를 필요 이상으로 길거나 짧게 작동시키면, 불필요한 대기 시간과 교통 정체라는 다양한 형태의 <strong>'손실(Loss)'</strong> 이 발생합니다.
+              </p>
+              <div class="math-callout" style="font-size: 27px; margin: 6px 0;">
+                인공지능 모델이 현실 데이터를 잘못 예측함으로써 발생하는 <strong>불일치의 총량(손실)을 측정한 함수</strong> 가 바로 <strong>손실함수(Loss Function)</strong> 입니다.
+              </div>
+              <div class="math-callout emerald" style="font-size: 26px; margin: 4px 0;">
+                $$\text{손실함수 } L(a) = \frac{1}{n}\sum_{i=1}^{n} \big( y_i - f(x_i) \big)^2$$
+              </div>
             </div>
           </div>
 
-          <div class="canvas-grid">
-            <div class="canvas-wrap">
-              <canvas id="canvas-data"></canvas>
-              <div class="sim-metric-badge" style="left: 20px; right: auto;">
-                데이터 공간 (1:1 격자, 끝까지 연장): $f(x) = ax$ 
-              </div>
+          <!-- Right: Curriculum Constraint Warning (Red Border) -->
+          <div class="card rose-card" style="border: 3px solid var(--rose); background: rgba(251, 113, 133, 0.08);">
+            <div class="card-title" style="color: var(--rose);">
+              <span>⚠️ 교육과정 학습 주의사항</span>
+              <span class="click-hint rose">필독 제약</span>
             </div>
-            <div class="canvas-wrap">
-              <canvas id="canvas-loss"></canvas>
-              <div class="sim-metric-badge">
-                손실 곡면 (1:1 격자 포물선): $L(a)$ 
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: var(--math-box-bg); border-left: 6px solid var(--rose); border-radius: 12px; padding: 18px;">
+                <p style="font-size: 28px; color: var(--rose); font-weight: 800; margin-bottom: 6px;">
+                  반드시 기억할 추세선 형태의 제한
+                </p>
+                <p style="font-size: 27px; line-height: 1.6; color: var(--text-main); margin: 0;">
+                  고등학교 《인공지능 수학》에서는 학생들의 수식 전개 부담을 줄이고 1차원 최적화 원리를 명확히 전달하기 위해, <strong>$y$ 절편이 없는 원점 통과 직선 $f(x) = ax$ 만을 다룹니다.</strong> 
+                </p>
               </div>
+              <p style="font-size: 26px; line-height: 1.6;">
+                일반적인 직선 $f(x) = ax + b$ 에서 절편 $b$ 가 고정($b = 0$)되어 있으므로, <strong>기울기 $a$ 하나만을 변수로 갖는 손실함수 $L(a)$</strong> 를 유도하고 최소화하게 됩니다.
+              </p>
             </div>
           </div>
+        </div>
+
+        <!-- Bottom Goal Summary -->
+        <div class="card" style="padding: 20px 38px;">
+          <p style="font-size: 27px; line-height: 1.6; margin: 0;">
+            🎯 <strong>인공지능 최적화의 본질:</strong> 모델의 예측 성능을 높인다는 것은, 데이터로부터 발생하는 <strong>손실함수 $L(a)$ 의 값을 최소로 만드는 최적의 매개변수 $a$ 를 찾아내는 과정</strong> 입니다.
+          </p>
         </div>
       </section>
 
@@ -1054,7 +1106,7 @@
               </div>
               <p style="margin-top: 14px;">
                 최고차항 계수 $A = \frac{62}{3} > 0$ 이므로,<br>
-                손실함수 그래프는 <strong>아래로 볼록한 포물선</strong> 을 이룹니다. 
+                손실함수 그래프는 <strong>아래로 볼록한 포물선</strong> 을 이룹니다.
               </p>
             </div>
           </div>
@@ -1064,60 +1116,42 @@
       <!-- ==================== SLIDE 6: Algebraic Derivation Step 2 ==================== -->
       <section class="slide" id="slide-6">
         <div class="slide-header">
-          <div class="slide-tag">Derivation 2 &amp; Comparison</div>
-          <h2 class="slide-title">최적 기울기 도출 및 두 직선의 비교 분석</h2>
-          <p class="slide-desc">이차함수의 꼭짓점에서 손실이 최소화되며, 오차합이 0인 직선보다 더 작은 손실을 달성합니다.</p>
+          <div class="slide-tag">Derivation 2</div>
+          <h2 class="slide-title">이차함수의 꼭짓점을 이용한 최적 기울기 도출</h2>
+          <p class="slide-desc">완전제곱식 표준형 변형과 대칭축의 성질을 이용하여 손실을 최소화하는 $a$ 를 확정합니다.</p>
         </div>
 
         <div class="grid-2">
-          <!-- Left: Optimal Solution (Clickable Card) -->
+          <!-- Left: Complete Square Derivation -->
           <div class="card clickable" onclick="openModal('modal-step2-complete')">
             <div class="card-title" style="color: var(--emerald);">
-              <span>🎯 최적해 도출 ($a_{\text{최적}} = \frac{14}{31}$)</span>
-              <span class="click-hint">🔍 유도식</span>
+              <span>🎯 완전제곱식 표준형 유도</span>
+              <span class="click-hint">🔍 변형 과정</span>
             </div>
             <div class="card-body">
               <div class="math-callout emerald">
                 $$L(a) = \frac{62}{3}\left(a - \frac{14}{31}\right)^2 + \frac{14}{31}$$
               </div>
               <p style="font-size: 27px; line-height: 1.6; margin-top: 12px;">
-                대칭축 공식 또는 완전제곱식에 의해:<br>
+                실수의 제곱 성질에 의해 $\left(a - \frac{14}{31}\right)^2 \ge 0$ 이므로:<br>
                 <strong>최적 기울기: $a = \frac{14}{31} \approx 0.45$ </strong><br>
-                <strong>이때의 최소 손실: $L\left(\frac{14}{31}\right) = \frac{14}{31} \approx 0.452$ </strong> 
+                <strong>최소 손실값: $L\left(\frac{14}{31}\right) = \frac{14}{31} \approx 0.452$ </strong>
               </p>
             </div>
           </div>
 
-          <!-- Right: Direct Comparison of Two Lines (Clickable Card) -->
-          <div class="card clickable amber-card" style="border-color: rgba(251, 191, 36, 0.45);" onclick="openModal('modal-stat-insight')">
+          <!-- Right: Vertex & Axis of Symmetry Property -->
+          <div class="card">
             <div class="card-title">
-              <span>⚖️ 오차합 0인 선 vs 최적 추세선</span>
-              <span class="click-hint amber">🔍 통계학 상식 비교</span>
+              <span>📐 포물선 대칭축 공식 활용</span>
             </div>
-            <div class="card-body" style="font-size: 26px; line-height: 1.6;">
-              <table class="custom-table" style="font-size: 25px; margin: 4px 0 12px 0;">
-                <thead>
-                  <tr>
-                    <th>구분</th>
-                    <th>단순 오차합</th>
-                    <th>손실값 $L(a)$ </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>후보 직선 $f(x) = 0.5x$ </td>
-                    <td><strong style="color: var(--emerald);">$\sum e_i = 0$ </strong> </td>
-                    <td>$0.500$ </td>
-                  </tr>
-                  <tr>
-                    <td>최적 추세선 $f(x) \approx 0.45x$ </td>
-                    <td>$\sum e_i \ne 0$ </td>
-                    <td><strong style="color: var(--primary);">$0.452$ (최소)</strong> </td>
-                  </tr>
-                </tbody>
-              </table>
-              <p style="margin: 0; font-size: 24px; color: var(--text-sub);">
-                💡 인공지능의 기준은 '오차합 0'이 아니라 <strong>'손실함수(제곱오차)의 최소화'</strong> 이므로 $f(x) \approx 0.45x$ 가 채택됩니다. 
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+              <p>이차함수 $y = Aa^2 + Ba + C$ 의 꼭짓점 축의 공식:</p>
+              <div class="math-callout">
+                $$a_{\text{최적}} = -\frac{B}{2A} = -\frac{-\frac{56}{3}}{2 \times \frac{62}{3}} = \frac{56}{124} = \frac{14}{31} \approx 0.45$$
+              </div>
+              <p style="font-size: 26px; line-height: 1.6;">
+                대칭축 공식만으로도 복잡한 전개 없이 <strong>손실이 최소가 되는 지점</strong> 에 정확히 도달할 수 있습니다.
               </p>
             </div>
           </div>
@@ -1125,13 +1159,142 @@
 
         <div class="card" style="padding: 20px 38px;">
           <p style="font-size: 27px; line-height: 1.6; margin: 0;">
-            세 점 $(3, 1)$ , $(2, 2)$ , $(7, 3)$ 을 대표하는 최적 추세선은 <strong>$f(x) = \frac{14}{31}x$ (약 $0.45x$)</strong> 이며, 카드를 터치하면 왜 최적선이 평균점을 지나지 않는지 상세 원리를 확인할 수 있습니다. 
+            세 점 $(3, 1)$ , $(2, 2)$ , $(7, 3)$ 을 대표하는 최적 추세선 모델은 <strong>$f(x) = \frac{14}{31}x$ (약 $0.45x$)</strong> 이며, 이때의 오차 제곱 평균은 약 $0.452$ 로 가장 작습니다.
           </p>
         </div>
       </section>
 
-      <!-- ==================== SLIDE 7: Summary & Bridge Question ==================== -->
+      <!-- ==================== SLIDE 7: NEW - Constraint & Why not passing Mean Point ==================== -->
       <section class="slide" id="slide-7">
+        <div class="slide-header">
+          <div class="slide-tag">Mathematical Insight</div>
+          <h2 class="slide-title">원점 고정 제약($b=0$)과 평균점 불일치 딜레마</h2>
+          <p class="slide-desc">왜 손실함수를 최소화한 최적 추세선은 데이터의 평균점 $(4, 2)$ 를 지나지 않을까요?</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Left: General Linear Regression vs ai Math -->
+          <div class="card clickable amber-card" style="border-color: rgba(251, 191, 36, 0.45);" onclick="openModal('modal-stat-insight')">
+            <div class="card-title">
+              <span>⚖️ 일반 선형회귀 vs 인공지능 수학 모델</span>
+              <span class="click-hint amber">🔍 증명 비교</span>
+            </div>
+            <div class="card-body">
+              <table class="custom-table" style="font-size: 24px; margin: 4px 0 12px 0;">
+                <thead>
+                  <tr>
+                    <th>모델 형태</th>
+                    <th>절편 조건</th>
+                    <th>평균점 $(\bar{x}, \bar{y})$ 통과 여부</th>
+                    <th>단순 오차합</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>일반 회귀선 $y = ax + b$ </td>
+                    <td>절편 $b$ 자유</td>
+                    <td><strong style="color: var(--emerald);">반드시 통과함</strong> </td>
+                    <td>$\sum e_i = 0$ </td>
+                  </tr>
+                  <tr>
+                    <td>교과서 모델 $y = ax$ </td>
+                    <td>$b = 0$ 고정</td>
+                    <td><strong style="color: var(--rose);">통과하지 않음</strong> </td>
+                    <td>$\sum e_i \ne 0$ </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="margin: 0; font-size: 25px; line-height: 1.5; color: var(--text-sub);">
+                💡 절편 $b$ 가 $0$ 으로 묶여 자유도를 잃었기 때문에, <strong>'오차합 0'을 만족하는 선($a=0.5$)과 '손실 최소선($a \approx 0.45$)'이 분리</strong> 됩니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Direct Numerical Comparison -->
+          <div class="card">
+            <div class="card-title">
+              <span>📊 두 직선의 최종 성능 비교</span>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+              <table class="custom-table" style="font-size: 25px;">
+                <thead>
+                  <tr>
+                    <th>직선 모델</th>
+                    <th>단순 오차합 $\sum e_i$ </th>
+                    <th>손실값 $L(a)$ (MSE)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>후보 직선 $f(x) = 0.5x$ </td>
+                    <td><strong style="color: var(--emerald);">$0$ </strong> </td>
+                    <td>$0.500$ </td>
+                  </tr>
+                  <tr>
+                    <td>최적 추세선 $f(x) \approx 0.45x$ </td>
+                    <td>$-0.20$ </td>
+                    <td><strong style="color: var(--primary);">$0.452$ (최소)</strong> </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="math-callout emerald" style="font-size: 26px; margin-top: 6px;">
+                인공지능의 절대적인 평가 기준은 '오차합 0'이 아니라 <strong>'손실함수 $L(a)$ 의 최소화'</strong> 이므로, $f(x) \approx 0.45x$ 가 최종 모델로 선택됩니다.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 20px 38px;">
+          <p style="font-size: 27px; line-height: 1.6; margin: 0;">
+            📌 <strong>결론:</strong> 원점 통과 제약($b=0$) 하에서는 평균점을 지나는 직선($a=0.5$)보다, 손실함수를 최소화하는 <strong>$a = \frac{14}{31} \approx 0.45$ 가 수학적으로 더 우수한 모델</strong> 입니다.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 8: Interactive Simulation (Relocated) ==================== -->
+      <section class="slide" id="slide-8">
+        <div class="slide-header" style="margin-bottom: 8px;">
+          <div class="slide-tag">Interactive Simulation</div>
+          <h2 class="slide-title">기울기 $a$ 에 따른 잔차 면적과 손실 곡면 비교</h2>
+          <p class="slide-desc">가로로 확장된 1:1 격자 데이터 공간과 정방형 손실 포물선의 움직임을 확인하세요.</p>
+        </div>
+
+        <div class="sim-panel">
+          <div class="sim-controls">
+            <div class="sim-slider-group">
+              <label for="slope-slider" id="label-slider-a">추세선 기울기 $a = 0.45$ </label>
+              <input type="range" id="slope-slider" min="0.0" max="1.1" step="0.01" value="0.45">
+            </div>
+            <div style="display: flex; gap: 14px;">
+              <button class="sim-preset-btn" onclick="setSlope(0.20)">a = 0.20</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.45)" style="border-color: var(--emerald); color: var(--emerald);">a = 0.45 (최적)</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.50)" style="border-color: var(--amber); color: var(--amber);">a = 0.50 (오차합 0)</button>
+              <button class="sim-preset-btn" onclick="setSlope(0.80)">a = 0.80</button>
+            </div>
+            <div style="font-size: 29px; font-weight: 800; color: var(--text-main);" id="loss-indicator">
+              손실 $L(a) = 0.452$ 
+            </div>
+          </div>
+
+          <div class="canvas-grid">
+            <div class="canvas-wrap">
+              <canvas id="canvas-data"></canvas>
+              <div class="sim-metric-badge" style="left: 20px; right: auto;">
+                데이터 공간 (1:1 격자): $f(x) = ax$ 
+              </div>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="canvas-loss"></canvas>
+              <div class="sim-metric-badge">
+                손실 곡면 (포물선): $L(a)$ 
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 9: Summary & Bridge Question ==================== -->
+      <section class="slide" id="slide-9">
         <div class="slide-header">
           <div class="slide-tag">Summary &amp; Outlook</div>
           <h2 class="slide-title">1차시 정리 및 2차시 질문: "왜 반복 알고리즘인가?"</h2>
@@ -1143,13 +1306,13 @@
             <div class="card-title">📝 1차시 핵심 요약</div>
             <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
               <div>
-                <strong style="color: var(--primary);">1. 부호 상쇄 극복:</strong> 오차 제곱의 평균(MSE)을 손실함수로 수립함. 
+                <strong style="color: var(--primary);">1. 부호 상쇄 극복:</strong> 평균점을 지나는 직선의 오차합 0 문제를 극복하기 위해 오차 제곱의 평균(MSE)을 손실함수로 수립함.
               </div>
               <div>
-                <strong style="color: var(--indigo);">2. 포물선 곡면:</strong> 선형 모델의 손실함수는 아래로 볼록한 2차 다항식을 형성함. 
+                <strong style="color: var(--indigo);">2. 포물선 곡면:</strong> 선형 모델의 손실함수는 아래로 볼록한 2차 다항식을 형성함.
               </div>
               <div>
-                <strong style="color: var(--emerald);">3. 최적해 확정:</strong> 대칭축 성질을 통해 최적 기울기 $a = \frac{14}{31} \approx 0.45$ 를 산출함. 
+                <strong style="color: var(--emerald);">3. 최적해 확정:</strong> 대칭축 성질을 통해 최적 기울기 $a = \frac{14}{31} \approx 0.45$ 를 산출함.
               </div>
             </div>
           </div>
@@ -1166,7 +1329,7 @@
                 <li>$y$ 절편 $b$ 가 포함된 다변수 모델이나 수억 개의 신경망 매개변수라면?</li>
                 <li>한 번에 계산하는 역행렬 공식은 메모리와 계산량의 한계에 부딪힙니다.</li>
               </ul>
-              <div class="math-callout emerald" style="margin-top: 16px; font-size: 29px;">
+              <div class="math-callout emerald" style="margin-top: 16px; font-size: 28px;">
                 💡 <strong>다음 시간:</strong> 현재 위치에서 접선 기울기(미분계수)만 보며 한 걸음씩 내려가는 알고리즘<br>
                 $\rightarrow$ <strong>[2차시] 경사하강법과 미분계수의 역할</strong> 
               </div>
@@ -1180,50 +1343,84 @@
 
   <!-- ==================== POPUP MODALS ==================== -->
 
-  <!-- Modal 1: Review Calculation -->
-  <div class="modal-overlay" id="modal-review-calc" onclick="closeModalOnBackdrop(event, 'modal-review-calc')">
+  <!-- Modal 1: Review Calculation Line 1 -->
+  <div class="modal-overlay" id="modal-review-calc1" onclick="closeModalOnBackdrop(event, 'modal-review-calc1')">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">📐 데이터 점과 모델 오차 상세 계산</h3>
-        <button class="modal-close-btn" onclick="closeModal('modal-review-calc')">✕</button>
+        <h3 class="modal-title">📐 후보 1: $f_1(x) = 0.5x$ 오차 계산</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-review-calc1')">✕</button>
       </div>
       <div class="modal-body">
-        <p>모델 식: $f(x) = 0.5x$ , 데이터 점: $(3, 1)$ , $(2, 2)$ , $(7, 3)$ </p>
+        <p>평균점 $(4, 2)$ 를 지나며 원점을 통과하는 직선 $f_1(x) = 0.5x$ 의 점별 오차:</p>
         <div class="math-callout">
-          • 첫 번째 점 $(3, 1)$ : 예측값 $f(3) = 1.5 \implies$ 오차 $e_1 = 1 - 1.5 = -0.5$<br>
-          • 두 번째 점 $(2, 2)$ : 예측값 $f(2) = 1.0 \implies$ 오차 $e_2 = 2 - 1.0 = +1.0$<br>
-          • 세 번째 점 $(7, 3)$ : 예측값 $f(7) = 3.5 \implies$ 오차 $e_3 = 3 - 3.5 = -0.5$
+          첫 번째 점 $(3, 1)$: $e_1 = 1 - f_1(3) = 1 - 1.5 = -0.5$<br>
+          두 번째 점 $(2, 2)$: $e_2 = 2 - f_1(2) = 2 - 1.0 = +1.0$<br>
+          세 번째 점 $(7, 3)$: $e_3 = 3 - f_1(7) = 3 - 3.5 = -0.5$
         </div>
         <p>
           오차 총합:
           $$\sum_{i=1}^{3} e_i = (-0.5) + (+1.0) + (-0.5) = 0$$
         </p>
-        <p>각 데이터에서 오차가 명백히 존재함에도 단순 합산 결과는 $0$ 이 됨을 확인합니다.</p>
+        <p>각 데이터에서 오차가 분명히 존재함에도 단순 합산 결과는 $0$ 이 됨을 확인합니다.</p>
       </div>
     </div>
   </div>
 
-  <!-- Modal 2: Review Insight -->
+  <!-- Modal 2: Review Calculation Line 2 -->
+  <div class="modal-overlay" id="modal-review-calc2" onclick="closeModalOnBackdrop(event, 'modal-review-calc2')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📐 후보 2: $f_2(x) = -x + 6$ 오차 계산</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-review-calc2')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>평균점 $(4, 2)$ 를 지나지만 기울기가 완전히 음수인 직선 $f_2(x) = -(x - 4) + 2 = -x + 6$ 의 점별 오차:</p>
+        <div class="math-callout amber">
+          첫 번째 점 $(3, 1)$: $e_1 = 1 - f_2(3) = 1 - 3.0 = -2.0$<br>
+          두 번째 점 $(2, 2)$: $e_2 = 2 - f_2(2) = 2 - 4.0 = -2.0$<br>
+          세 번째 점 $(7, 3)$: $e_3 = 3 - f_2(7) = 3 - (-1.0) = +4.0$
+        </div>
+        <p>
+          오차 총합:
+          $$\sum_{i=1}^{3} e_i = (-2.0) + (-2.0) + (+4.0) = 0$$
+        </p>
+        <p>데이터의 경향성과 정반대인 직선임에도 단순 오차합은 여전히 정확히 $0$ 이 됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: General Proof of Zero Error Sum -->
   <div class="modal-overlay" id="modal-review-insight" onclick="closeModalOnBackdrop(event, 'modal-review-insight')">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">⚠️ 부호 상쇄의 수학적 한계</h3>
+        <h3 class="modal-title">⚠️ 평균점을 지나는 직선의 오차합 성질 (대수적 증명)</h3>
         <button class="modal-close-btn" onclick="closeModal('modal-review-insight')">✕</button>
       </div>
       <div class="modal-body">
-        <p><strong>왜 단순 합산은 신뢰할 수 없는가?</strong> </p>
+        <p><strong>왜 평균점 $(\bar{x}, \bar{y})$ 를 지나는 모든 직선은 오차합이 항상 $0$ 일까?</strong></p>
+        <p>임의의 기울기 $m$ 을 갖고 평균점 $(\bar{x}, \bar{y})$ 를 지나는 직선의 방정식은 다음과 같습니다:</p>
+        <div class="math-callout">
+          $$f(x) = m(x - \bar{x}) + \bar{y}$$
+        </div>
+        <p>이 직선에 대한 전체 오차의 합 $\sum_{i=1}^{n} e_i$ 를 전개하면:</p>
+        <div class="math-callout emerald">
+          $$\sum_{i=1}^{n} \big( y_i - f(x_i) \big) = \sum_{i=1}^{n} \Big( y_i - \big( m(x_i - \bar{x}) + \bar{y} \big) \Big)$$
+          $$= \sum_{i=1}^{n} (y_i - \bar{y}) - m \sum_{i=1}^{n} (x_i - \bar{x})$$
+        </div>
         <p>
-          오차 $e_i = y_i - f(x_i)$ 는 실제값보다 예측값이 작으면 양수, 크면 음수가 됩니다.
+          편차의 합은 항상 $0$ 이므로 ($\sum (y_i - \bar{y}) = 0$ 이고 $\sum (x_i - \bar{x}) = 0$), 기울기 $m$ 값에 상관없이:
         </p>
+        <div class="math-callout" style="text-align: center;">
+          $$\sum_{i=1}^{n} e_i = 0 - m \cdot 0 = 0$$
+        </div>
         <p>
-          이를 단순 합산하면 서로 반대 방향의 오차들이 상쇄(Cancellation)되어 데이터에 적합하지 않은 직선도 '완벽한 모델'로 오판할 수 있습니다.
+          즉, <strong>기울기가 무엇이든 평균점만 지나면 단순 오차합은 무조건 $0$</strong> 이 되므로, 직선의 우수성을 평가할 때 '단순 오차합'은 전혀 변별력을 갖지 못합니다.
         </p>
-        <p>따라서 모든 오차의 크기를 정확히 반영하기 위해 부호를 제거하는 변환이 필수적입니다.</p>
       </div>
     </div>
   </div>
 
-  <!-- Modal 3: MAE Detail -->
+  <!-- Modal 4: MAE Detail -->
   <div class="modal-overlay" id="modal-mae-detail" onclick="closeModalOnBackdrop(event, 'modal-mae-detail')">
     <div class="modal-content">
       <div class="modal-header">
@@ -1234,13 +1431,13 @@
         <div class="math-callout">
           $$\text{MAE}(a) = \frac{1}{n} \sum_{i=1}^{n} |y_i - ax_i|$$
         </div>
-        <p>• <strong>장점:</strong> 오차 크기를 직관적으로 나타내며 이상치에 덜 민감합니다. </p>
-        <p>• <strong>수학적 한계:</strong> 절댓값 함수는 $0$ 에서 꺾인 점(첨점)을 가지므로 <strong>미분이 불가능</strong> 한 지점이 발생합니다. 이는 기울기를 이용해 최적점을 찾아가는 알고리즘에 불리합니다. </p>
+        <p><strong>장점:</strong> 오차 크기를 직관적으로 나타내며 이상치에 덜 민감합니다.</p>
+        <p><strong>수학적 한계:</strong> 절댓값 함수는 $0$ 에서 꺾인 점(첨점)을 가지므로 <strong>미분이 불가능</strong> 한 지점이 발생합니다. 이는 기울기를 이용해 최적점을 찾아가는 알고리즘에 불리합니다.</p>
       </div>
     </div>
   </div>
 
-  <!-- Modal 4: MSE Detail -->
+  <!-- Modal 5: MSE Detail -->
   <div class="modal-overlay" id="modal-mse-detail" onclick="closeModalOnBackdrop(event, 'modal-mse-detail')">
     <div class="modal-content">
       <div class="modal-header">
@@ -1251,13 +1448,41 @@
         <div class="math-callout emerald">
           $$L(a) = \frac{1}{n} \sum_{i=1}^{n} (y_i - ax_i)^2$$
         </div>
-        <p>• <strong>실수의 성질:</strong> 임의의 실수에 대해 $e^2 \ge 0$ 이므로 부호 상쇄가 일어나지 않습니다. </p>
-        <p>• <strong>미분 가능성:</strong> $a$ 에 대해 전개했을 때 전 구간에서 매끄러운 2차 포물선이 되어 미분계수가 항상 명확히 존재합니다. </p>
+        <p><strong>실수의 성질:</strong> 임의의 실수에 대해 $e^2 \ge 0$ 이므로 부호 상쇄가 일어나지 않습니다.</p>
+        <p><strong>미분 가능성:</strong> $a$ 에 대해 전개했을 때 전 구간에서 매끄러운 2차 포물선이 되어 미분계수가 항상 명확히 존재합니다.</p>
       </div>
     </div>
   </div>
 
-  <!-- Modal 5: Step 1 Expand -->
+  <!-- Modal 6: NEW - Loss Function Names (Cost & Objective) -->
+  <div class="modal-overlay" id="modal-loss-names" onclick="closeModalOnBackdrop(event, 'modal-loss-names')">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📖 손실함수의 다양한 이름과 의미</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-loss-names')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>인공지능 분야에서는 <strong>손실함수(Loss Function)</strong> 외에도 맥락에 따라 여러 명칭을 혼용합니다:</p>
+        
+        <div class="math-callout" style="border-left-color: var(--primary);">
+          <strong style="color: var(--primary); font-size: 30px;">1. 손실함수 (Loss Function)</strong><br>
+          단일 데이터 샘플 또는 데이터셋 전체에서 모델의 예측이 빗나감으로써 발생하는 <strong>'오차의 손실 규모'</strong> 를 직접 측정한 함수입니다.
+        </div>
+
+        <div class="math-callout emerald">
+          <strong style="color: var(--emerald); font-size: 30px;">2. 비용함수 (Cost Function)</strong><br>
+          모델이 전체 훈련 데이터셋에 대해 지불해야 하는 <strong>'총 대가(Cost)'</strong> 라는 경제학적 비유에서 유래했습니다. 시스템 전체 차원에서 손실을 최소화하여 최적의 효율을 달성하려는 목적으로 부릅니다.
+        </div>
+
+        <div class="math-callout amber">
+          <strong style="color: var(--amber); font-size: 30px;">3. 목적함수 (Objective Function)</strong><br>
+          수학적 최적화(Optimization) 이론에서 사용하는 가장 일반적인 상위 개념입니다. 최적화 알고리즘이 <strong>'최소화하거나 최대화하려는 목적 대상이 되는 함수'</strong> 를 뜻하며, AI 학습에서는 손실을 최소화하는 것이 목적이므로 손실함수가 곧 목적함수가 됩니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Step 1 Expand -->
   <div class="modal-overlay" id="modal-step1-expand" onclick="closeModalOnBackdrop(event, 'modal-step1-expand')">
     <div class="modal-content">
       <div class="modal-header">
@@ -1275,7 +1500,7 @@
     </div>
   </div>
 
-  <!-- Modal 6: Step 1 Group -->
+  <!-- Modal 8: Step 1 Group -->
   <div class="modal-overlay" id="modal-step1-group" onclick="closeModalOnBackdrop(event, 'modal-step1-group')">
     <div class="modal-content">
       <div class="modal-header">
@@ -1284,9 +1509,9 @@
       </div>
       <div class="modal-body">
         <div class="math-callout emerald">
-          • $a^2$ 항의 합: $9 + 4 + 49 = 62$<br>
-          • $a$ 항의 합: $-6 - 8 - 42 = -56$<br>
-          • 상수항의 합: $1 + 4 + 9 = 14$
+          $a^2$ 항의 합: $9 + 4 + 49 = 62$<br>
+          $a$ 항의 합: $-6 - 8 - 42 = -56$<br>
+          상수항의 합: $1 + 4 + 9 = 14$
         </div>
         <p>대괄호 내부의 식은 $62a^2 - 56a + 14$ 이며, $\frac{1}{3}$ 을 적용하면 최종 손실함수가 완성됩니다:</p>
         <div class="math-callout">
@@ -1296,11 +1521,11 @@
     </div>
   </div>
 
-  <!-- Modal 7: Step 2 Complete -->
+  <!-- Modal 9: Step 2 Complete -->
   <div class="modal-overlay" id="modal-step2-complete" onclick="closeModalOnBackdrop(event, 'modal-step2-complete')">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">경로 1: 완전제곱식 표준형 변형 과정</h3>
+        <h3 class="modal-title">완전제곱식 표준형 변형 과정 상세</h3>
         <button class="modal-close-btn" onclick="closeModal('modal-step2-complete')">✕</button>
       </div>
       <div class="modal-body">
@@ -1315,7 +1540,7 @@
     </div>
   </div>
 
-  <!-- Modal 8: Statistical Insight -->
+  <!-- Modal 10: Statistical Insight (Why Mean Point is Missed) -->
   <div class="modal-overlay" id="modal-stat-insight" onclick="closeModalOnBackdrop(event, 'modal-stat-insight')">
     <div class="modal-content">
       <div class="modal-header">
@@ -1323,25 +1548,25 @@
         <button class="modal-close-btn" onclick="closeModal('modal-stat-insight')">✕</button>
       </div>
       <div class="modal-body">
-        <p><strong>1. 통계학의 기본 상식: "최소제곱 회귀직선은 항상 평균점을 지난다"</strong> </p>
+        <p><strong>1. 통계학의 최소제곱 회귀직선: "항상 평균점을 지난다"</strong></p>
         <p>
-          통계학에서 배우는 단순선형회귀 모델은 $y$ 절편이 존재하는 일반적인 형태인 <strong>$f(x) = ax + b$ </strong> 입니다.<br>
+          통계학에서 배우는 단순선형회귀 모델은 $y$ 절편이 존재하는 일반적인 형태인 <strong>$f(x) = ax + b$</strong> 입니다.<br>
           이때 손실함수를 절편 $b$ 로 편미분하여 $0$ 으로 두면 다음과 같은 필수 관계식이 도출됩니다:
         </p>
         <div class="math-callout">
           $$\frac{\partial L}{\partial b} = 0 \implies \frac{1}{n}\sum_{i=1}^{n} (y_i - ax_i - b) = 0 \iff b = \bar{y} - a\bar{x}$$
         </div>
         <p>
-          즉, 절편 $b$ 가 자유롭게 움직일 수 있을 때는 <strong>직선이 반드시 데이터의 평균점 $(\bar{x}, \bar{y})$ 을 통과</strong> 하게 되며, 이때는 <strong>오차의 단순 총합도 항상 정확히 $0$ </strong> 이 됩니다.
+          즉, 절편 $b$ 가 자유롭게 움직일 수 있을 때는 <strong>직선이 반드시 데이터의 평균점 $(\bar{x}, \bar{y})$ 을 통과</strong> 하게 되며, 이때는 <strong>오차의 단순 총합도 항상 정확히 $0$</strong> 이 됩니다.
         </p>
         <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 20px 0;">
-        <p><strong>2. 인공지능 수학 교과서의 제약 조건: "원점 통과 ($b = 0$)"</strong> </p>
+        <p><strong>2. 인공지능 수학 교과서의 제약 조건: "원점 통과 ($b = 0$)"</strong></p>
         <p>
           고등학교 인공지능 수학에서는 학습자의 연산 부담을 줄이고 1차원 경사하강법을 직관적으로 학습시키기 위해 <strong>절편을 $0$ 으로 고정($b = 0$)</strong> 하고 원점을 지나는 직선 $f(x) = ax$ 만을 다룹니다.
         </p>
         <div class="math-callout emerald">
-          • 오차합을 $0$ 으로 만드는 기울기: $a_1 = \frac{\bar{y}}{\bar{x}} = \frac{2}{4} = 0.50$<br>
-          • 제곱오차(손실)를 최소화하는 기울기: $a_2 = \frac{\sum x_i y_i}{\sum x_i^2} = \frac{28}{62} = \frac{14}{31} \approx 0.45$ 
+          오차합을 $0$ 으로 만드는 기울기: $a_1 = \frac{\bar{y}}{\bar{x}} = \frac{2}{4} = 0.50$<br>
+          제곱오차(손실)를 최소화하는 기울기: $a_2 = \frac{\sum x_i y_i}{\sum x_i^2} = \frac{28}{62} = \frac{14}{31} \approx 0.45$
         </div>
         <p>
           원점 제약($b=0$)이 걸리면 이 두 수학적 조건이 서로 분리됩니다. 인공지능 모델의 최종 목적은 <strong>'오차합 0'이 아니라 '손실값(MSE)의 최소화'</strong> 이므로, 평균점을 지나지 않더라도 손실이 더 작은 $a \approx 0.45$ 가 진정한 최적해로 채택됩니다.
@@ -1350,7 +1575,7 @@
     </div>
   </div>
 
-  <!-- ==================== WHITEBOARD MODAL (WITH 3-STEP OPACITY) ==================== -->
+  <!-- ==================== WHITEBOARD MODAL ==================== -->
   <div class="modal-overlay wb-level-1" id="modal-whiteboard" onclick="closeModalOnBackdrop(event, 'modal-whiteboard')">
     <div class="whiteboard-content" onclick="event.stopPropagation()">
       <div class="whiteboard-header">
@@ -1359,7 +1584,6 @@
           <span style="font-size: 20px; color: var(--text-muted);">전자칠판 펜 또는 마우스 터치로 자유롭게 판서할 수 있습니다.</span>
         </div>
         <div class="whiteboard-tools">
-          <!-- 3-Step Opacity Control Buttons -->
           <div style="display: flex; align-items: center; gap: 6px; background: var(--btn-bg); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--card-border);">
             <span style="font-size: 18px; font-weight: 700; color: var(--text-muted); margin-right: 4px;">투명도:</span>
             <button class="wb-op-btn active" id="btn-op-1" onclick="setWhiteboardOpacity(1)">100% 불투명</button>
@@ -1388,12 +1612,11 @@
     </div>
     <div class="nav-right">
       <button class="btn-nav" onclick="prevSlide()">◀ 이전</button>
-      <div class="slide-counter"><span id="curr-num">01</span> / <span id="total-num">07</span></div>
+      <div class="slide-counter"><span id="curr-num">01</span> / <span id="total-num">09</span></div>
       <button class="btn-nav" onclick="nextSlide()">다음 ▶</button>
       
       <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
       
-      <!-- Theme Preset Selector -->
       <select class="theme-select" id="theme-selector" onchange="changeTheme(this.value)">
         <option value="dark">🌙 다크 네이비</option>
         <option value="light">☀️ 클린 라이트</option>
@@ -1401,12 +1624,10 @@
         <option value="sepia">☕ 웜 세피아</option>
       </select>
 
-      <!-- Whiteboard Trigger Button -->
       <button class="btn-nav whiteboard-btn" onclick="openWhiteboard()">📋 화이트보드</button>
       
       <div style="width: 2px; height: 28px; background: var(--card-border); margin: 0 4px;"></div>
 
-      <!-- Live Edit & Save HTML Buttons -->
       <button class="btn-nav" id="btn-edit" onclick="toggleEditMode()">✏️ 편집 모드</button>
       <button class="btn-nav" id="btn-save" onclick="saveHTML()">💾 HTML 저장</button>
       
@@ -1455,7 +1676,8 @@
       document.getElementById('curr-num').textContent = String(currentSlide + 1).padStart(2, '0');
       document.getElementById('progress-bar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
 
-      if (currentSlide === 3) {
+      // Slide 8 is the simulator (index 7)
+      if (currentSlide === 7) {
         requestAnimationFrame(renderSimulation);
       }
     }
@@ -1468,7 +1690,7 @@
         if (e.key === 'Escape') {
           e.target.blur();
         }
-        return; // Prevent slide navigation while typing/editing
+        return;
       }
 
       if (e.key === 'Escape') {
@@ -1488,7 +1710,7 @@
     });
 
     /* ========================================================
-       2. Modal Control & Stacked Hierarchy Engine
+       2. Modal Control Engine
        ======================================================== */
     function openModal(id) {
       const m = document.getElementById(id);
@@ -1509,13 +1731,11 @@
     }
 
     function closeTopModal() {
-      // If whiteboard is active, close only whiteboard so underlying modal remains!
       const wb = document.getElementById('modal-whiteboard');
       if (wb && wb.classList.contains('active')) {
         wb.classList.remove('active');
         return;
       }
-      // Otherwise close active content modals
       const activeModals = Array.from(document.querySelectorAll('.modal-overlay.active'));
       if (activeModals.length > 0) {
         activeModals[activeModals.length - 1].classList.remove('active');
@@ -1527,7 +1747,7 @@
     }
 
     /* ========================================================
-       Live Inline Edit & Save HTML Engine (Slides + Modals)
+       3. Live Inline Edit & Save HTML Engine
        ======================================================== */
     let isEditing = false;
 
@@ -1564,7 +1784,6 @@
       const wasEditing = isEditing;
       if (wasEditing) toggleEditMode();
 
-      // Ensure modals are closed before saving to ensure clean initial load
       closeAllModals();
 
       const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
@@ -1572,7 +1791,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = '2026_태릉고_인공지능수학_최적화_1차시_슬라이드_수정본.html';
+      a.download = '2026_인공지능수학_최적화_1차시_슬라이드_수정본.html';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1582,18 +1801,16 @@
     }
 
     /* ========================================================
-       3. Theme Switching Engine
+       4. Theme Switching Engine
        ======================================================== */
     function changeTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
-      // Re-render simulation with theme colors
       renderSimulation();
-      // Redraw whiteboard with theme background if needed
       resizeWhiteboardCanvas();
     }
 
-        /* ========================================================
-       4. Whiteboard High-Fidelity Smooth Ink Engine (Bézier Smoothing)
+    /* ========================================================
+       5. Whiteboard Engine (Bézier Smoothing)
        ======================================================== */
     let wbCanvas, wbCtx;
     let isDrawing = false;
@@ -1617,7 +1834,6 @@
       }
 
       function startDraw(e) {
-        // Prevent default touch gestures (pinch, scroll)
         if (e.cancelable) e.preventDefault();
         isDrawing = true;
         const pos = getPos(e);
@@ -1630,7 +1846,6 @@
         wbCtx.lineCap = 'round';
         wbCtx.lineJoin = 'round';
 
-        // Draw an initial clean dot
         wbCtx.beginPath();
         wbCtx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
         wbCtx.fill();
@@ -1645,29 +1860,25 @@
         wbCtx.lineCap = 'round';
         wbCtx.lineJoin = 'round';
 
-        // High-frequency coalesced events support for high-precision styluses / touchscreens
         const rawEvents = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
 
         for (let ev of rawEvents) {
           const pos = getPos(ev);
           points.push(pos);
 
-          // Need at least 3 points to create a smooth quadratic Bézier curve
           if (points.length >= 3) {
             const p0 = points[points.length - 3];
             const p1 = points[points.length - 2];
             const p2 = points[points.length - 1];
 
-            // Control point: p1, End point: midpoint between p1 and p2
             const midX = (p1.x + p2.x) / 2;
             const midY = (p1.y + p2.y) / 2;
             const startMidX = (p0.x + p1.x) / 2;
             const startMidY = (p0.y + p1.y) / 2;
 
-            // Velocity-based stroke width smoothing
             const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
             const dt = Math.max(1, p2.time - p1.time);
-            const speed = dist / dt; // px per ms
+            const speed = dist / dt;
             const targetWidth = Math.max(2.5, Math.min(5.5, 6.0 - speed * 1.5));
             wbCtx.lineWidth = wbCtx.lineWidth * 0.7 + targetWidth * 0.3;
 
@@ -1682,7 +1893,6 @@
       function stopDraw() {
         if (!isDrawing) return;
         isDrawing = false;
-        // Finish any remaining segment
         if (points.length >= 2) {
           const p1 = points[points.length - 2];
           const p2 = points[points.length - 1];
@@ -1694,14 +1904,12 @@
         points = [];
       }
 
-      // Pointer Events (Unified handler for pen, touch, and mouse with zero latency)
       if (window.PointerEvent) {
         wbCanvas.addEventListener('pointerdown', startDraw);
         wbCanvas.addEventListener('pointermove', draw);
         window.addEventListener('pointerup', stopDraw);
         window.addEventListener('pointercancel', stopDraw);
       } else {
-        // Fallback for older browsers
         wbCanvas.addEventListener('mousedown', startDraw);
         wbCanvas.addEventListener('mousemove', draw);
         window.addEventListener('mouseup', stopDraw);
@@ -1736,8 +1944,7 @@
       if (!wrap) return;
       const rect = wrap.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      
-      // Save current drawing
+
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = wbCanvas.width;
       tempCanvas.height = wbCanvas.height;
@@ -1749,7 +1956,6 @@
       wbCtx = wbCanvas.getContext('2d');
       wbCtx.scale(dpr, dpr);
 
-      // Restore drawing
       wbCtx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
     }
 
@@ -1762,7 +1968,7 @@
     }
 
     /* ========================================================
-       5. KaTeX Auto Render
+       6. KaTeX Auto Render
        ======================================================== */
     function renderAllKaTeX() {
       if (typeof renderMathInElement === 'function') {
@@ -1777,7 +1983,7 @@
     }
 
     /* ========================================================
-       6. Simulation Engine (1:1 Aspect Ratio on Both Canvases)
+       7. Simulation Engine
        Data: (3, 1), (2, 2), (7, 3)
        ======================================================== */
     const dataPoints = [
@@ -1996,7 +2202,6 @@
       function toY(l) { return originY - l * unitScale; }
 
       const maxL_val = 6;
-
       ctx.strokeStyle = gridColor;
       ctx.lineWidth = 1;
 
@@ -2045,7 +2250,7 @@
       }
       ctx.stroke();
 
-      // Guide for a = 0.5 (오차합 0인 지점)
+      // Guide for a = 0.5
       const a05X = toX(0.5);
       const a05Y = toY(lossFunction(0.5));
       ctx.fillStyle = amber;
